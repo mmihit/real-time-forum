@@ -1,0 +1,51 @@
+CREATE TABLE Users (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL UNIQUE,
+    email TEXT NOT NULL UNIQUE,
+    password TEXT NULL UNIQUE,
+    create_date DATETIME DEFAULT,
+);
+
+CREATE TABLE Categories (
+    
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE Postes (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    user_id INTEGER NOT NULL,
+    categorie_id INTEGER NOT NULL,
+    create_date DATETIME DEFAULT,
+    FOREIGN KEY (user_id) REFERENCES Users (id) ON DELETE CASCADE,
+    FOREIGN KEY ( categorie_id) REFERENCES Categories (id) ON DELETE CASCADE
+);
+
+CREATE TABLE Comments (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    content TEXT NOT NULL,
+    user_id INTEGER NOT NULL,
+    poste_id INTEGER NOT NULL,
+    create_date DATETIME DEFAULT,
+    FOREIGN KEY (user_id) REFERENCES Users (id) ON DELETE CASCADE,
+    FOREIGN KEY (poste_id) REFERENCES Postes (id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE Likes (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    poste_id INTEGER NOT NULL,
+    commente_id INTEGER NOT NULL,
+    create_date DATETIME DEFAULT,
+    FOREIGN KEY (user_id) REFERENCES Users (id) ON DELETE CASCADE,
+    FOREIGN KEY (poste_id) REFERENCES Postes (id) ON DELETE CASCADE,
+    FOREIGN KEY (commente_id) REFERENCES Comments (id) ON DELETE CASCADE
+);
+
