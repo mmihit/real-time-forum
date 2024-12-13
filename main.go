@@ -22,6 +22,39 @@ func ValidConnectionWithDatabase(database *sql.DB) error {
 	return err
 }
 
+func InsertNewUserInTable(database *sql.DB) error {
+
+	_, err := database.Exec(`INSERT INTO Users (username, email, password) VALUES (?, ?, ?)`, "Kerzazi", "kerzazi@example.com", "123")
+
+	return err
+}
+
+func SelectUserFromTable(database *sql.DB) (*sql.Rows, error) {
+
+	rows, err := database.Query("SELECT id, username, email, password FROM Users")
+
+	return rows, err;
+}
+
+func PrintUser(rows *sql.Rows) {
+
+	fmt.Println("This is All User : ")
+
+	for rows.Next() {
+
+		var Id int;
+		var Username, Email, Password string;
+
+		if err := rows.Scan(&Id, &Username, &Email, &Password); err != nil {
+
+			log.Fatalf("Error scanning row: %v", err);
+		}
+
+		fmt.Printf("ID: %d, Username: %s, Email: %s, Password: %s\n", Id, Username, Email, Password)
+	}
+
+}
+
 func main() {
 
 	
@@ -40,5 +73,17 @@ func main() {
 
 	fmt.Println("Database connection successfuly.");
 
+	err = InsertNewUserInTable(db)
 
+	if err != nil {
+		log.Fatalf("Error Inserting User : %v", err)
+	}
+
+	rows, err := SelectUserFromTable(db)
+
+	if err != nil {
+		log.Fatalf("Error querying database : %v", err)
+	}
+
+	PrintUser(rows);
 }
