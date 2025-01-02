@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Forum</title>
+  </head>
+
+  <body>
+    <header>
+      <nav>
+        {{with . }}
+        <a href="/" alt="home">01 Forum</a>
+        <a href="/logout?user={{.UserName}}" alt="logout"
+          ><button>Logout</button></a
+        >
+        <a href="/posts/create?user={{.UserName}}" alt="create post"
+          ><button>Create Post</button></a
+        >
+        <a href="/posts?user={{.UserName}}" alt="user posts"
+          ><button>My Posts</button></a
+        >
+        {{else}}
+        <a href="/" alt="home">01 Forum</a>
+        <a href="/register" alt="register"><button>Register</button></a>
+        <a href="/login" alt="login"><button>Login</button></a>
+        {{end}}
+      </nav>
+    </header>
+    <main>
+      <h2>Posts</h2>
+    </main>
+    <footer>
+      <script>
+        fetch("/api")
+          .then((response) => {
+            return response.json();
+          })
+          .then((data) => {
+            let posts = data;
+            console.log(posts);
+            let postsContainer = document.createElement("div");
+            postsContainer.className = "posts-container";
+
+            posts.forEach((post) => {
+              let postDiv = document.createElement("div");
+              postDiv.className = "post";
+              let userDiv = document.createElement("div");
+              userDiv.textContent = post.userName;
+              userDiv.className = "user";
+              let titleDiv = document.createElement("div");
+              titleDiv.className = "title";
+              titleDiv.textContent = post.title;
+              let contentDiv = document.createElement("div");
+              contentDiv.className = "content";
+              contentDiv.textContent = post.content;
+              let creationDateDiv = document.createElement("div");
+              contentDiv.className = "creation-date";
+              creationDateDiv.textContent = post.creationDate;
+              postDiv.append(userDiv, creationDateDiv, titleDiv, contentDiv);
+
+              postsContainer.appendChild(postDiv);
+
+              document.body.appendChild(postsContainer);
+            });
+          });
+      </script>
+    </footer>
+  </body>
+</html>

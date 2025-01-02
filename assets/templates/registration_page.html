@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Forum</title>
+    <h2>Register</h2>
+
+    <form action="/register" method="post">
+      <div>
+        <input
+          type="text"
+          name="user-name"
+          maxlength="10"
+          placeholder="Enter a username"
+        />
+        {{ with or (.Errors.UserName) (.Errors.DuplicateUser) }}
+        <p class="error">{{ . }}</p>
+        {{ end }}
+      </div>
+
+      <div>
+        <input
+          type="text"
+          name="email"
+          maxlength="20"
+          placeholder="Enter your email"
+        />
+        {{ with or (.Errors.Email) (.Errors.DuplicateEmail) }}
+        <p class="error">{{ . }}</p>
+        {{ end }}
+      </div>
+
+      <div>
+        <input
+          type="password"
+          name="password"
+          minlength="4"
+          placeholder="Enter a password"
+        />
+        {{ with .Errors.Password }}
+        <p class="error">{{ . }}</p>
+        {{ end }}
+      </div>
+
+      <div>
+        {{ with .Errors.PasswordConfirmation }}
+        <p class="error">{{ . }}</p>
+        {{ end }}
+        <input
+          type="password"
+          name="password-confirmation"
+          minlength="4"
+          placeholder="confirm your password"
+        />
+      </div>
+
+      <input type="submit" />
+    </form>
+  </head>
+  <body></body>
+</html>
