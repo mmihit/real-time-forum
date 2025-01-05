@@ -19,26 +19,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	for _, post := range a.Posts {
-		fmt.Println("post: ", post)
-	}
-
-	for _, user := range a.Users {
-		fmt.Println("user: ", user)
-		// for _, post := range user.Posts {
-		// 	fmt.Println("user-post: ", post)
-
-		// }
-	}
+	
 
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/", a.HomeHandler)
-	mux.HandleFunc("/register", a.RegisterationHandler)
-	mux.Handle("/posts/create", a.AuthorizeUser(http.HandlerFunc(a.CreatePostHandler)))
-	mux.HandleFunc("/login", a.LoginHandler)
-	mux.Handle("/logout", a.AuthorizeUser(http.HandlerFunc(a.LogoutUserHandler)))
-	mux.Handle("/posts", a.AuthorizeUser(http.HandlerFunc(a.UserPostsHandler)))
 	mux.HandleFunc("/api/posts", a.FetchPosts)
 	mux.HandleFunc("/api/posts/", a.FetchPost)
 	mux.HandleFunc("/api/users", a.FetchUsers)
