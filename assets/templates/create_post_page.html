@@ -1,50 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Forum</title>
-  </head>
 
-  <body>
-    <h2>Create Post</h2>
-    <header></header>
-    <main>
-      {{ with . }}
-      <div>{{.}}</div>
-      {{end}}
-      <form action="/posts/create?user={{.}}" method="post">
-        <label for="title">Post Title</label>
-        <input
-          type="text"
-          id="title"
-          name="title"
-          placeholder="Please provide a title for your post..."
-        />
-        <label for="content">Post Content</label>
-        <textarea
-          id="content"
-          name="content"
-          placeholder="Please enter the content of ypur post..."
-        ></textarea>
-        <input type="checkbox" value="sport" id="sport" name="categories" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forum</title>
+</head>
+
+<body>
+  <h2>Create Post</h2>
+  <header></header>
+  <main>
+    <form action="/posts/create?user={{.UserName}}" method="post">
+      <div><label for="title">Post Title</label>
+        <input type="text" id="title" name="title" placeholder="Please provide a title for your post..." />
+        {{ with or (.Errors.EmptyTitle) (.Errors.TitleMaxLen) }}
+        <div>{{.}}</div>
+        {{end}}
+      </div>
+      <div><label for="content">Post Content</label>
+        <textarea id="content" name="content" placeholder="Please enter the content of ypur post..."></textarea>
+        {{ with .Errors.EmptyContent }}
+        <div>{{.}}</div>
+        {{end}}
+      </div>
+      <div><input type="checkbox" value="sport" id="sport" name="categories" />
         <label for="sport">Sport</label>
         <input type="checkbox" value="games" id="games" name="categories" />
         <label for="games">Games</label>
         <input type="checkbox" value="News" id="News" name="categories" />
         <label for="News">News</label>
-        <input
-          type="checkbox"
-          value="lifestyle"
-          id="lifestyle"
-          name="categories"
-        />
+        <input type="checkbox" value="lifestyle" id="lifestyle" name="categories" />
         <label for="lifestyle">Lifestyle</label>
         <input type="checkbox" value="food" id="food" name="categories" />
         <label for="food">Food</label>
-        <input type="submit" />
-      </form>
-    </main>
-    <footer></footer>
-  </body>
+      </div>
+      <input type="submit" />
+    </form>
+  </main>
+  <footer></footer>
+</body>
+
 </html>

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"forum/internal/models"
 	"net/http"
 	"time"
 )
@@ -10,7 +11,7 @@ func (a *App) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		ExecuteTmpl(w, "create_post_page.html", http.StatusInternalServerError, "", userName)
+		ExecuteTmpl(w, "create_post_page.html", http.StatusInternalServerError, "", a.Users[userName])
 		return
 
 	case http.MethodPost:
@@ -19,8 +20,6 @@ func (a *App) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 		title := r.FormValue("title")
 		content := r.FormValue("content")
 		categories := r.Form["categories"]
-
-		user := a.Users[userName]
 
 		post, err := a.db.InsertPostWithCategories(a.Users, userName, title, content, time.Now().Format(time.ANSIC), categories)
 		if len(post.Errors) != 0 {
@@ -33,19 +32,20 @@ func (a *App) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 
 		}
 
-		user.Posts = append(user.Posts, *post)
+		a.Users[post.User].Posts = append(a.Users[post.User].Posts, post)
+		a.Posts = append([]*models.Post{post}, a.Posts...)
 
-		a.Users[userName] = user
-
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		ExecuteTmpl(w, "home_page.html", http.StatusOK, "", a.Users[userName])
+		return
 
 	default:
 		ExecuteTmpl(w, "error_page.html", http.StatusMethodNotAllowed, "Method Not Allowed!", nil)
 		return
 	}
-
 }
 
 func (a *App) UserPostsHandler(w http.ResponseWriter, r *http.Request) {
-	ExecuteTmpl(w, "logged_user_page.html", http.StatusOK, "", a)
+	userName := r.URL.Query().Get("user")
+
+	ExecuteTmpl(w, "home_page.html", http.StatusOK, "", a.Users[userName])
 }

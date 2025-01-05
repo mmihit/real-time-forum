@@ -3,18 +3,42 @@ package main
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	"forum/internal/models"
 )
 
+// func (d *Database) AllPosts() ([]models.Post, error) {
+// 	posts := []models.Post{}
+// 	selectPosts := `SELECT title, content, creation_date, user  FROM posts;`
 
-func (d *Database) InsertPost(userId int64, title, content string, creationDate time.Time) (int64, error) {
+// 	rows, err := d.db.Query(selectPosts)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("error selecting posts from posts table: %w", err)
+// 	}
+
+// 	defer rows.Close()
+
+// 	for rows.Next() {
+// 		post := models.Post{}
+// 		if err := rows.Scan(&post.Title, &post.Content, &post.CreationDate); err != nil {
+// 			return nil, fmt.Errorf("error scanning posts table rows: %w", err)
+// 		}
+// 		posts = append(posts, post)
+// 	}
+
+// 	if err := rows.Err(); err != nil {
+// 		return nil, fmt.Errorf("error iterating through posts table rows: %w", err)
+// 	}
+// 	// fmt.Println("\033[0;0mposts :---------------------------------------\n\033[0;0m", posts)
+
+// 	return posts, nil
+// }
+
+func (d *Database) InsertPost(userId int64, title, content, creationDate string) (int64, error) {
 	insertPost := `INSERT INTO posts(user, title, content, creation_date) VALUES(?, ?, ?, datetime('now'));`
 	stmnt, err := d.db.Prepare(insertPost)
 	if err != nil {
 		return 0, fmt.Errorf("error preparing statment for posts table: %w", err)
-
 	}
 	row, err := stmnt.Exec(userId, title, content)
 	if err != nil {
@@ -30,7 +54,8 @@ func (d *Database) InsertPost(userId int64, title, content string, creationDate 
 }
 
 func (d *Database) InsertCategories(postId int, categories []string) error {
-	
+	fmt.Println("\033[0;0mcategories :---------------------------------------\n\033[0;0m", categories)
+
 	for _, category := range categories {
 		insertCategories := `INSERT INTO post_category(post, category) VALUES(?,?)`
 		stmnt, err := d.db.Prepare(insertCategories)
@@ -73,12 +98,13 @@ func (d *Database) SelectCategories(categories []string) ([]string, error) {
 		return nil, fmt.Errorf("error selecting categories: %w", err)
 	}
 
-	
+	fmt.Println("\033[0;35mselected categories :---------------------------------------\n\033[0;0m", categoriesIDs)
+
 	return categoriesIDs, nil
 }
 
 func (d *Database) InsertPostWithCategories(users map[string]*models.User, userName string, title, content, creationDate string, categories []string) (*models.Post, error) {
-	postId, err := d.InsertPost(users[userName].Id, title, content, time.Now())
+	postId, err := d.InsertPost(users[userName].Id, title, content, creationDate)
 	if err != nil {
 		return &models.Post{}, err
 	}
@@ -97,7 +123,8 @@ func (d *Database) InsertPostWithCategories(users map[string]*models.User, userN
 	}
 
 	return &models.Post{
-		Id:           postId,
+		Id:           int(postId),
+		User:         userName,
 		Title:        title,
 		Content:      content,
 		CreationDate: creationDate,

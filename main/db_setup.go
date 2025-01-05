@@ -12,8 +12,8 @@ import (
 
 type Database struct {
 	db *sql.DB
-
 }
+
 type App struct {
 	Users map[string]*models.User
 	Posts []*models.Post
@@ -21,7 +21,7 @@ type App struct {
 }
 
 func NewDatabase() (*Database, error) {
-	db, err := sql.Open("sqlite3", "./forum2.db")
+	db, err := sql.Open("sqlite3", "./forum.db")
 	if err != nil {
 		return nil, fmt.Errorf("cannot create new database: %w", err)
 	}
@@ -52,7 +52,7 @@ func AppSetup() (*App, error) {
 
 	if err := d.CreateTables(); err != nil {
 		return nil, err
-	} 
+	}
 
 	return &App{
 		Users: make(map[string]*models.User),

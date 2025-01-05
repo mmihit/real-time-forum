@@ -11,15 +11,16 @@
       <nav>
         {{with . }}
         <a href="/" alt="home">01 Forum</a>
-        <a href="/logout?user={{.UserName}}" alt="logout"
+        <a href="/logout?user={{.UserName}}" alt="logout" id="logout-btn"
           ><button>Logout</button></a
         >
-        <a href="/posts/create?user={{.UserName}}" alt="create post"
+        <a
+          href="/posts/create?user={{.UserName}}"
+          alt="create post"
+          id="create-post-btn"
           ><button>Create Post</button></a
         >
-        <a href="/posts?user={{.UserName}}" alt="user posts"
-          ><button>My Posts</button></a
-        >
+        <button id="my-posts-btn">My Posts</button>
         {{else}}
         <a href="/" alt="home">01 Forum</a>
         <a href="/register" alt="register"><button>Register</button></a>
@@ -32,38 +33,54 @@
     </main>
     <footer>
       <script>
-        fetch("/api")
-          .then((response) => {
-            return response.json();
-          })
-          .then((data) => {
-            let posts = data;
-            console.log(posts);
-            let postsContainer = document.createElement("div");
-            postsContainer.className = "posts-container";
+        const fetchApi = async (url) => {
+          let req = await fetch(url);
+          let jsonData = await req.json();
+          return jsonData;
+        };
 
-            posts.forEach((post) => {
-              let postDiv = document.createElement("div");
-              postDiv.className = "post";
-              let userDiv = document.createElement("div");
-              userDiv.textContent = post.userName;
-              userDiv.className = "user";
-              let titleDiv = document.createElement("div");
-              titleDiv.className = "title";
-              titleDiv.textContent = post.title;
-              let contentDiv = document.createElement("div");
-              contentDiv.className = "content";
-              contentDiv.textContent = post.content;
-              let creationDateDiv = document.createElement("div");
-              contentDiv.className = "creation-date";
-              creationDateDiv.textContent = post.creationDate;
-              postDiv.append(userDiv, creationDateDiv, titleDiv, contentDiv);
+        let postsContainer = document.createElement("div");
+        postsContainer.setAttribute("id", "posts-container");
 
-              postsContainer.appendChild(postDiv);
+        const getPosts = async (userName) => {
+          let apiData = userName
+            ? await fetchApi(`/api/users/${userName}`)
+            : await fetchApi("/api/posts");
 
-              document.body.appendChild(postsContainer);
-            });
+          let posts = userName ? apiData.posts : apiData;
+
+          posts.forEach((post) => {
+            let postDiv = document.createElement("div");
+            postDiv.className = "post";
+            let userDiv = document.createElement("div");
+            userDiv.textContent = post.user;
+            userDiv.className = "user";
+            let titleDiv = document.createElement("div");
+            titleDiv.className = "title";
+            titleDiv.textContent = post.title;
+            let contentDiv = document.createElement("div");
+            contentDiv.className = "content";
+            contentDiv.textContent = post.content;
+            let creationDateDiv = document.createElement("div");
+            creationDateDiv.className = "creation-date";
+            creationDateDiv.textContent = post.creationDate;
+            postDiv.append(userDiv, creationDateDiv, titleDiv, contentDiv);
+
+            postsContainer.appendChild(postDiv);
           });
+        };
+
+        document.body.appendChild(postsContainer);
+        getPosts();
+        ("{{with .}}");
+        document
+          .getElementById("my-posts-btn")
+          .addEventListener("click", function (event) {
+            // event.preventDefault(); // Prevent the default anchor behavior
+            document.getElementById("posts-container").innerHTML = "";
+            getPosts("{{.UserName}}");
+          });
+        ("{{end}}");
       </script>
     </footer>
   </body>
