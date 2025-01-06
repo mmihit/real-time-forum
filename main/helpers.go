@@ -5,7 +5,6 @@ import (
 )
 
 func IsValidPost(title, content string) *models.Post {
-
 	post := &models.Post{
 		Errors: make(map[string]string),
 	}
@@ -13,7 +12,7 @@ func IsValidPost(title, content string) *models.Post {
 	switch {
 	case title == "":
 		post.Errors["EmptyTitle"] = "Please enter a title!!"
-	case len(title) > 25:
+	case len(title) > 5:
 		post.Errors["TitleMaxLen"] = "Title lenght exceded!!"
 	case content == "":
 		post.Errors["EmptyContent"] = "Please enter a content!!"
@@ -21,4 +20,3 @@ func IsValidPost(title, content string) *models.Post {
 
 	return post
 }
-

@@ -101,7 +101,7 @@ func (a *App) GetPostsFromDB() error {
 	}
 	defer rows.Close()
 
-
+	// A map to store posts by their post_id for deduplication
 	postsMap := make(map[int]*models.Post)
 
 	// Iterate through the query result
@@ -121,30 +121,37 @@ func (a *App) GetPostsFromDB() error {
 			return err
 		}
 
-	
+		// If the post has valid fields
 		if postId.Valid && title.Valid && content.Valid && creationDate.Valid {
 			// Check if the post already exists in the map
 			post, exists := postsMap[int(postId.Int64)]
 
 			if !exists {
+				// If the post doesn't exist, create a new one
 				post = &models.Post{
 					Id:           int(postId.Int64),
 					User:         u.UserName,
 					Title:        title.String,
 					Content:      content.String,
 					CreationDate: creationDate.String,
+					Total:        len(a.Posts),
 				}
+				// Add the new post to the map
 				postsMap[int(postId.Int64)] = post
+				// Append to a global posts slice to preserve the order of appearance
 				a.Posts = append(a.Posts, post)
 			}
 
+			// If the category is valid, append it to the post's categories
 			if categoryId.Valid && category.Valid {
 				post.Categories = append(post.Categories, category.String)
 			}
 
+			// Ensure the user is initialized in the Users map
 			if _, userExists := a.Users[u.UserName]; !userExists {
 				a.Users[u.UserName] = &u
 			}
+			// Append the post to the user's posts slice
 			a.Users[u.UserName].Posts = append(a.Users[u.UserName].Posts, post)
 		}
 	}

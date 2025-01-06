@@ -1,0 +1,123 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: #000;
+}
+a:active {
+  text-decoration: none;
+  color: #000;
+}
+body {
+  font-family: "Arial", sans-serif;
+  background: linear-gradient(135deg, #f2f2f5 50%, #e8eaf6 50%);
+  height: 100vh;
+}
+nav {
+  padding: 1rem;
+  width: 100%;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  line-height: 2rem;
+}
+
+#logo {
+  width: 50%;
+}
+
+button {
+  appearance: none;
+  background-color: transparent;
+  border: 0.125rem solid #bb86fc;
+  border-radius: 1rem;
+  color: #3b3b3b;
+  cursor: pointer;
+  font-weight: 2rem;
+  margin: 0;
+  outline: none;
+  padding: 0.5rem;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+button:hover {
+  color: #fff;
+  border: none;
+  background: linear-gradient(90deg, #d7b8f0, #bb86fc);
+  box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
+  transform: translateY(-2px);
+}
+
+.posts-container {
+  margin: auto;
+  position: absolute;
+  /* width: 10rem; */
+  /* height: 100%; */
+  top: 20vh;
+  left: 30vw;
+}
+.post {
+  background-color: white;
+  margin: 1rem;
+  padding: 1rem;
+  width: 100%;
+  border-radius: 1rem;
+  transition: all 0.3s;
+}
+.user {
+  margin: 0.2rem;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  flex-flow: row wrap;
+  cursor: pointer;
+}
+.info {
+  margin: 0.2rem;
+  display: flex;
+  justify-content: start;
+  flex-flow: column wrap;
+}
+.user-name {
+  font-size: 1.2rem;
+}
+.creation-date {
+  font-size: 0.7rem;
+}
+.user-image {
+  width: 3rem;
+}
+.title {
+  margin: 1rem 0.2rem 0.2rem 0.2rem;
+  font-size: 2rem;
+}
+
+.content {
+  margin: 0.5rem 0.2rem;
+  font-size: 1rem;
+}
+.comment-area {
+  margin: 0.5rem 0.2rem;
+  font-size: 1rem;
+}
+.comment-area textarea {
+  appearance: none;
+  resize: none;
+  padding: 0.5rem;
+  background-color: #f1e8f5;
+  border: none;
+  border-radius: 0.5rem;
+  overflow: auto;
+  outline: none;
+  height: 100%;
+  width: 100%;
+}
+.post:hover {
+  box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
+  transform: translateY(-2px);
+}

@@ -7,22 +7,23 @@ type Post struct {
 	Content      string            `json:"content"`
 	CreationDate string            `json:"creationDate"`
 	Categories   []string          `json:"categories,omitempty"`
-	Errors       map[string]string 
+	Total        int               `json:"total"`
+	Errors       map[string]string `json:"-,omitempty"`
 }
 
 type Login struct {
 	Email          string `json:"email"`
-	Password       string 
-	HashedPassword string 
-	SessionToken   string 
-	CRSFToken      string
+	Password       string `json:"-"`
+	HashedPassword string `json:"-"`
+	SessionToken   string `json:"-"`
+	CRSFToken      string `json:"-"`
 }
 
 type User struct {
 	Id       int64             `json:"id"`
 	UserName string            `json:"userName"`
-	Login    Login             
+	Login    Login            `json:"-"`
 	Posts    []*Post           `json:"posts,omitempty"`
-	Errors   map[string]string
+	Errors   map[string]string `json:"-,omitempty"`
 }
 
