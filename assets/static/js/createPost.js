@@ -41,7 +41,7 @@ async function createPosts() {
         // Process JSON response
         const responseData = await response.json();
         console.log('Response:', responseData);
-        alert(responseData.message || 'Post created successfully!');
+        alert(responseData.message);
 
         // Clear form fields and checkboxes
         document.getElementById('title').value = '';

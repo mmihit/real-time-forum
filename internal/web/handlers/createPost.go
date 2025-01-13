@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 	"encoding/json"
@@ -33,16 +32,10 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    
-    fmt.Fprintf(w, "Post created successfully!")
-
 
 	if post := helpers.IsValidPost(requestBody.Title, requestBody.Content); len(post.Errors) != 0 {
-		// helpers.ExecuteTmpl(w, "Home.html", http.StatusBadRequest, "Oops! Bad request.", post)
-		// return
 		response := map[string]interface{}{
 			"message": "Validation failed",
-			"errors":  post.Errors,
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
@@ -60,7 +53,6 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	h.Api.Users[post.User].Posts = append([]*db.Post{post}, h.Api.Users[post.User].Posts...)
 	h.Api.Posts = append([]*db.Post{post}, h.Api.Posts...)
 
-	fmt.Println("posts create posts: ", h.Api.Posts)
 	 // Respond with a JSON message
 	 response := map[string]string{"message": "Post created successfully!"}
 	 w.Header().Set("Content-Type", "application/json")
