@@ -13,7 +13,7 @@ func (a *App) Routes() http.Handler {
 	mux.Handle("/register", a.Handlers.RedirectMiddleware(a.Handlers.Register))
 	mux.Handle("/login", a.Handlers.RedirectMiddleware(a.Handlers.Login))
 	mux.HandleFunc("/logout", a.Handlers.Logout)
-	mux.Handle("/posts/create", a.Handlers.AccessMiddleware(a.Handlers.CreatePost))
+	mux.Handle("/creat/post", a.Handlers.AccessMiddleware(a.Handlers.CreatePost))
 	mux.Handle("/users/", a.Handlers.AccessMiddleware(a.Handlers.UserPosts))
 	mux.HandleFunc("/posts/", a.Handlers.DisplayPost)
 	mux.HandleFunc("/api", a.Api.ApiHome)

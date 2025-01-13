@@ -31,6 +31,7 @@ func (h *Handler) Home(w http.ResponseWriter, r *http.Request) {
 			helpers.ExecuteTmpl(w, "home.html", 200, "", nil)
 			return
 		} else {
+			// Update
 			helpers.ExecuteTmpl(w, "home.html", 200, "", h.Api.Users[userName])
 			return
 		}

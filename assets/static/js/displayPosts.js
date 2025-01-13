@@ -1,77 +1,88 @@
 const fetchApi = async (url) => {
   try {
-    let req = await fetch(url);
-    let jsonData = await req.json();
-    return jsonData;
+    const response = await fetch(url);
+    return await response.json();
   } catch (error) {
-    console.log("Error Fetching data ", error);
+    console.error("Error fetching data:", error);
+    return null; // Return null to handle errors gracefully
   }
 };
-
-let postsContainer = document.createElement("div");
-postsContainer.className = "posts-container";
 
 const loadPosts = async (input) => {
   let apiData;
-  let user = false;
-  let postId = false;
   let posts = [];
 
-  if (input && !isNaN(input)) postId = true;
-  else if (input && isNaN(input)) user = true;
+  // Determine the type of input
+  const isPostId = input && !isNaN(input);
+  const isUser = input && isNaN(input);
 
-  if (postId) apiData = await fetchApi(`/api/posts/${input}`);
-  if (user) apiData = await fetchApi(`/api/users/${input}`);
-  else if (!user && !postId) apiData = await fetchApi("/api/posts");
+  // Fetch data based on input type
+  if (isPostId) {
+    apiData = await fetchApi(`/api/posts/${input}`);
+  } else if (isUser) {
+    apiData = await fetchApi(`/api/users/${input}`);
+  } else {
+    apiData = await fetchApi("/api/posts");
+  }
 
-  if (user) posts = apiData.posts;
-  else if (postId) posts.push(apiData);
-  else if (!user && !postId) posts = apiData;
+  // Process fetched data
+  if (isUser) {
+    posts = apiData?.posts || [];
+  } else if (isPostId) {
+    if (apiData) posts.push(apiData);
+  } else {
+    posts = apiData || [];
+  }
 
-  if (posts) {
-    displayPosts(posts);
+  // Display posts if available
+  if (posts.length) {
+    DisplayAllPosts(posts);
   }
 };
 
-const displayPosts = (posts) => {
-  posts.forEach((post) => {
-    let postDiv = document.createElement("div");
-    postDiv.className = "post";
-    let userDiv = document.createElement("div");
-    userDiv.className = "user";
-    let userNameDiv = document.createElement("div");
-    userNameDiv.className = "user-name";
-    let userInfoDiv = document.createElement("div");
-    userInfoDiv.className = ".info";
-    userNameDiv.textContent = post.user;
-    let userImg = document.createElement("img");
-    userImg.className = "user-img";
-    userImg.src =
-      "https://static.vecteezy.com/system/resources/thumbnails/002/318/271/small_2x/user-profile-icon-free-vector.jpg";
-    let creationDateDiv = document.createElement("div");
-    creationDateDiv.className = "creation-date";
-    creationDateDiv.textContent = post.creationDate;
-    userInfoDiv.append(userNameDiv, creationDateDiv);
-    userDiv.append(userImg, userInfoDiv);
-    let titleDiv = document.createElement("div");
-    titleDiv.className = "title";
-    titleDiv.textContent = post.title;
-    let contentDiv = document.createElement("div");
-    contentDiv.className = "content";
-    contentDiv.textContent = post.content;
-    let commentContainerDiv = document.createElement("div");
-    commentContainerDiv.className = "comment-area";
-    let commentInput = document.createElement("textarea");
-    commentInput.className = "comment-input";
-    commentContainerDiv.appendChild(commentInput);
-    postDiv.append(userDiv, titleDiv, contentDiv, commentContainerDiv);
-    let postLink = document.createElement("a");
-    postLink.href = `/posts/${post.id}`;
-    postLink.appendChild(postDiv);
-    postsContainer.appendChild(postLink);
+
+// Function to create a post element
+const CreatePost = function(post) {
+  const postElement = document.createElement("div");
+  postElement.classList.add("post");
+  postElement.innerHTML = `
+      <div>
+          <div class="headers">
+              <span class="username">${post.user}</span>
+              <span class="date">${post.creationDate}</span>
+          </div>
+          <div class="title">${post.title}</div>
+          <div class="content">${post.content}</div>
+          <a href="/posts/${post.id}" class="comment-link">Comment</a>
+          <div class="reactions">
+          <button class="reaction-button like-button" onclick="toggleLikeDislike('like', this)">
+              <i class="fas fa-thumbs-up"></i>
+          </button>
+          <button class="reaction-button dislike-button" onclick="toggleLikeDislike('dislike', this)">
+              <i class="fas fa-thumbs-down"></i>
+          </button>
+
+      </div>
+      </div>
+  `;
+  postElement.addEventListener("click", (e) => {
+      if (e.target.closest(".headers")) return;
+      window.location.href = `/post.html?id=${1}`;
+  });
+  return postElement;
+}
+
+// Display posts dynamically :
+const DisplayAllPosts = function(posts) {
+  const postContainer = document.getElementById("post-container");
+  if (!postContainer) {
+    console.error("post-container element not found!");
+    return;
+  }
+  posts.forEach(post => {
+    const postElement = CreatePost(post);
+    postContainer.appendChild(postElement);
   });
 };
-
-document.body.appendChild(postsContainer);
 
 export { loadPosts };

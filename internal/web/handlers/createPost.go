@@ -10,6 +10,7 @@ import (
 )
 
 func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
+	
 	loggedUser, err := helpers.CheckCookie(r, h.DB)
 	if err != nil {
 		helpers.ExecuteTmpl(w, "error.html", http.StatusInternalServerError, "Oops! Internal server error.", nil)
@@ -18,7 +19,7 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		helpers.ExecuteTmpl(w, "create_post.html", http.StatusOK, "", h.Api.Users[loggedUser])
+		helpers.ExecuteTmpl(w, "Home.html", http.StatusOK, "", h.Api.Users[loggedUser])
 		return
 
 	case http.MethodPost:
@@ -29,7 +30,7 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		categories := r.Form["categories"]
 
 		if post := helpers.IsValidPost(title, content); len(post.Errors) != 0 {
-			helpers.ExecuteTmpl(w, "create_post.html", http.StatusBadRequest, "Oops! Bad request.", post)
+			helpers.ExecuteTmpl(w, "Home.html", http.StatusBadRequest, "Oops! Bad request.", post)
 			return
 		}
 
