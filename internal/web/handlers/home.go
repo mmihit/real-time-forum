@@ -16,6 +16,7 @@ type Handler struct {
 /************************** Home ************************/
 
 func (h *Handler) Home(w http.ResponseWriter, r *http.Request) {
+	
 	if r.URL.Path != "/" {
 		helpers.ExecuteTmpl(w, "error.html", 404, "Oops! Not found", nil)
 		return
