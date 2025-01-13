@@ -11,10 +11,12 @@ const fetchApi = async (url) => {
 const loadPosts = async (input) => {
   let apiData;
   let posts = [];
+  const categories = ["sport", "news", "music", "food", "games", "maths"]
 
   // Determine the type of input
+  const isGategory = categories.includes(input)
   const isPostId = input && !isNaN(input);
-  const isUser = input && isNaN(input);
+  const isUser = false;
 
   // Fetch data based on input type
   if (isPostId) {
@@ -30,19 +32,26 @@ const loadPosts = async (input) => {
     posts = apiData?.posts || [];
   } else if (isPostId) {
     if (apiData) posts.push(apiData);
+  } else if (isGategory) {
+    posts = FilterByCategory(apiData, input) || [];
   } else {
     posts = apiData || [];
   }
 
+  console.log(input)
+
   // Display posts if available
-  if (posts.length) {
-    DisplayAllPosts(posts);
-  }
+
+  DisplayAllPosts(posts);
+
 };
 
+const FilterByCategory = (allPosts, category) => {
+  return allPosts.filter(obj => obj.categories.includes(category.toLowerCase()))
+}
 
 // Function to create a post element
-const CreatePost = function(post) {
+const CreatePost = function (post) {
   const postElement = document.createElement("div");
   postElement.classList.add("post");
   postElement.innerHTML = `
@@ -66,19 +75,20 @@ const CreatePost = function(post) {
       </div>
   `;
   postElement.addEventListener("click", (e) => {
-      if (e.target.closest(".headers")) return;
-      window.location.href = `/post.html?id=${1}`;
+    if (e.target.closest(".headers")) return;
+    window.location.href = `/post.html?id=${1}`;
   });
   return postElement;
 }
 
 // Display posts dynamically :
-const DisplayAllPosts = function(posts) {
+const DisplayAllPosts = function (posts) {
   const postContainer = document.getElementById("post-container");
   if (!postContainer) {
     console.error("post-container element not found!");
     return;
   }
+  postContainer.innerHTML = ""
   posts.forEach(post => {
     const postElement = CreatePost(post);
     postContainer.appendChild(postElement);

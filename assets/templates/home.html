@@ -58,12 +58,12 @@
               <div class="dropdown">
                   <button class="dropdown-button">Categories <i class="fa fa-caret-down" aria-hidden="true"></i></button>
                   <div class="dropdown-menu">
-                      <a id="News">News</a>
-                      <a id="Sport">Sport</a>
-                      <a id="Music">Music</a>
-                      <a id="Food">Food</a>
-                      <a id="Games">Games</a>
-                      <a id="Maths">Maths</a>
+                      <a data-category="news">News</a>
+                      <a data-category="sport">Sport</a>
+                      <a data-category="music">Music</a>
+                      <a data-category="food">Food</a>
+                      <a data-category="games">Games</a>
+                      <a data-category="maths">Maths</a>
                   </div>
               </div>
           </div>
@@ -107,7 +107,25 @@
   <script type="module">
     import { loadPosts } from "/static/js/displayPosts.js";
 
-    loadPosts();
+    let flag = true;
+    let input =""
+
+    addEventListener('click', e => {
+      const category = e.target.dataset.category
+      const allPosts = e.target.id === 'All-Posts'
+      if (category || allPosts) {
+        if (category) {
+          input = category
+        }
+        flag = false
+        loadPosts(input)
+      }
+      input=""
+    })
+
+    if (flag){
+      loadPosts();
+    }
 
   </script>
   <script src="/static/js/createPost.js"></script>
