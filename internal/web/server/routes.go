@@ -15,7 +15,7 @@ func (a *App) Routes() http.Handler {
 	mux.HandleFunc("/logout", a.Handlers.Logout)
 	mux.Handle("/create/post", a.Handlers.AccessMiddleware(a.Handlers.CreatePost))
 	mux.Handle("/users/", a.Handlers.AccessMiddleware(a.Handlers.UserPosts))
-	mux.HandleFunc("/posts/", a.Handlers.DisplayPost)
+	mux.HandleFunc("/post", a.Handlers.DisplayPostWithComments)
 	mux.HandleFunc("/api", a.Api.ApiHome)
 	mux.HandleFunc("/api/posts", a.Api.GetPosts)
 	mux.HandleFunc("/api/posts/", a.Api.GetPost)

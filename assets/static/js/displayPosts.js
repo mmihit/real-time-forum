@@ -63,7 +63,7 @@ const CreatePost = function (post) {
           </div>
           <div class="title">${post.title}</div>
           <div class="content">${post.content}</div>
-          <a href="/posts/${post.id}" class="comment-link">Comment</a>
+          <a href="/post?id=${post.id}" class="comment-link">See All Comments</a>
           <div class="reactions">
           <button class="reaction-button like-button" onclick="toggleLikeDislike('like', this)">
               <i class="fas fa-thumbs-up"></i>
@@ -75,10 +75,6 @@ const CreatePost = function (post) {
       </div>
       </div>
   `;
-  postElement.addEventListener("click", (e) => {
-    if (e.target.closest(".headers")) return;
-    window.location.href = `/post.html?id=${1}`;
-  });
   return postElement;
 }
 

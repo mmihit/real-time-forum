@@ -8,10 +8,9 @@ import (
 	"forum/internal/db"
 )
 
-func (h *Handler) DisplayPost(w http.ResponseWriter, r *http.Request) {
-	isLogged := true
-	id := r.URL.Path[len("/posts/"):]
+func (h *Handler) DisplayPostWithComments(w http.ResponseWriter, r *http.Request) {
 
+	isLogged := true
 	loggedUser, err := helpers.CheckCookie(r, h.DB)
 	if err == http.ErrNoCookie {
 		isLogged = false
@@ -20,10 +19,16 @@ func (h *Handler) DisplayPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
+	idTarget, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil {
+		helpers.ExecuteTmpl(w, "error.html", http.StatusBadRequest, "Oops! Bad Request error !", nil)
+		return
+	}
+
 	for _, user := range h.Api.Users {
 
 		for _, p := range user.Posts {
-			if strconv.Itoa(p.Id) == id {
+			if strconv.Itoa(p.Id) == string(idTarget) {
 				userName := ""
 				if isLogged {
 					userName = loggedUser
