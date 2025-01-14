@@ -11,7 +11,7 @@ const fetchApi = async (url) => {
 const loadPosts = async (input) => {
   let apiData;
   let posts = [];
-  const categories = ["sport", "news", "music", "food", "games", "maths"]
+  const categories = ["sport", "games", "news", "lifestyle", "food"]
 
   // Determine the type of input
   const isGategory = categories.includes(input)
