@@ -56,30 +56,37 @@ async function createPosts() {
     }
 };
 
+const btns = [document.getElementById('Post-Created'), document.getElementById('Likes'), document.getElementById('Create-Post')]
 
-  
-  // Show the form when the button is clicked
-  document.getElementById('Create-Post').addEventListener('click', function () {
+btns.forEach(btn => {
+    if (btn.classList.contains('Permission-Denied')) {
+
+        btn.classList.remove('Permission-Denied')
+    }
+});
+
+// Show the form when the button is clicked
+document.getElementById('Create-Post').addEventListener('click', function () {
     document.getElementById('overlay').style.display = 'flex';
-  });
-  
-  // Hide the form when the close button is clicked
-  document.getElementById('closeFormBtn').addEventListener('click', function () {
+});
+
+// Hide the form when the close button is clicked
+document.getElementById('closeFormBtn').addEventListener('click', function () {
     document.getElementById('overlay').style.display = 'none';
-  });
-  
-  // Handle form submission
-  document.getElementById('postForm').addEventListener('submit',async function (event) {
+});
+
+// Handle form submission
+document.getElementById('postForm').addEventListener('submit', async function (event) {
     event.preventDefault(); // Prevent form from reloading the page
     // console.log('Post Created:', postData);
     // alert('Post created successfully!');
     await createPosts();
     // Hide the form after submission
     document.getElementById('overlay').style.display = 'none';
-  
+
     // Optionally, reset the form
     // this.reset();
-  });
+});
 
 
 

@@ -92,4 +92,23 @@ const DisplayAllPosts = function (posts) {
   });
 };
 
+const permissionDenied = (isDenied) => {
+  const postBtn = document.getElementById('Post-Created')
+  const likesBtn = document.getElementById('Likes')
+  const createPostBtn = document.getElementById('Create-Post')
+
+  var btns = [postBtn, likesBtn, createPostBtn]
+
+  btns.forEach(btn => {
+    if (isDenied === true) {
+      btn.classList.add("none")
+    } else {
+      if (btn.className.includes("none")) {
+        btn.classList.remove("none")
+      }
+    }
+  });
+}
+
 export { loadPosts };
+export { permissionDenied };
