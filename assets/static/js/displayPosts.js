@@ -16,7 +16,9 @@ const loadPosts = async (input) => {
   // Determine the type of input
   const isGategory = categories.includes(input)
   const isPostId = input && !isNaN(input);
-  const isUser = false;
+  const isUser = input && isNaN(input) && !isGategory;
+
+  console.log(input)
 
   // Fetch data based on input type
   if (isPostId) {
@@ -38,7 +40,6 @@ const loadPosts = async (input) => {
     posts = apiData || [];
   }
 
-  console.log(input)
 
   // Display posts if available
 

@@ -52,8 +52,8 @@
         <main class="main">
           <div class="card">
               <button id="All-Posts">All Posts</button>
-              <button id="Post-Created">Posts</button>
-              <button id="Likes">Likes</button>
+              <button id="Post-Created">My Posts</button>
+              <button id="Likes">My Likes</button>
               <button id="Create-Post"> <i class="fa fa-plus" aria-hidden="true"></i> Create </button>
               <div class="dropdown">
                   <button class="dropdown-button">Categories <i class="fa fa-caret-down" aria-hidden="true"></i></button>
@@ -107,19 +107,23 @@
     import { loadPosts } from "/static/js/displayPosts.js";
 
     let flag = true;
-    let input =""
+    let input = "" ;
 
     addEventListener('click', e => {
-      const category = e.target.dataset.category
+      let category = e.target.dataset.category
       const allPosts = e.target.id === 'All-Posts'
-      if (category || allPosts) {
+      const user = e.target.id === 'Post-Created'
+      if (category || allPosts || user) {
         if (category) {
           input = category
+        } else if (user) {
+          input = "{{.UserName}}"
         }
         flag = false
         loadPosts(input)
       }
       input=""
+      category=""
     })
 
     if (flag){
