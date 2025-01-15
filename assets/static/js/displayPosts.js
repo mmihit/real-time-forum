@@ -55,11 +55,17 @@ const FilterByCategory = (allPosts, category) => {
 const CreatePost = function (post) {
   const postElement = document.createElement("div");
   postElement.classList.add("post");
+  const categoryLinks = post.categories
+  .map(cat => `<a>${cat}</a>`)
+  .join(" | ");
   postElement.innerHTML = `
       <div>
           <div class="headers">
               <span class="username">${post.user}</span>
               <span class="date">${post.creationDate}</span>
+          </div>
+          <div class="category-label">
+              Categories: ${categoryLinks}
           </div>
           <div class="title">${post.title}</div>
           <div class="content">${post.content}</div>
