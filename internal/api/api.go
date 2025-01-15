@@ -10,9 +10,10 @@ import (
 )
 
 type Api struct {
-	Endpoints Endpoints           `json:"endpoints"`
-	Users     map[string]*db.User `json:"users"`
-	Posts     []*db.Post          `json:"posts"`
+	Endpoints Endpoints                `json:"endpoints"`
+	Users     map[string]*db.User      `json:"users"`
+	Posts     []*db.Post               `json:"posts"`
+	Comments  map[string][]*db.Comment `json:"comments"`
 }
 
 type Endpoints struct {
@@ -59,14 +60,21 @@ func (api *Api) GetUsers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(&api.Users)
 }
 
-func (api *Api) GetPost(w http.ResponseWriter, r *http.Request) {
+func (api *Api) GetComment(w http.ResponseWriter, r *http.Request) {
+	var h handlers.Handler
+	loggedUser, err := helpers.CheckCookie(r, h.DB)
+	if err != nil {
+		helpers.ExecuteTmpl(w, "error.html", http.StatusInternalServerError, "Oops! Internal server error.", nil)
+		return
+	}
+
 	if r.Method != http.MethodGet {
 		helpers.ExecuteTmpl(w, "error_page.html", http.StatusMethodNotAllowed, "Method Not Allowed!", nil)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	idQuery := r.URL.Path[len("/api/posts/"):]
+	idQuery := r.URL.Path[len("/api/comments/"):]
 
 	id, err := strconv.Atoi(idQuery)
 	if err != nil {
@@ -74,16 +82,12 @@ func (api *Api) GetPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, post := range api.Posts {
-		if id == post.Id {
-			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(&post)
-			return
-		}
-	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(&api.Comments[loggedUser][len(api.Comments[loggedUser])-1-id])
+	// return
 
-	w.WriteHeader(http.StatusNotFound)
-	json.NewEncoder(w).Encode(map[string]string{"error": "Post Not Found!"})
+	// w.WriteHeader(http.StatusNotFound)
+	// json.NewEncoder(w).Encode(map[string]string{"error": "Post Not Found!"})
 }
 
 func (api *Api) GetUser(w http.ResponseWriter, r *http.Request) {

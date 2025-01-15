@@ -94,6 +94,7 @@
       <div id="addCommentContainer">
         <h4>Leave a comment</h4>
         <form id="commentForm">
+          <span id="IdOfPost" hidden>{{.Id}}</span>
           <textarea id="commentContent" rows="3"
             placeholder="Write a comment..."></textarea>
           <button type="submit" id="commentSubmit">Post Comment</button>
@@ -101,15 +102,6 @@
       </div>
 
     </div>
-
-  <script type="module">
-    "{{$post := index .Posts 0}}";
-    let postId = "{{$post.Id}}";
-    import { loadPosts } from "/static/js/displayPosts.js";
-  
-    console.log(postId);
-    loadPosts(postId);
-  </script>
   </body>
 </html>
 

@@ -8,6 +8,12 @@ import (
 	"forum/internal/db"
 )
 
+type RequestBodyPost struct {
+	Title             string   `json:"title"`
+	Content           string   `json:"content"`
+	Categories []string `json:"selectedCategories"`
+}
+
 func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	
 	loggedUser, err := helpers.CheckCookie(r, h.DB)
@@ -20,13 +26,8 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		helpers.ExecuteTmpl(w, "error.html", http.StatusMethodNotAllowed, "Oops! Method Not Allowed.", nil)
 		return
     }
-   
-    var requestBody struct {
-        Title             string   `json:"title"`
-        Content           string   `json:"content"`
-        Categories []string `json:"selectedCategories"`
-    }
 
+   var requestBody RequestBodyPost
     if err := json.NewDecoder(r.Body).Decode(&requestBody); err != nil {
         http.Error(w, "Invalid JSON", http.StatusBadRequest)
         return
