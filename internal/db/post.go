@@ -167,6 +167,8 @@ func (d *Database) GetPostsFromDB(users map[string]*User, posts *[]*Post) error 
 				post.Categories = append(post.Categories, category.String)
 			}
 
+		}else{
+			users[u.UserName] = &u
 		}
 	}
 
