@@ -88,12 +88,15 @@ body {
   font-weight: bold;
   display: flex;
   align-items: center;
-  gap: 10px; /* Add space between the icon and the text */
+  gap: 10px;
+  /* Add space between the icon and the text */
 }
 
 .header .site-title i {
-  font-size: 1.6em; /* Adjust the icon size to match your title */
-  color: #bb86fc; /* Color of the icon, adjust as needed */
+  font-size: 1.6em;
+  /* Adjust the icon size to match your title */
+  color: #bb86fc;
+  /* Color of the icon, adjust as needed */
 }
 
 .header .site-title a {
@@ -183,7 +186,8 @@ body {
   align-items: center;
   width: 72%;
   gap: 20px;
-  height: 120px; /* Adjusted to be consistent with card content */
+  height: 120px;
+  /* Adjusted to be consistent with card content */
   box-sizing: border-box;
   transition: transform 0.3s, box-shadow 0.3s;
 }
@@ -212,10 +216,9 @@ body {
   transition: background-color 0.3s, box-shadow 0.3s;
 }
 
-.card .Permission-Denied:hover{
-  cursor:not-allowed;
-  background: linear-gradient(90deg, #b4a9cc, #ae98cd);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+.card .Permission-Denied:hover {
+  cursor: not-allowed !important;
+  opacity: .5 !important;
 }
 
 .card button:hover {
@@ -228,40 +231,41 @@ body {
 /* For Tablets (portrait and smaller) */
 @media (max-width: 1024px) {
   .card {
-      width: 100%;
-      padding: 15px;
+    width: 100%;
+    padding: 15px;
   }
 }
 
 /* For Tablets (landscape) and smaller devices */
 @media (max-width: 768px) {
   .header {
-      align-items: flex-start;
-      padding: 15px;
+    align-items: flex-start;
+    padding: 15px;
   }
 
   .dropdown {
-      width: 40%;
+    width: 40%;
   }
 
   .dropdown-button {
-      width: 100%;
-      text-align: center;
+    width: 100%;
+    text-align: center;
   }
 
   .dropdown-menu {
-      width: 100%;
+    width: 100%;
   }
 
   .card {
-      width: 90%;
-      flex-direction: column;
-      height: auto;
+    width: 90%;
+    flex-direction: column;
+    height: auto;
   }
 
   .card button {
-      width: 100%;
+    width: 100%;
   }
+
   /* .overlay{
       width: 70%;
       padding-left: ;
@@ -271,28 +275,29 @@ body {
 /* For Small Mobile Devices */
 @media (max-width: 480px) {
   .header {
-      padding: 10px;
-      flex-direction: column;
+    padding: 10px;
+    flex-direction: column;
   }
 
   .card {
-      width: 90%;
-      flex-direction: column;
-      height: auto;
-      padding: 10px 15px;
+    width: 90%;
+    flex-direction: column;
+    height: auto;
+    padding: 10px 15px;
   }
 
   .dropdown {
-      width: 100%;
+    width: 100%;
   }
+
   .dropdown-menu {
-      width: 100%;
+    width: 100%;
   }
 
   .dropdown-button {
-      margin-top: 20px;
-      width: 100%;
-      padding: 12px 25px;
+    margin-top: 20px;
+    width: 100%;
+    padding: 12px 25px;
   }
 }
 
@@ -317,22 +322,29 @@ h1 {
 .category-label {
   font-family: Arial, sans-serif;
   font-size: 14px;
-  color: #555; /* Muted text color */
-  background-color: #f5f5f5; /* Light gray background */
+  color: #555;
+  /* Muted text color */
+  background-color: #f5f5f5;
+  /* Light gray background */
   padding: 5px 10px;
-  border-radius: 5px; /* Rounded corners */
+  border-radius: 5px;
+  /* Rounded corners */
   display: inline-block;
-  text-align: justify; /* Makes it look like a badge */
-  margin: 10px 0; /* Spacing between elements */
+  text-align: justify;
+  /* Makes it look like a badge */
+  margin: 10px 0;
+  /* Spacing between elements */
 }
 
 .category-label a {
   /*text-decoration: none; /* Remove underline */
-  color: #007bff; /* Professional link color */
+  color: #007bff;
+  /* Professional link color */
 }
 
 .category-label a:hover {
-  color: #0056b3; /* Darker shade for hover */
+  color: #0056b3;
+  /* Darker shade for hover */
 }
 
 .post {
@@ -391,7 +403,7 @@ h1 {
 
 .post .reactions {
   display: flex;
-  align-items:center;
+  align-items: center;
   margin-right: 20px;
 }
 
@@ -420,10 +432,11 @@ h1 {
 
 @media (max-width: 768px) {
   .post {
-      padding: 15px;
+    padding: 15px;
   }
+
   .artical {
-      width: 90%;
+    width: 90%;
   }
 }
 
@@ -441,7 +454,7 @@ h1 {
   justify-content: center;
   align-items: center;
   animation: fadeIn 0.3s ease-in-out;
-} 
+}
 
 .form-container {
   background: white;
@@ -487,7 +500,9 @@ label {
   font-weight: bold;
 }
 
-input, textarea, fieldset {
+input,
+textarea,
+fieldset {
   width: 100%;
   padding: 10px;
   border: 1px solid #ddd;
@@ -514,18 +529,18 @@ legend {
 .checkbox-group {
   display: flex;
   gap: 15px;
-  flex-wrap: wrap; 
-  justify-content: flex-start; 
+  flex-wrap: wrap;
+  justify-content: flex-start;
 }
 
 .checkbox-group label {
   display: flex;
-  align-items: center; 
+  align-items: center;
   font-size: 16px;
 }
 
 .checkbox-group input[type="checkbox"] {
-  margin-right: 8px; 
+  margin-right: 8px;
 }
 
 .submit-btn {
@@ -551,6 +566,7 @@ legend {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -560,6 +576,7 @@ legend {
   from {
     transform: translateY(-20px);
   }
+
   to {
     transform: translateY(0);
   }
@@ -591,7 +608,8 @@ legend {
 
 @media (max-width: 480px) {
   .form-container {
-    width: 95%; /* Almost full width on smaller devices */
+    width: 95%;
+    /* Almost full width on smaller devices */
     padding: 15px;
   }
 

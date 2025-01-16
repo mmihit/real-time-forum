@@ -61,8 +61,8 @@ func (api *Api) GetUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *Api) GetComment(w http.ResponseWriter, r *http.Request) {
-	var h handlers.Handler
-	loggedUser, err := helpers.CheckCookie(r, h.DB)
+	var db *db.Database
+	loggedUser, err := helpers.CheckCookie(r, db)
 	if err != nil {
 		helpers.ExecuteTmpl(w, "error.html", http.StatusInternalServerError, "Oops! Internal server error.", nil)
 		return

@@ -1,19 +1,18 @@
 package handlers
 
 import (
-	"net/http"
-	"time"
 	"encoding/json"
 	"forum/helpers"
 	"forum/internal/db"
 	"log"
+	"net/http"
+	"time"
 )
 
 type RequestBodyComment struct {
-	IdPost            int   `json:"title"`
-	Content           string   `json:"content"`
+	IdPost  int    `json:"title"`
+	Content string `json:"content"`
 }
-
 
 func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 
@@ -26,8 +25,8 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		helpers.ExecuteTmpl(w, "error.html", http.StatusMethodNotAllowed, "Oops! Method Not Allowed.", nil)
 		return
-    }
-	
+	}
+
 	var comment RequestBodyComment
 	if err := json.NewDecoder(r.Body).Decode(&comment); err != nil {
 		log.Printf("Error decoding JSON: %v", err)
@@ -41,13 +40,11 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 		return
 
 	}
-	
 
-	h.Api.Comments[loggedUser] = append([]*db.Comment{comments}, h.Api.Comments[loggedUser]...);
+	h.Api.Comments[loggedUser] = append([]*db.Comment{comments}, h.Api.Comments[loggedUser]...)
 
-	 // Respond with a JSON message
-	 response := map[string]string{"message": "Comment created successfully!"}
-	 w.Header().Set("Content-Type", "application/json")
-	 json.NewEncoder(w).Encode(response)
+	// Respond with a JSON message
+	response := map[string]string{"message": "Comment created successfully!"}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }
-

@@ -8,6 +8,34 @@ const fetchApi = async (url) => {
   }
 };
 
+const displayPosts = (UserName) => {
+  let flag = true;
+  let input = "";
+  addEventListener('click', e => {
+    let category = e.target.dataset.category
+    const allPosts = e.target.id === 'All-Posts'
+    const user = e.target.id === 'Post-Created'
+    const likes = e.target.id == 'Likes'
+    if (category || allPosts || user || likes) {
+      flag = false
+      if (category) {
+        input = category
+      } else if (user) {
+        input = UserName
+      }
+      if (!input && (user || likes)) {
+        return
+      }
+      loadPosts(input)
+    }
+    input = ""
+    category = ""
+  })
+  if (flag) {
+    loadPosts();
+  }
+}
+
 const loadPosts = async (input) => {
   let apiData;
   let posts = [];
@@ -116,5 +144,5 @@ const permissionDenied = (isDenied) => {
   });
 }
 
-export { loadPosts };
+export { displayPosts };
 export { permissionDenied };

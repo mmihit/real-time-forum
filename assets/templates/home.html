@@ -104,44 +104,17 @@
 
 
   <script type="module" hidden>
-    import { loadPosts } from "/static/js/displayPosts.js";
+    import { displayPosts } from "/static/js/displayPosts.js";
     import { permissionDenied } from "/static/js/displayPosts.js";
-    // import { }
 
-    let flag = true;
-    let input = "";
-
-    addEventListener('click', e => {
-      let category = e.target.dataset.category
-      const allPosts = e.target.id === 'All-Posts'
-      const user = e.target.id === 'Post-Created'
-      const likes = e.target.id == 'Likes'
-
-      if (category || allPosts || user || likes) {
-        flag = false
-        if (category) {
-          input = category
-        } else if (user) {
-          input = "{{.UserName}}"
-        }
-        if (!input && (user || likes)) {
-          return
-        }
-        loadPosts(input)
-      }
-      input = ""
-      category = ""
-    })
-
-    if (flag) {
-      loadPosts();
-    }
+    const UserName = "{{.UserName}}"
+    displayPosts(UserName)
 
   </script>
   {{if .UserName}}
-  <script src="/static/js/createPost.js"></script>
+  <script src="/static/js/createPost.js" hidden></script>
   {{else}}
-  <script src="/static/js/permissionDenied.js"></script>
+  <script src="/static/js/permissionDenied.js" hidden></script>
   {{end}}
 </body>
 

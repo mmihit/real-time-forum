@@ -57,13 +57,22 @@ async function createPosts() {
 };
 
 const btns = [document.getElementById('Post-Created'), document.getElementById('Likes'), document.getElementById('Create-Post')]
+const create_post = [document.getElementById('Create-Post'),document.getElementById('create-post-btn')]
 
 btns.forEach(btn => {
     if (btn.classList.contains('Permission-Denied')) {
-
         btn.classList.remove('Permission-Denied')
     }
 });
+
+create_post.forEach(btn=>{
+    
+    btn.addEventListener('click', function (e) {
+        document.getElementById('overlay').style.display = 'flex';
+        e.preventDefault()
+    });
+})
+
 
 // Show the form when the button is clicked
 document.getElementById('Create-Post').addEventListener('click', function () {
