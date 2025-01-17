@@ -3,14 +3,13 @@ package handlers
 import (
 	"encoding/json"
 	"forum/helpers"
-	"forum/internal/db"
 	"log"
 	"net/http"
 	"time"
 )
 
 type RequestBodyComment struct {
-	IdPost  int    `json:"title"`
+	IdPost  int    `json:"postId"`
 	Content string `json:"content"`
 }
 
@@ -33,15 +32,13 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
 	comments, err := h.DB.InsertComment(comment.Content, time.Now().Format("Mon Jan 02 15:04:05 2006"), loggedUser, h.Api.Users, comment.IdPost)
 	if err != nil {
 		helpers.ExecuteTmpl(w, "error.html", http.StatusInternalServerError, "Oops! Internal server error.", nil)
 		return
-
 	}
 
-	h.Api.Comments[loggedUser] = append([]*db.Comment{comments}, h.Api.Comments[loggedUser]...)
+	h.Api.Comments[comment.IdPost] = append(h.Api.Comments[comment.IdPost], comments)
 
 	// Respond with a JSON message
 	response := map[string]string{"message": "Comment created successfully!"}

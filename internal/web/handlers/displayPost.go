@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -21,15 +20,12 @@ func (h *Handler) DisplayPostWithComments(w http.ResponseWriter, r *http.Request
 	}
 	
 	idTarget, err := strconv.Atoi(r.URL.Query().Get("id"))
-	fmt.Println(idTarget);
 	if err != nil {
 		helpers.ExecuteTmpl(w, "error.html", http.StatusBadRequest, "Oops! Bad Request error !", nil)
 		return
 	}
 
 	for _, user := range h.Api.Users {
-
-		// fmt.Println(*user);
 		for _, p := range user.Posts {
 			if p.Id == idTarget {
 				userName := ""

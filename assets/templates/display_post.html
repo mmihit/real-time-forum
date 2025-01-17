@@ -23,6 +23,7 @@
     </div>
 
     <div class="dropdown">
+      <input type="hidden" id="Name" value="{{.UserName}}">
       <button class="dropdown-button">{{.UserName}} <i class="fa fa-caret-down" aria-hidden="true"></i></button>
       <div class="dropdown-menu">
         <a href="/logout" alt="logout" id="logout-btn" title="Logout">Logout</a>
@@ -58,6 +59,7 @@
     {{if .Posts}}
       {{range .Posts}}
           <div class="post-header">
+            <span id="PostId" hidden> {{.Id}}</span>
               <h3 id="postTitle" class="post-title"> {{.Title}} </h3>
               <p id="postInfo" class="post-info"> Posted by {{.User}} on {{.CreationDate}}</p>
               {{if .Categories}}
@@ -107,8 +109,7 @@
       <!-- Add New Comment Form -->
       <div id="addCommentContainer">
         <h4>Leave a comment</h4>
-        <form id="commentForm">
-          <span id="IdOfPost" hidden>{{.Id}}</span>
+        <form action="/create/comment"  method="post" id="commentForm">
           <textarea id="commentContent" rows="3"
             placeholder="Write a comment..."></textarea>
           <button type="submit" id="commentSubmit">Post Comment</button>
@@ -118,6 +119,8 @@
     </div>
     {{if not .UserName}}
     <script src="/static/js/permissionDenied.js"></script>
+    {{else}}
+    <script src="/static/js/createComment.js"></script>
     {{end}}
   </body>
 </html>

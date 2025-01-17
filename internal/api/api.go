@@ -5,15 +5,17 @@ import (
 	"net/http"
 	"strconv"
 
+	// "strconv"
+
 	"forum/helpers"
 	"forum/internal/db"
 )
 
 type Api struct {
-	Endpoints Endpoints                `json:"endpoints"`
-	Users     map[string]*db.User      `json:"users"`
-	Posts     []*db.Post               `json:"posts"`
-	Comments  map[string][]*db.Comment `json:"comments"`
+	Endpoints Endpoints             `json:"endpoints"`
+	Users     map[string]*db.User   `json:"users"`
+	Posts     []*db.Post            `json:"posts"`
+	Comments  map[int][]*db.Comment `json:"comments"`
 }
 
 type Endpoints struct {
@@ -61,12 +63,6 @@ func (api *Api) GetUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *Api) GetComment(w http.ResponseWriter, r *http.Request) {
-	var db *db.Database
-	loggedUser, err := helpers.CheckCookie(r, db)
-	if err != nil {
-		helpers.ExecuteTmpl(w, "error.html", http.StatusInternalServerError, "Oops! Internal server error.", nil)
-		return
-	}
 
 	if r.Method != http.MethodGet {
 		helpers.ExecuteTmpl(w, "error_page.html", http.StatusMethodNotAllowed, "Method Not Allowed!", nil)
@@ -82,12 +78,14 @@ func (api *Api) GetComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(&api.Comments[loggedUser][len(api.Comments[loggedUser])-1-id])
-	// return
-
-	// w.WriteHeader(http.StatusNotFound)
-	// json.NewEncoder(w).Encode(map[string]string{"error": "Post Not Found!"})
+    comments, exists := api.Comments[id]
+    if !exists {
+        w.WriteHeader(http.StatusNotFound)
+        json.NewEncoder(w).Encode(map[string]string{"error": "Comments not found for the given ID!"})
+        return
+    }
+    w.WriteHeader(http.StatusOK)
+    json.NewEncoder(w).Encode(comments)
 }
 
 func (api *Api) GetUser(w http.ResponseWriter, r *http.Request) {
