@@ -26,9 +26,9 @@ const createScrollPagination = (posts, displayCallback) => {
 
       startIndex = endIndex;
       endIndex = Math.min(endIndex + 5, posts.length);
-      
+
       displayCallback(posts.slice(startIndex, endIndex), true);
-      
+
       isLoading = false;
     }
   };
@@ -45,36 +45,39 @@ const scrollingPosts = (posts) => {
   return createScrollPagination(posts, DisplayAllPosts);
 };
 
-export const displayPosts = async (UserName) => {
+export const getPosts = async (UserName) => {
   let cleanup = null;
   let currentPosts = await loadPosts();
   
   // Initial display
   cleanup = scrollingPosts(currentPosts);
-
+  
   const handleClick = async (e) => {
     const category = e.target.dataset.category;
-    const allPosts = e.target.id === 'All-Posts';
-    const likes = e.target.id === 'Likes';
-    const user = e.target.id === 'Post-Created'
+    const isClickOnAllPosts = e.target.id === 'All-Posts';
+    const isCLickOnMyLikes = e.target.id === 'Likes';
+    const isClickOnMyPosts = e.target.id === 'Post-Created'
 
-    if (category || allPosts || user || likes) {
-      if (cleanup) {
+    if (category || isClickOnAllPosts || isClickOnMyPosts || isCLickOnMyLikes) {
+      
         cleanup();
-      }
+      
 
       let input = '';
+
       if (category) {
         input = category;
-      } else if (UserName) {
-        input = UserName;
+      } else if (isClickOnMyPosts ) {
+        if (!UserName) {
+          return
+        }
+        input = UserName
+      } else if (isCLickOnMyLikes) {
+        return
       }
 
-      if (!input && likes) {
-        return;
-      }
+        currentPosts = await loadPosts(input);
 
-      currentPosts = await loadPosts(input);
       cleanup = scrollingPosts(currentPosts);
     }
   };
@@ -99,7 +102,7 @@ export const loadPosts = async (input) => {
 
   // Determine the type of input
   const isGategory = categories.includes(input)
-  const isUser = input && isNaN(input) && !isGategory;
+  const isUser = input && !isGategory;
 
   // Fetch data based on input type
   if (isUser) {
@@ -116,7 +119,6 @@ export const loadPosts = async (input) => {
   } else {
     posts = apiData || [];
   }
-  console.log(posts)
   return posts
 };
 

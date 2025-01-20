@@ -91,21 +91,19 @@
     </div>
   </div>
 
-
-  <script type="module" hidden>
-    import { displayPosts,  } from "/static/js/displayPosts.js";
-    import { permissionDenied } from "/static/js/displayPosts.js";
-   
-
-    const UserName = "{{.UserName}}"
-    displayPosts(UserName)
-
-  </script>
   {{if .UserName}}
   <script type="module" src="/static/js/createPost.js" hidden></script>
   {{else}}
   <script src="/static/js/permissionDenied.js" hidden></script>
   {{end}}
+  <script type="module" hidden>
+    import { getPosts } from "/static/js/displayPosts.js";   
+
+    const UserName = "{{.UserName}}"
+    getPosts(UserName)
+
+  </script>
+
 </body>
 
 </html>
