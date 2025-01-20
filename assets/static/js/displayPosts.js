@@ -8,7 +8,7 @@ const fetchApi = async (url) => {
   }
 };
 
-const displayPosts = (UserName) => {
+export const displayPosts = (UserName) => {
   let flag = true;
   let input = "";
   addEventListener('click', e => {
@@ -36,7 +36,15 @@ const displayPosts = (UserName) => {
   }
 }
 
+export const GoToTop = () => {
+  if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+  }
+  window.scrollTo(0, 0);
+}
+
 const loadPosts = async (input) => {
+  GoToTop()
   let apiData;
   let posts = [];
   const categories = ["sport", "games", "news", "lifestyle", "food"]
@@ -68,10 +76,30 @@ const loadPosts = async (input) => {
     posts = apiData || [];
   }
 
+  let startIndex = 0
+  let endIndex = 5
+
+  DisplayAllPosts(posts.slice(startIndex, endIndex))
+
+  endIndex += 5
 
   // Display posts if available
+  window.addEventListener('scroll', () => {
 
-  DisplayAllPosts(posts);
+    const scrollable = document.documentElement.scrollHeight - window.innerHeight
+    const scrolled = window.scrollY
+    if (Math.ceil(scrolled) === scrollable && posts.length >= endIndex) {
+      console.log(posts.length)
+      console.log(endIndex)
+      DisplayAllPosts(posts.slice(startIndex, endIndex))
+      if (posts.length - endIndex > 0 && posts.length - endIndex < 5) {
+        endIndex += posts.length - endIndex
+      } else {
+        endIndex += 5
+      }
+    }
+
+  })
 
 };
 
@@ -84,8 +112,8 @@ const CreatePost = function (post) {
   const postElement = document.createElement("div");
   postElement.classList.add("post");
   const categoryLinks = post.categories
-  .map(cat => `<a>${cat}</a>`)
-  .join(" | ");
+    .map(cat => `<a>${cat}</a>`)
+    .join(" | ");
   postElement.innerHTML = `
       <div>
           <div class="headers">
@@ -126,7 +154,7 @@ const DisplayAllPosts = function (posts) {
   });
 };
 
-const permissionDenied = (isDenied) => {
+export const permissionDenied = (isDenied) => {
   const postBtn = document.getElementById('Post-Created')
   const likesBtn = document.getElementById('Likes')
   const createPostBtn = document.getElementById('Create-Post')
@@ -143,6 +171,3 @@ const permissionDenied = (isDenied) => {
     }
   });
 }
-
-export { displayPosts };
-export { permissionDenied };
