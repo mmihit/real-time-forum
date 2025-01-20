@@ -56,6 +56,7 @@ export const displayPosts = async (UserName) => {
     const category = e.target.dataset.category;
     const allPosts = e.target.id === 'All-Posts';
     const likes = e.target.id === 'Likes';
+    const user = e.target.id === 'Post-Created'
 
     if (category || allPosts || user || likes) {
       if (cleanup) {
@@ -98,13 +99,10 @@ export const loadPosts = async (input) => {
 
   // Determine the type of input
   const isGategory = categories.includes(input)
-  const isPostId = input && !isNaN(input);
   const isUser = input && isNaN(input) && !isGategory;
 
   // Fetch data based on input type
-  if (isPostId) {
-    apiData = await fetchApi(`/api/posts/${input}`);
-  } else if (isUser) {
+  if (isUser) {
     apiData = await fetchApi(`/api/users/${input}`);
   } else {
     apiData = await fetchApi("/api/posts");
@@ -113,8 +111,6 @@ export const loadPosts = async (input) => {
   // Process fetched data
   if (isUser) {
     posts = apiData?.posts || [];
-  } else if (isPostId) {
-    if (apiData) posts.push(apiData);
   } else if (isGategory) {
     posts = FilterByCategory(apiData, input) || [];
   } else {
@@ -129,7 +125,7 @@ const FilterByCategory = (allPosts, category) => {
 }
 
 // Function to create a post element
-const CreatePost = function (post) {
+export const RenderPosts = function (post) {
   const postElement = document.createElement("div");
   postElement.classList.add("post");
   const categoryLinks = post.categories
@@ -174,7 +170,7 @@ const DisplayAllPosts = function (posts, isLoadPosts) {
   }
 
   posts.forEach(post => {
-    const postElement = CreatePost(post);
+    const postElement = RenderPosts(post);
     postContainer.appendChild(postElement);
   });
 };

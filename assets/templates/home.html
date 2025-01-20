@@ -11,42 +11,31 @@
 </head>
 
 <body>
-  {{if .}}
-  <!-- Header -->
-  <header class="header">
-    <div class="site-title">
-      <i class="fas fa-comments"></i> <!-- Font Awesome icon for chat -->
-      <a href="/" alt="home">Forum Chat</a>
-    </div>
+<!-- Header -->
+<header class="header">
+  <div class="site-title">
+    <i class="fas fa-comments"></i> <!-- Font Awesome icon for chat -->
+    <a href="/" alt="home">Forum Chat</a>
+  </div>
 
-    <div class="dropdown">
+  <div class="dropdown">
+    <span id="UserName" hidden> {{.UserName}} </span>
+    {{if .}}
       <button class="dropdown-button">{{.UserName}} <i class="fa fa-caret-down" aria-hidden="true"></i></button>
       <div class="dropdown-menu">
         <a href="/logout" alt="logout" id="logout-btn" title="Logout">Logout</a>
         <a href="/posts/create" alt="create post" id="create-post-btn"> + Create</a>
       </div>
-    </div>
-
-  </header>
-  {{else}}
-
-  <!-- Header -->
-  <header class="header">
-    <div class="site-title">
-      <i class="fas fa-comments"></i> <!-- Font Awesome icon for chat -->
-      <a href="/" alt="home">Forum Chat</a>
-    </div>
-
-    <div class="dropdown">
-      <button class="dropdown-button">Acounte <i class="fa fa-caret-down" aria-hidden="true"></i></button>
+    {{else}}
+      <button class="dropdown-button">Account <i class="fa fa-caret-down" aria-hidden="true"></i></button>
       <div class="dropdown-menu">
         <a href="/login">Login</a>
         <a href="/register">Signup</a>
       </div>
-    </div>
+    {{end}}
+  </div>
+</header>
 
-  </header>
-  {{end}}
 
   <!-- main -->
   <main class="main">
@@ -103,20 +92,20 @@
   </div>
 
 
-  
-  {{if .UserName}}
-  <script src="/static/js/createPost.js" hidden></script>
-  {{else}}
-  <script src="/static/js/permissionDenied.js" hidden></script>
-  {{end}}
   <script type="module" hidden>
-    import { displayPosts } from "/static/js/displayPosts.js";
+    import { displayPosts,  } from "/static/js/displayPosts.js";
     import { permissionDenied } from "/static/js/displayPosts.js";
+   
 
     const UserName = "{{.UserName}}"
     displayPosts(UserName)
 
   </script>
+  {{if .UserName}}
+  <script type="module" src="/static/js/createPost.js" hidden></script>
+  {{else}}
+  <script src="/static/js/permissionDenied.js" hidden></script>
+  {{end}}
 </body>
 
 </html>
