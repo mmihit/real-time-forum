@@ -80,7 +80,7 @@ const loadPosts = async (input) => {
   let endIndex = 5
 
   DisplayAllPosts(posts.slice(startIndex, endIndex))
-
+  startIndex += 5
   endIndex += 5
 
   // Display posts if available
@@ -88,15 +88,21 @@ const loadPosts = async (input) => {
 
     const scrollable = document.documentElement.scrollHeight - window.innerHeight
     const scrolled = window.scrollY
-    if (Math.ceil(scrolled) === scrollable && posts.length >= endIndex) {
-      console.log(posts.length)
-      console.log(endIndex)
-      DisplayAllPosts(posts.slice(startIndex, endIndex))
+    console.log(Math.ceil(scrolled))
+    if (Math.ceil(scrolled) >= scrollable && posts.length >= endIndex) {
+      console.log(scrollable)
+      console.log("********************************")
+      // console.log(posts.length)
+      // console.log(endIndex)
+      DisplayAllPosts(posts.slice(startIndex, endIndex), true)
       if (posts.length - endIndex > 0 && posts.length - endIndex < 5) {
+
         endIndex += posts.length - endIndex
       } else {
+
         endIndex += 5
       }
+      startIndex += 5
     }
 
   })
@@ -141,13 +147,15 @@ const CreatePost = function (post) {
 }
 
 // Display posts dynamically :
-const DisplayAllPosts = function (posts) {
+const DisplayAllPosts = function (posts, isLoadPosts) {
   const postContainer = document.getElementById("post-container");
   if (!postContainer) {
     console.error("post-container element not found!");
     return;
   }
-  postContainer.innerHTML = ""
+  if (!isLoadPosts) {
+    postContainer.innerHTML = ""
+  }
   posts.forEach(post => {
     const postElement = CreatePost(post);
     postContainer.appendChild(postElement);
