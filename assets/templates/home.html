@@ -103,6 +103,12 @@
   </div>
 
 
+  
+  {{if .UserName}}
+  <script src="/static/js/createPost.js" hidden></script>
+  {{else}}
+  <script src="/static/js/permissionDenied.js" hidden></script>
+  {{end}}
   <script type="module" hidden>
     import { displayPosts } from "/static/js/displayPosts.js";
     import { permissionDenied } from "/static/js/displayPosts.js";
@@ -111,11 +117,6 @@
     displayPosts(UserName)
 
   </script>
-  {{if .UserName}}
-  <script src="/static/js/createPost.js" hidden></script>
-  {{else}}
-  <script src="/static/js/permissionDenied.js" hidden></script>
-  {{end}}
 </body>
 
 </html>

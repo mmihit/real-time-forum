@@ -8,33 +8,80 @@ const fetchApi = async (url) => {
   }
 };
 
-export const displayPosts = (UserName) => {
-  let flag = true;
-  let input = "";
-  addEventListener('click', e => {
-    let category = e.target.dataset.category
-    const allPosts = e.target.id === 'All-Posts'
-    const user = e.target.id === 'Post-Created'
-    const likes = e.target.id == 'Likes'
-    if (category || allPosts || user || likes) {
-      flag = false
-      if (category) {
-        input = category
-      } else if (user) {
-        input = UserName
-      }
-      if (!input && (user || likes)) {
-        return
-      }
-      loadPosts(input)
+const createScrollPagination = (posts, displayCallback) => {
+  let startIndex = 0;
+  let endIndex = 5;
+  let isLoading = false;
+
+  displayCallback(posts.slice(0, endIndex));
+
+  const handleScroll = () => {
+    if (isLoading) return;
+
+    const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+    const scrolled = window.scrollY;
+
+    if (Math.ceil(scrolled) >= scrollable && posts.length > endIndex) {
+      isLoading = true;
+
+      startIndex = endIndex;
+      endIndex = Math.min(endIndex + 5, posts.length);
+      
+      displayCallback(posts.slice(startIndex, endIndex), true);
+      
+      isLoading = false;
     }
-    input = ""
-    category = ""
-  })
-  if (flag) {
-    loadPosts();
-  }
-}
+  };
+
+  // Clean up previous event listeners before adding new one
+  window.removeEventListener('scroll', handleScroll);
+  window.addEventListener('scroll', handleScroll);
+
+  return () => window.removeEventListener('scroll', handleScroll);
+};
+
+const scrollingPosts = (posts) => {
+  if (!posts || !posts.length) return;
+  return createScrollPagination(posts, DisplayAllPosts);
+};
+
+export const displayPosts = async (UserName) => {
+  let cleanup = null;
+  let currentPosts = await loadPosts();
+  
+  // Initial display
+  cleanup = scrollingPosts(currentPosts);
+
+  const handleClick = async (e) => {
+    const category = e.target.dataset.category;
+    const allPosts = e.target.id === 'All-Posts';
+    const likes = e.target.id === 'Likes';
+
+    if (category || allPosts || user || likes) {
+      if (cleanup) {
+        cleanup();
+      }
+
+      let input = '';
+      if (category) {
+        input = category;
+      } else if (UserName) {
+        input = UserName;
+      }
+
+      if (!input && likes) {
+        return;
+      }
+
+      currentPosts = await loadPosts(input);
+      cleanup = scrollingPosts(currentPosts);
+    }
+  };
+
+  document.removeEventListener('click', handleClick);
+  document.addEventListener('click', handleClick);
+
+};
 
 export const GoToTop = () => {
   if ('scrollRestoration' in history) {
@@ -43,7 +90,7 @@ export const GoToTop = () => {
   window.scrollTo(0, 0);
 }
 
-const loadPosts = async (input) => {
+export const loadPosts = async (input) => {
   GoToTop()
   let apiData;
   let posts = [];
@@ -53,8 +100,6 @@ const loadPosts = async (input) => {
   const isGategory = categories.includes(input)
   const isPostId = input && !isNaN(input);
   const isUser = input && isNaN(input) && !isGategory;
-
-  console.log(input)
 
   // Fetch data based on input type
   if (isPostId) {
@@ -75,38 +120,8 @@ const loadPosts = async (input) => {
   } else {
     posts = apiData || [];
   }
-
-  let startIndex = 0
-  let endIndex = 5
-
-  DisplayAllPosts(posts.slice(startIndex, endIndex))
-  startIndex += 5
-  endIndex += 5
-
-  // Display posts if available
-  window.addEventListener('scroll', () => {
-
-    const scrollable = document.documentElement.scrollHeight - window.innerHeight
-    const scrolled = window.scrollY
-    console.log(Math.ceil(scrolled))
-    if (Math.ceil(scrolled) >= scrollable && posts.length >= endIndex) {
-      console.log(scrollable)
-      console.log("********************************")
-      // console.log(posts.length)
-      // console.log(endIndex)
-      DisplayAllPosts(posts.slice(startIndex, endIndex), true)
-      if (posts.length - endIndex > 0 && posts.length - endIndex < 5) {
-
-        endIndex += posts.length - endIndex
-      } else {
-
-        endIndex += 5
-      }
-      startIndex += 5
-    }
-
-  })
-
+  console.log(posts)
+  return posts
 };
 
 const FilterByCategory = (allPosts, category) => {
@@ -155,7 +170,9 @@ const DisplayAllPosts = function (posts, isLoadPosts) {
   }
   if (!isLoadPosts) {
     postContainer.innerHTML = ""
+    console.log("clear inner html")
   }
+
   posts.forEach(post => {
     const postElement = CreatePost(post);
     postContainer.appendChild(postElement);
