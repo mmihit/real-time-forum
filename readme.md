@@ -16,7 +16,6 @@ Forum consists in creating a web forum that allows :
 - Wadia Jeglaoui
 - Mohammed Mihit
 - Hasnae Lamrani
-- Hamza Kouki
 
 
 ### <span style="color:pink">Usage
@@ -31,7 +30,7 @@ cd forum
 ```
 3. Run the program :
 ```
-go run .
+go run cmd/*
 ```
 4. Open your web browser and go to http://localhost:8080
 
