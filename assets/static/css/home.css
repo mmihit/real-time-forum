@@ -81,12 +81,11 @@ body {
   background-color: #fff;
   color: #333;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  /* position: fixed;  
+  position: fixed;  
   top: 0;           
   left: 0;          
   width: 100%;      
   z-index: 1000;
-  padding-bottom: 20px; */
 }
 
 .header .site-title {
@@ -178,7 +177,7 @@ body {
   flex-wrap: wrap;
   margin-top: 20px;
   gap: 20px;
-  padding: 0 15px;
+  padding: 100px 11px 15px 15px;
 }
 
 /* Card */
@@ -190,7 +189,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 72%;
+  width: 74%;
   gap: 20px;
   height: 120px;
   /* Adjusted to be consistent with card content */
