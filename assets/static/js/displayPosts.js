@@ -46,12 +46,13 @@ const scrollingPosts = (posts) => {
 };
 
 export const getPosts = async (UserName) => {
+  GoToTop()
   let cleanup = null;
   let currentPosts = await loadPosts();
-  
+
   // Initial display
   cleanup = scrollingPosts(currentPosts);
-  
+
   const handleClick = async (e) => {
     const category = e.target.dataset.category;
     const isClickOnAllPosts = e.target.id === 'All-Posts';
@@ -59,15 +60,15 @@ export const getPosts = async (UserName) => {
     const isClickOnMyPosts = e.target.id === 'Post-Created'
 
     if (category || isClickOnAllPosts || isClickOnMyPosts || isCLickOnMyLikes) {
-      
-        cleanup();
-      
+
+      cleanup();
+
 
       let input = '';
 
       if (category) {
         input = category;
-      } else if (isClickOnMyPosts ) {
+      } else if (isClickOnMyPosts) {
         if (!UserName) {
           return
         }
@@ -76,7 +77,7 @@ export const getPosts = async (UserName) => {
         return
       }
 
-        currentPosts = await loadPosts(input);
+      currentPosts = await loadPosts(input);
 
       cleanup = scrollingPosts(currentPosts);
     }
@@ -95,7 +96,6 @@ export const GoToTop = () => {
 }
 
 export const loadPosts = async (input) => {
-  GoToTop()
   let apiData;
   let posts = [];
   const categories = ["sport", "games", "news", "lifestyle", "food"]
@@ -176,21 +176,3 @@ const DisplayAllPosts = function (posts, isLoadPosts) {
     postContainer.appendChild(postElement);
   });
 };
-
-export const permissionDenied = (isDenied) => {
-  const postBtn = document.getElementById('Post-Created')
-  const likesBtn = document.getElementById('Likes')
-  const createPostBtn = document.getElementById('Create-Post')
-
-  var btns = [postBtn, likesBtn, createPostBtn]
-
-  btns.forEach(btn => {
-    if (isDenied === true) {
-      btn.classList.add("none")
-    } else {
-      if (btn.className.includes("none")) {
-        btn.classList.remove("none")
-      }
-    }
-  });
-}

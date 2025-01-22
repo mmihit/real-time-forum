@@ -23,7 +23,6 @@
     </div>
 
     <div class="dropdown">
-      <input type="hidden" id="Name" value="{{.UserName}}">
       <button class="dropdown-button">{{.UserName}} <i class="fa fa-caret-down" aria-hidden="true"></i></button>
       <div class="dropdown-menu">
         <a href="/logout" alt="logout" id="logout-btn" title="Logout">Logout</a>
@@ -47,25 +46,20 @@
     </div>
   </header>
   {{end}}
-  
   <div id="navbarContainer"></div>
   <div class="container">
     <!-- Back to Home -->
     <div class="back-home">
       <a href="/" class="back-link">&larr; Back to Home</a>
     </div>
-
     <!-- Post Header -->
-    {{if .Posts}}
-      {{range .Posts}}
           <div class="post-header">
-            <span id="PostId" hidden> {{.Id}}</span>
-              <h3 id="postTitle" class="post-title"> {{.Title}} </h3>
-              <p id="postInfo" class="post-info"> Posted by {{.User}} on {{.CreationDate}}</p>
-              {{if .Categories}}
+              <h3 id="postTitle" class="post-title"> {{.Post.Title}} </h3>
+              <p id="postInfo" class="post-info"> Posted by {{.Post.User}} on {{.Post.CreationDate}}</p>
+              {{if .Post.Categories}}
                   <div class="category-label">
                     Categories:        
-                      {{range .Categories}}
+                      {{range .Post.Categories}}
                           <a>{{.}} |  </a>
                       {{end}}
                   </div>
@@ -74,28 +68,10 @@
     <!-- Post Content -->
         <div class="post-content" id="postContent">
           <!-- Content will be dynamically injected -->
-            {{.Content}}
+            {{.Post.Content}}
         </div>
-      {{end}}
-    {{else}}
-      <p>No post found.</p>
-    {{end}}
-    <!-- Reaction Buttons -->
-    <!-- <div class="reaction-buttons">
-      <div class="reaction-item">
-        <button id="likeButton" class="reaction-button">
-          <img id="likeIcon" src="../img/likes.svg" alt="Like">
-        </button>
-        <span id="likeCount">0</span>
-      </div>
 
-      <div class="reaction-item">
-        <button id="dislikeButton" class="reaction-button">
-          <img id="dislikeIcon" src="../img/dislikes.svg" alt="Dislike">
-        </button>
-        <span id="dislikeCount">0</span>
-      </div>
-    </div> -->
+    <!-- Reaction Buttons -->
 
     <!-- Comments Section -->
     <div id="commentsSection">
@@ -104,7 +80,7 @@
       <h3>Comments</h3>
       <div id="commentsList">
         <!-- We'll dynamically render existing comments here -->
-      </div>
+      </div>  
 
       <!-- Add New Comment Form -->
       <div id="addCommentContainer">
@@ -119,11 +95,27 @@
     </div>
     {{if not .UserName}}
     <script src="/static/js/permissionDenied.js"></script>
-    {{else}}
-    <script src="/static/js/createComment.js"></script>
     {{end}}
+
+
+    <script type="module">
+       import { CreateComments } from "/static/js/createComment.js";
+       import { displayComments } from "/static/js/createComment.js";
+     
+    // Perform actions with the postId here
+    const userName = "{{.UserName}}";
+    const IdPost = parseInt("{{.Id}}");
+
+      // fetchComments(IdPost);
+    document.addEventListener('DOMContentLoaded', displayComments(IdPost));
+      // document.addEventListener('DOMContentLoaded',  fetchComments(IdPost));
+    document.getElementById('commentForm').addEventListener('submit', async function (event) {
+    event.preventDefault(); // Prevent form from reloading the page
+    await CreateComments(userName, IdPost);
+    });
+    </script>
+
   </body>
 </html>
-
 
 

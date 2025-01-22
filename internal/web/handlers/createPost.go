@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"forum/helpers"
 	"forum/internal/db"
+	"log"
 	"net/http"
 	"time"
 )
@@ -14,38 +15,61 @@ type RequestBodyPost struct {
 	Categories []string `json:"selectedCategories"`
 }
 
+type PostResponse struct {
+	Message string `json:"message"`
+}
+
 func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	loggedUser, err := helpers.CheckCookie(r, h.DB)
 	if err != nil {
-		helpers.ExecuteTmpl(w, "error.html", http.StatusInternalServerError, "Oops! Internal server error.", nil)
+		response := PostResponse{Message: "Unauthorized: Please log in to continue."}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(response)
 		return
 	}
 
 	if r.Method != http.MethodPost {
-		helpers.ExecuteTmpl(w, "error.html", http.StatusMethodNotAllowed, "Oops! Method Not Allowed.", nil)
+		response := PostResponse{Message: "Oops! Method Not Allowed."}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		json.NewEncoder(w).Encode(response)
 		return
 	}
 
-	var requestBody RequestBodyPost
-	if err := json.NewDecoder(r.Body).Decode(&requestBody); err != nil {
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
-		return
-	}
+	var requestBodyOfPost RequestBodyPost
 
-	if post := helpers.IsValidPost(requestBody.Title, requestBody.Content); len(post.Errors) != 0 {
-		response := map[string]interface{}{
-			"message": "Validation failed",
-		}
+	defer r.Body.Close()
+	if err := json.NewDecoder(r.Body).Decode(&requestBodyOfPost); err != nil {
+		response := PostResponse{Message: "Bad Request: Error decoding JSON."}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(response)
 		return
 	}
 
-	post, err := h.DB.InsertPostWithCategories(h.Api.Users, loggedUser, requestBody.Title, requestBody.Content, time.Now().Format("Mon Jan 02 15:04:05 2006"), requestBody.Categories)
+	if post := helpers.IsValidPost(requestBodyOfPost.Title, requestBodyOfPost.Content); len(post.Errors) != 0 || len(requestBodyOfPost.Categories) == 0 {
+		response := PostResponse{Message: "Invalid input: Content, title and selectedCategories are required."}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	post, err := h.DB.InsertPostWithCategories(
+		h.Api.Users,
+		loggedUser,
+		requestBodyOfPost.Title,
+		requestBodyOfPost.Content, time.Now().Format("Mon Jan 02 15:04:05 2006"),
+		requestBodyOfPost.Categories,
+	)
 	if err != nil {
-		helpers.ExecuteTmpl(w, "error.html", http.StatusInternalServerError, "Oops! Internal server error.", nil)
+		log.Printf("Error inserting post: %v", err)
+		response := PostResponse{Message: "Oops! Internal Server Error."}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
 		return
 
 	}
@@ -54,8 +78,9 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	h.Api.Posts = append([]*db.Post{post}, h.Api.Posts...)
 
 	// Respond with a JSON message
-	response := map[string]string{"message": "Post created successfully!"}
+	response := PostResponse{Message: "post created successfully!"}
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
 
 }

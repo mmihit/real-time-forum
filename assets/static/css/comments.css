@@ -34,6 +34,11 @@
   opacity: 0.5 !important;
 }
 
+#commentsList{
+  max-height: 250px;
+  overflow-y: scroll;
+}
+
 #addCommentContainer h4 {
   margin-bottom: 10px;
   font-weight: 500;

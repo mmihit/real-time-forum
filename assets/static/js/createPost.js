@@ -1,9 +1,11 @@
+import { getPosts } from "/static/js/displayPosts.js";
+
 async function createPosts() {
 
     const selectedCategories = Array.from(
         document.querySelectorAll('input[name="categories"]:checked')
     ).map(checkbox => checkbox.value);
-
+    const postsContainer=document.getElementById('post-container')
     const title = document.getElementById('title').value.trim();
     const content = document.getElementById('content').value.trim();
 
@@ -40,9 +42,11 @@ async function createPosts() {
 
         // Process JSON response
         const responseData = await response.json();
+
         console.log('Response:', responseData);
         alert(responseData.message);
-
+        postsContainer.innerHTML=''
+        getPosts()
         // Clear form fields and checkboxes
         document.getElementById('title').value = '';
         document.getElementById('content').value = '';
@@ -54,6 +58,7 @@ async function createPosts() {
         console.error('Unexpected error:', error);
         alert('An unexpected error occurred. Please try again later.');
     }
+
 };
 
 const btns = [document.getElementById('Post-Created'), document.getElementById('Likes'), document.getElementById('Create-Post')]
@@ -96,6 +101,3 @@ document.getElementById('postForm').addEventListener('submit', async function (e
     // Optionally, reset the form
     // this.reset();
 });
-
-
-

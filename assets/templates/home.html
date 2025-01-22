@@ -7,7 +7,6 @@
   <link rel="stylesheet" type="text/css" href="/static/css/home.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-  <link rel="icon" href="../static/img/5539745.png">
   <title>Home</title>
 </head>
 
@@ -20,7 +19,7 @@
   </div>
 
   <div class="dropdown">
-    <span id="UserName" hidden> {{.UserName}} </span>
+    <input type="hidden" id="Name" value="{{.UserName}}">
     {{if .}}
       <button class="dropdown-button">{{.UserName}} <i class="fa fa-caret-down" aria-hidden="true"></i></button>
       <div class="dropdown-menu">
@@ -92,19 +91,20 @@
     </div>
   </div>
 
-  {{if .UserName}}
-  <script type="module" src="/static/js/createPost.js" hidden></script>
-  {{else}}
-  <script src="/static/js/permissionDenied.js" hidden></script>
-  {{end}}
+
   <script type="module" hidden>
-    import { getPosts } from "/static/js/displayPosts.js";   
+    import { getPosts,  } from "/static/js/displayPosts.js";
+   
 
     const UserName = "{{.UserName}}"
     getPosts(UserName)
 
   </script>
-
+  {{if .UserName}}
+  <script type="module" src="/static/js/createPost.js" hidden></script>
+  {{else}}
+  <script src="/static/js/permissionDenied.js" hidden></script>
+  {{end}}
 </body>
 
 </html>
