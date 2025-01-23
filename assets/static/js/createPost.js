@@ -35,9 +35,9 @@ async function createPosts() {
         });
 
         if (!response.ok) {
-            const errorMessage = await response.text();
-            console.log('Error response:', errorMessage);
-            return alert(`Error: ${errorMessage || 'Failed to create post'}`);
+            const errorMessage = await response.json();
+            console.log('Error response:', errorMessage.message);
+            return alert(`${errorMessage.message || 'Failed to create post'}`);
         }
 
         // Process JSON response
@@ -77,7 +77,6 @@ create_post.forEach(btn=>{
         e.preventDefault()
     });
 })
-
 
 // Show the form when the button is clicked
 document.getElementById('Create-Post').addEventListener('click', function () {

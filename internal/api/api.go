@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -37,8 +38,8 @@ func (api *Api) ApiHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *Api) GetPosts(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		helpers.ExecuteTmpl(w, "error_page.html", http.StatusMethodNotAllowed, "Method Not Allowed!", nil)
+	if r.Method != http.MethodPost {
+		helpers.ExecuteTmpl(w, "error.html", http.StatusMethodNotAllowed, "Method Not Allowed!", nil)
 		return
 	}
 
@@ -50,8 +51,8 @@ func (api *Api) GetPosts(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *Api) GetUsers(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		helpers.ExecuteTmpl(w, "error_page.html", http.StatusMethodNotAllowed, "Method Not Allowed!", nil)
+	if r.Method != http.MethodPost {
+		helpers.ExecuteTmpl(w, "error.html", http.StatusMethodNotAllowed, "Method Not Allowed!", nil)
 		return
 	}
 
@@ -63,48 +64,52 @@ func (api *Api) GetUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *Api) GetComment(w http.ResponseWriter, r *http.Request) {
-
-	if r.Method != http.MethodGet {
-		helpers.ExecuteTmpl(w, "error_page.html", http.StatusMethodNotAllowed, "Method Not Allowed!", nil)
+	if r.Method != http.MethodPost {
+		helpers.ExecuteTmpl(w, "error.html", http.StatusMethodNotAllowed, "Method Not Allowed!", nil)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	idQuery := r.URL.Path[len("/api/comments/"):]
 
 	id, err := strconv.Atoi(idQuery)
 	if err != nil {
-		helpers.ExecuteTmpl(w, "error_page.html", http.StatusInternalServerError, "Internal Server Error!", nil)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]string{"error": "Bad request !!"})
 		return
 	}
 
-    comments, exists := api.Comments[id]
-    if !exists {
-        w.WriteHeader(http.StatusNotFound)
-        json.NewEncoder(w).Encode(map[string]string{"error": "Comments not found for the given ID!"})
-        return
-    }
-    w.WriteHeader(http.StatusOK)
-    json.NewEncoder(w).Encode(comments)
+	comments, exists := api.Comments[id]
+	if !exists {
+		w.WriteHeader(http.StatusNotFound)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]string{"message": "Enter the first comment in this post"})
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(comments)
 }
 
 func (api *Api) GetUser(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		helpers.ExecuteTmpl(w, "error_page.html", http.StatusMethodNotAllowed, "Method Not Allowed!", nil)
+
+	if r.Method != http.MethodPost {
+		helpers.ExecuteTmpl(w, "error.html", http.StatusMethodNotAllowed, "Method Not Allowed!", nil)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+
 	UserName := r.URL.Path[len("/api/users/"):]
 
-	for _, user := range api.Users {
-		if UserName == user.UserName {
-			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(&user)
-			return
-		}
+	user, exists := api.Users[UserName]
+	if !exists {
+		w.WriteHeader(http.StatusNotFound)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]string{"message": fmt.Sprintf("This ${%s} does not exist", UserName)})
+		return
 	}
-
-	w.WriteHeader(http.StatusNotFound)
-	json.NewEncoder(w).Encode(map[string]string{"error": "User Not Found!"})
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&user)
 }

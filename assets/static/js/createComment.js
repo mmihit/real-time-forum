@@ -9,8 +9,7 @@ export async function CreateComments(username, postId) {
         postId,
         content
     };
-    try {
-        const response = await fetch('/create/comment', {
+    try {    const response = await fetch('/create/comment', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -18,24 +17,25 @@ export async function CreateComments(username, postId) {
             body: JSON.stringify(requestBody),
         });
 
-        if (!response.ok) {
-            const errorMessage = await response.text();
-            console.log('Error response:', errorMessage);
-            return alert(`Error: ${errorMessage || 'Failed to create comment'}`);
-        }
-
-        // Process JSON response
         const responseData = await response.json();
-        displayComments(postId)
-        console.log('Response:', responseData);
-        // Clear form fields and checkboxes
-        document.getElementById('commentContent').value = '';
+        if (response.ok) {
+            displayComments(postId)
+            console.log('Response:', responseData);
+            document.getElementById('commentContent').value = '';
+        } else if (response.status === 401) {
+            alert(responseData.message)
+            window.location.href = "/login";
+            return
+        } else {
+            const errorMessage = await response.json();
+            console.log('Error response:', errorMessage.message);
+            return alert(`Error: ${errorMessage.message || 'Failed to create comment'}`);
+        }
     } catch (error) {
-        console.error('Unexpected error:', error);
-        alert('An unexpected error occurred. Please try again later.');
+            console.error("Unexpected error:", error);
+            alert("An unexpected error occurred. Please try again later.");
     }
 };
-
 
 const RenderComments = (comments) => {
     const commentsList = document.getElementById("commentsList");
@@ -63,20 +63,26 @@ const RenderComments = (comments) => {
     });
 };
 
-
-
 export const fetchComments = async (postId) => {
-    const response = await fetch(`/api/comments/${postId}`);
+    const response = await fetch(`/api/comments/${postId}`, {
+    method: 'POST', // Use POST to fetch data
+    headers: {
+        'Content-Type': 'application/json' // Indicate that the body is in JSON format
+    },
+    body: JSON.stringify({
+        action: "fetchComments" // Optional: Send additional context if needed
+    }) 
+    });
     const commentsContainer = document.getElementById('commentsList');
     console.log(commentsContainer)
+    const responseData = await response.json();
     if (response.ok) {
-        const comments = await response.json();
-        return Array.from(comments).reverse();
+        return Array.from(responseData).reverse();
 
+    } else if (response.status === 404) {
+        commentsContainer.innerHTML = `<p>${responseData.message}</p>`;
     } else {
-        const responseData = await response.json();
         console.log('Response:', responseData);
-        commentsContainer.innerHTML = "<p>No Comments In This Post</p>"
         alert(responseData.error);
     }
 };
@@ -90,8 +96,6 @@ export const displayComments = async (postId) => {
         createScrollPagination(comments, RenderComments)
     }
 }
-
-
 
 const createScrollPagination = (comments, displayCallback) => {
     let startIndex = 0;
@@ -119,42 +123,3 @@ const createScrollPagination = (comments, displayCallback) => {
   
     return () => commentsContainer('scroll', handleScroll);
 }
-
-const loadMoreComments = (() => {
-    let startIndex = 0;
-
-    return (comments) => {
-        const commentPerLoad = 5;
-
-        if (initialize) {
-            startIndex = 0;
-        }
-
-        const endIndex = Math.min(startIndex + commentPerLoad, comments.length);
-        comments.slice(startIndex, endIndex).forEach((comment) => {
-            RenderComments([
-                {
-                    content: comment.content,
-                    username: comment.username,
-                    create_date: comment.create_date,
-                },
-            ]);
-        });
-
-        startIndex = endIndex;
-
-
-        if (endIndex >= comments.length) {
-            loadMoreButton.remove();
-        }
-    };
-})();
-// Event listeners
-// document.addEventListener('DOMContentLoaded', fetchComments);
-
-
-// Handle form submission
-// document.getElementById('commentForm').addEventListener('submit', async function (event) {
-//     event.preventDefault(); // Prevent form from reloading the page
-//     await CreateComments();
-// });

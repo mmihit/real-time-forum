@@ -46,5 +46,5 @@ func (h *Handler) DisplayPostWithComments(w http.ResponseWriter, r *http.Request
             }
         }
     }
-
+    helpers.ExecuteTmpl(w, "error.html", http.StatusBadRequest, "Oops! Bad Request error !", nil);
 }

@@ -1,6 +1,14 @@
 const fetchApi = async (url) => {
   try {
-    const response = await fetch(url);
+    const response = await fetch(url,{
+      method: 'POST', // Use POST to fetch data
+      headers: {
+          'Content-Type': 'application/json' // Indicate that the body is in JSON format
+      },
+      body: JSON.stringify({
+          action: "fetchComments" // Optional: Send additional context if needed
+      }) 
+      });
     return await response.json();
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -108,9 +116,9 @@ export const loadPosts = async (input) => {
   if (isUser) {
     apiData = await fetchApi(`/api/users/${input}`);
   } else {
-    apiData = await fetchApi("/api/posts");
+    apiData = await fetchApi(`/api/posts`)
   }
-
+  console.log(apiData)
   // Process fetched data
   if (isUser) {
     posts = apiData?.posts || [];
@@ -119,6 +127,7 @@ export const loadPosts = async (input) => {
   } else {
     posts = apiData || [];
   }
+  console.log(posts)
   return posts
 };
 
