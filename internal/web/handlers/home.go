@@ -13,9 +13,7 @@ type Handler struct {
 	DB  *db.Database
 }
 
-/************************** Home ************************/
-
-func (h *Handler) Home(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) HomePage(w http.ResponseWriter, r *http.Request) {
 	
 	if r.URL.Path != "/" {
 		helpers.ExecuteTmpl(w, "error.html", 404, "Oops! Not found", nil)

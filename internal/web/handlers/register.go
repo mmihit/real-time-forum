@@ -8,8 +8,6 @@ import (
 	"forum/internal/db"
 )
 
-/*********************   Register *********************/
-
 func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		helpers.ExecuteTmpl(w, "register.html", 200, "", nil)

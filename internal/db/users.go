@@ -1,8 +1,7 @@
 package db
 
 import (
-	"fmt"
-
+	
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -14,9 +13,9 @@ type User struct {
 	Token    string            `json:"-"`
 	Posts    []*Post           `json:"posts,omitempty"`
 	Errors   map[string]string `json:"-,omitempty"`
+	Reactions map[string][]int `json:"reactions,omitempty"`
 }
 
-/********************** Insert Function *********************/
 func (d *Database) InsertUser(users map[string]*User, name, email, Password string) error {
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(Password), 12) // 2¹² times
 	if err != nil {
@@ -51,11 +50,6 @@ func (d *Database) InsertUser(users map[string]*User, name, email, Password stri
 	return nil
 }
 
-// 12 cost Factor
-// represents how many iterations the algorithm should use to hash the password
-
-/********************** Authenticate Function *********************/
-
 func (d *Database) Authenticate(email, Password string) (int, error) {
 	var id int
 	var passwordHash []byte
@@ -74,9 +68,8 @@ func (d *Database) Authenticate(email, Password string) (int, error) {
 	return id, nil
 }
 
-/************************** Insert Tocken *************************/
-
 func (d *Database) InsertToken(id int, token string) error {
+
 	expression := `UPDATE users SET Token = ? WHERE id = ?;`
 	_, err := d.db.Exec(expression, token, id)
 	if err != nil {
@@ -86,21 +79,16 @@ func (d *Database) InsertToken(id int, token string) error {
 	return nil
 }
 
-/**********************  DataBaseVerification *******************/
-
 func (d *Database) DatabaseVerification(name, email string) (bool, error) {
-	fmt.Println("database: ", d)
+
 	expression := `SELECT EXISTS (SELECT * FROM users WHERE username LIKE ? OR email LIKE ?);`
 	var exists bool
 	err := d.db.QueryRow(expression, name, email).Scan(&exists)
 	if err != nil {
 		return false, err
 	}
-	fmt.Println("exists: ", exists)
 	return exists, nil
 }
-
-/*********************** TokenVerification *********************/
 
 func (d *Database) TokenVerification(token string) (string, error) {
 	var user User
@@ -111,7 +99,6 @@ func (d *Database) TokenVerification(token string) (string, error) {
 
 	err := row.Scan(&user.UserName)
 	if err != nil {
-		fmt.Println(err)
 		return "", err
 	}
 

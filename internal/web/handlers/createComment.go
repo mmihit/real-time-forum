@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"forum/helpers"
 	"log"
 	"net/http"
@@ -22,7 +21,6 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 	
 	loggedUser, err := helpers.CheckCookie(r, h.DB)
 	if err != nil {
-		fmt.Println("gfhj")
 		response := CommentResponse{Message: "Unauthorized: Please log in to continue."}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusUnauthorized)
