@@ -186,3 +186,30 @@ func (api *Api) AddPostReactionInApi(loggedUser string, postId int, userReaction
 	api.Posts[int(math.Abs(float64(postId-len(api.Posts))))] = post
 	api.Users[loggedUser] = user
 }
+
+func (api *Api) GetPost(w http.ResponseWriter, r *http.Request) {
+	// if r.Method != http.MethodGet {
+	// 	helpers.ExecuteTmpl(w, "error_page.html", http.StatusMethodNotAllowed, "Method Not Allowed!", nil)
+	// 	return
+	// }
+
+	w.Header().Set("Content-Type", "application/json")
+	idQuery := r.URL.Path[len("/api/posts/"):]
+
+	id, err := strconv.Atoi(idQuery)
+	if err != nil {
+		helpers.ExecuteTmpl(w, "error_page.html", http.StatusInternalServerError, "Internal Server Error!", nil)
+		return
+	}
+
+	for _, post := range api.Posts {
+		if id == post.Id {
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(&post)
+			return
+		}
+	}
+
+	w.WriteHeader(http.StatusNotFound)
+	json.NewEncoder(w).Encode(map[string]string{"error": "Post Not Found!"})
+}

@@ -19,8 +19,6 @@ export async function CreateComments(postId) {
 
         const responseData = await response.json();
         if (response.ok) {
-            displayComments(postId)
-            console.log('Response:', responseData);
             document.getElementById('commentContent').value = '';
         } else if (response.status === 401) {
             alert(responseData.message)
@@ -49,7 +47,6 @@ const RenderComments = (comments) => {
     }
     comments.forEach((comment) => {
         const commentElement = document.createElement("div");
-        console.log(comment.likes)
         commentElement.classList.add("comment-item");
         commentElement.dataset.commentId = comment.id;
         commentElement.innerHTML = `
@@ -106,34 +103,34 @@ export const displayComments = async (postId) => {
 
     const commentsContainer = document.getElementById('commentsList');
     if (comments) {
-        commentsContainer.innerHTML = ''; // Clear existing comments
-        createScrollPagination(comments, RenderComments)
+        commentsContainer.innerHTML = '';
+        RenderComments(comments)
     }
 }
 
-const createScrollPagination = (comments, displayCallback) => {
-    let startIndex = 0;
-    let endIndex = 5;
-    const commentsContainer = document.getElementById('commentsList')
+// const createScrollPagination = (comments, displayCallback) => {
+//     let startIndex = 0;
+//     let endIndex = 5;
+//     const commentsContainer = document.getElementById('commentsList')
 
-    displayCallback(comments.slice(0, endIndex))
-    const handleScroll = () => {
+//     displayCallback(comments.slice(0, endIndex))
+//     const handleScroll = () => {
 
-        const scrollable = commentsContainer.scrollHeight - commentsContainer.clientHeight
-        const scrolled = commentsContainer.scrollTop
-        if (Math.ceil(scrolled) >= scrollable && comments.length > endIndex) {
-            // isLoading = true
+//         const scrollable = commentsContainer.scrollHeight - commentsContainer.clientHeight
+//         const scrolled = commentsContainer.scrollTop
+//         if (Math.ceil(scrolled) >= scrollable && comments.length > endIndex) {
+//             // isLoading = true
 
-            startIndex = endIndex
-            endIndex = Math.min(endIndex + 5, comments.length)
+//             startIndex = endIndex
+//             endIndex = Math.min(endIndex + 5, comments.length)
 
-            displayCallback(comments.slice(startIndex, endIndex))
+//             displayCallback(comments.slice(startIndex, endIndex))
 
-            // isLoading = false
-        }
-    }
-    commentsContainer.addEventListener('scroll', handleScroll);
-    commentsContainer.addEventListener('scroll', handleScroll);
+//             // isLoading = false
+//         }
+//     }
+//     commentsContainer.addEventListener('scroll', handleScroll);
+//     commentsContainer.addEventListener('scroll', handleScroll);
   
-    return () => commentsContainer('scroll', handleScroll);
-}
+//     return () => commentsContainer('scroll', handleScroll);
+// }

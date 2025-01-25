@@ -1,9 +1,8 @@
 import { fetchApi } from "/static/js/displayPosts.js";
 
 // userReactions adds like and dislike functionality for the provided element
-const userReactions = (element, getUrl, postUrl, userName) => {
+const userReactions = (element, getUrl, postUrl, userName, postId) => {
   document.querySelectorAll(element).forEach(async (elementDiv) => {
-    console.log("ele", elementDiv);
     const likeDiv = elementDiv.querySelector(".like-div");
     const dislikeDiv = elementDiv.querySelector(".dislike-div");
     const likeBtn = elementDiv.querySelector(".like-div .btn");
@@ -11,9 +10,14 @@ const userReactions = (element, getUrl, postUrl, userName) => {
     const likeCountDisplay = elementDiv.querySelector(".like-div .count");
     const dislikeCountDisplay = elementDiv.querySelector(".dislike-div .count");
     // console.log(likeDiv)
-    // const currentPost = likeDiv.closest(".post");
+    const currentPost = likeDiv.closest(".post");
+   
+    if (!postId){
+      postId = currentPost.dataset.postId;
+    }
     // console.log(currentPost)
-    const postId = document.querySelector(".post1").dataset.postid;
+    // const postId = document.querySelector(".post").dataset.postid;
+    console.log(postId)
     let elementObject = await fetchApi(getUrl + postId);
     let commentId = null;
     let reaction = null;
@@ -52,7 +56,6 @@ const userReactions = (element, getUrl, postUrl, userName) => {
       }
     }
 
-    console.log(likeBtn)
 
     likeBtn.addEventListener("click", async () => {
       if (reaction === "like") {
@@ -92,13 +95,13 @@ const userReactions = (element, getUrl, postUrl, userName) => {
       dislikeCountDisplay.textContent = dislikeCount;
       await fetchRequest(postUrl + postId, { postId, reaction, commentId });
     });
+  
   });
 };
 
 // fetchRequest makes a request to a provided endpoint with a specific body
 const fetchRequest = async (url, body) => {
-  console.log(url)
-  console.log(body)
+
   try {
     const res = await fetch(url, {
       method: "POST",

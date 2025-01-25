@@ -1,4 +1,4 @@
-import { getPosts } from "/static/js/displayPosts.js";
+// import { getPosts } from "/static/js/displayPosts.js";
 
 async function createPosts() {
 
@@ -42,11 +42,10 @@ async function createPosts() {
 
         // Process JSON response
         const responseData = await response.json();
-
         console.log('Response:', responseData);
         alert(responseData.message);
-        postsContainer.innerHTML=''
-        getPosts()
+        // postsContainer.innerHTML=''
+        // getPosts()
         // Clear form fields and checkboxes
         document.getElementById('title').value = '';
         document.getElementById('content').value = '';

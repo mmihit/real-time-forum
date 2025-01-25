@@ -1,4 +1,5 @@
 export const fetchApi = async (url) => {
+  console.log(url)
   try {
     const response = await fetch(url,{
       method: 'POST', // Use POST to fetch data
@@ -16,60 +17,60 @@ export const fetchApi = async (url) => {
   }
 };
 
-const createScrollPagination = (posts, displayCallback) => {
-  let startIndex = 0;
-  let endIndex = 5;
-  let isLoading = false;
+// const createScrollPagination = (posts, displayCallback) => {
+//   let startIndex = 0;
+//   let endIndex = 5;
+//   let isLoading = false;
 
-  displayCallback(posts.slice(0, endIndex));
+//   displayCallback(posts.slice(0, endIndex));
 
-  const handleScroll = () => {
-    if (isLoading) return;
+//   const handleScroll = () => {
+//     if (isLoading) return;
 
-    const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-    const scrolled = window.scrollY;
+//     const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+//     const scrolled = window.scrollY;
 
-    if (Math.ceil(scrolled) >= scrollable && posts.length > endIndex) {
-      isLoading = true;
+//     if (Math.ceil(scrolled) >= scrollable && posts.length > endIndex) {
+//       isLoading = true;
 
-      startIndex = endIndex;
-      endIndex = Math.min(endIndex + 5, posts.length);
+//       startIndex = endIndex;
+//       endIndex = Math.min(endIndex + 5, posts.length);
 
-      displayCallback(posts.slice(startIndex, endIndex), true);
+//       displayCallback(posts.slice(startIndex, endIndex), true);
 
-      isLoading = false;
-    }
-  };
+//       isLoading = false;
+//     }
+//   };
 
-  // Clean up previous event listeners before adding new one
-  window.removeEventListener('scroll', handleScroll);
-  window.addEventListener('scroll', handleScroll);
+//   // Clean up previous event listeners before adding new one
+//   window.removeEventListener('scroll', handleScroll);
+//   window.addEventListener('scroll', handleScroll);
 
-  return () => window.removeEventListener('scroll', handleScroll);
-};
+//   return () => window.removeEventListener('scroll', handleScroll);
+// };
 
-const scrollingPosts = (posts) => {
-  if (!posts || !posts.length) return;
-  return createScrollPagination(posts, DisplayAllPosts);
-};
+// const scrollingPosts = (posts) => {
+//   if (!posts || !posts.length) return;
+//   return createScrollPagination(posts, DisplayAllPosts);
+// };
 
 export const getPosts = async (UserName) => {
-  GoToTop()
-  let cleanup = null;
+  // GoToTop()
+  // let cleanup = null;
   let currentPosts = await loadPosts();
 
   // Initial display
-  cleanup = scrollingPosts(currentPosts);
-
+  // cleanup = scrollingPosts(currentPosts);
   const handleClick = async (e) => {
     const category = e.target.dataset.category;
     const isClickOnAllPosts = e.target.id === 'All-Posts';
     const isCLickOnMyLikes = e.target.id === 'Likes';
     const isClickOnMyPosts = e.target.id === 'Post-Created'
 
+
     if (category || isClickOnAllPosts || isClickOnMyPosts || isCLickOnMyLikes) {
 
-      cleanup();
+      // cleanup();
 
 
       let input = '';
@@ -85,23 +86,26 @@ export const getPosts = async (UserName) => {
         return
       }
 
-      currentPosts = await loadPosts(input);
+      DisplayAllPosts(currentPosts)
+      return
 
-      cleanup = scrollingPosts(currentPosts);
     }
+    
   };
+  DisplayAllPosts(currentPosts)
+  console.log("finish")
 
   document.removeEventListener('click', handleClick);
   document.addEventListener('click', handleClick);
 
 };
 
-export const GoToTop = () => {
-  if ('scrollRestoration' in history) {
-    history.scrollRestoration = 'manual';
-  }
-  window.scrollTo(0, 0);
-}
+// export const GoToTop = () => {
+//   if ('scrollRestoration' in history) {
+//     history.scrollRestoration = 'manual';
+//   }
+//   window.scrollTo(0, 0);
+// }
 
 export const loadPosts = async (input) => {
   let apiData;
@@ -118,7 +122,7 @@ export const loadPosts = async (input) => {
   } else {
     apiData = await fetchApi(`/api/posts`)
   }
-  console.log(apiData)
+  // console.log(apiData)
   // Process fetched data
   if (isUser) {
     posts = apiData?.posts || [];
@@ -127,7 +131,7 @@ export const loadPosts = async (input) => {
   } else {
     posts = apiData || [];
   }
-  console.log(posts)
+  // console.log(posts)
   return posts
 };
 
@@ -138,7 +142,8 @@ const FilterByCategory = (allPosts, category) => {
 // Function to create a post element
 export const RenderPosts = function (post) {
   const postElement = document.createElement("div");
-  postElement.classList.add("post");
+  postElement.className="post";
+  postElement.dataset.postId = post.id;
   const categoryLinks = post.categories
     .map(cat => `<a>${cat}</a>`)
     .join(" | ");
@@ -155,13 +160,19 @@ export const RenderPosts = function (post) {
           <div class="content">${post.content}</div>
           <a href="/post?id=${post.id}" class="comment-link">See All Comments</a>
           <div class="reactions">
-          <button class="reaction-button like-button" onclick="toggleLikeDislike('like', this)">
-              <i class="fas fa-thumbs-up"></i>
-          </button>
-          <button class="reaction-button dislike-button" onclick="toggleLikeDislike('dislike', this)">
-              <i class="fas fa-thumbs-down"></i>
-          </button>
-
+          <div class="like-div">
+            <button class="btn">
+              <span class="material-icons">thumb_up</span>
+            </button>
+            <span class="count">${post.likes || 0}</span>
+          </div>
+          <div class="dislike-div">
+            <button class="btn">
+              <span class="material-icons">thumb_down</span>
+            </button>
+            <span class="count">${post.dislikes || 0}</span>
+          </div>
+        </div>
       </div>
       </div>
   `;
@@ -169,18 +180,20 @@ export const RenderPosts = function (post) {
 }
 
 // Display posts dynamically :
-const DisplayAllPosts = function (posts, isLoadPosts) {
+const DisplayAllPosts = function (posts) {
+
   const postContainer = document.getElementById("post-container");
   if (!postContainer) {
     console.error("post-container element not found!");
     return;
   }
-  if (!isLoadPosts) {
+  // if (!isLoadPosts) {
     postContainer.innerHTML = ""
-    console.log("clear inner html")
-  }
+    // console.log("clear inner html")
+  // }
 
   posts.forEach(post => {
+ 
     const postElement = RenderPosts(post);
     postContainer.appendChild(postElement);
   });
