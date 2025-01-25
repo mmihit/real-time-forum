@@ -69,10 +69,10 @@ func (api *Api) GetUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *Api) GetComment(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		helpers.ExecuteTmpl(w, "error.html", http.StatusMethodNotAllowed, "Method Not Allowed!", nil)
-		return
-	}
+	// if r.Method != http. {
+	// 	helpers.ExecuteTmpl(w, "error.html", http.StatusMethodNotAllowed, "Method Not Allowed!", nil)
+	// 	return
+	// }
 
 	idQuery := r.URL.Path[len("/api/comments/"):] 
 

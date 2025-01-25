@@ -53,6 +53,7 @@
       <a href="/" class="back-link">&larr; Back to Home</a>
     </div>
     <!-- Post Header -->
+    <div class="post1" data-postid="{{.Post.Id}}">
           <div class="post-header">
               <h3 id="postTitle" class="post-title"> {{.Post.Title}} </h3>
               <p id="postInfo" class="post-info"> Posted by {{.Post.User}} on {{.Post.CreationDate}}</p>
@@ -65,12 +66,13 @@
                   </div>
                 {{end}}
           </div>
+        
     <!-- Post Content -->
         <div class="post-content" id="postContent">
           <!-- Content will be dynamically injected -->
             {{.Post.Content}}
         </div>
-
+      </div>
     <!-- Reaction Buttons -->
 
     <!-- Comments Section -->
@@ -101,17 +103,36 @@
     <script type="module">
        import { CreateComments } from "/static/js/createComment.js";
        import { displayComments } from "/static/js/createComment.js";
+       import { userReactions } from "/static/js/reaction.js";
      
     // Perform actions with the postId here
     const userName = "{{.UserName}}";
     const IdPost = parseInt("{{.Id}}");
 
       // fetchComments(IdPost);
-    document.addEventListener('DOMContentLoaded', displayComments(IdPost));
+    document.addEventListener('DOMContentLoaded', async() => {
+      console.log("fdvsv")
+      await displayComments(IdPost)
+      await userReactions(
+          ".comment-item",
+          "/api/comments/",
+          "/comment/reaction/",
+          userName
+        );
+    });
+   
       // document.addEventListener('DOMContentLoaded',  fetchComments(IdPost));
     document.getElementById('commentForm').addEventListener('submit', async function (event) {
+
+    console.log("click")
     event.preventDefault(); // Prevent form from reloading the page
-    await CreateComments(userName, IdPost);
+    await CreateComments(IdPost);
+    await userReactions(
+          ".comment-item",
+          "/api/comments/",
+          "/comment/reaction/",
+          userName
+        );
     });
     </script>
 

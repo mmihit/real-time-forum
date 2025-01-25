@@ -1,4 +1,4 @@
-const fetchApi = async (url) => {
+export const fetchApi = async (url) => {
   try {
     const response = await fetch(url,{
       method: 'POST', // Use POST to fetch data

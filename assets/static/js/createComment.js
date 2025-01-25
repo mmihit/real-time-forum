@@ -1,4 +1,4 @@
-export async function CreateComments(username, postId) {
+export async function CreateComments(postId) {
     const content = document.getElementById('commentContent').value.trim();
 
     // Validate inputs
@@ -47,18 +47,33 @@ const RenderComments = (comments) => {
         commentsList.innerHTML = `<p>No comments yet. Be the first to comment!</p>`;
         return;
     }
-
-
-
     comments.forEach((comment) => {
         const commentElement = document.createElement("div");
+        console.log(comment.likes)
         commentElement.classList.add("comment-item");
+        commentElement.dataset.commentId = comment.id;
         commentElement.innerHTML = `
                 <p class="comment-meta">
                     <strong>${comment.username}</strong> 
-                    <span class="comment-date">${new Date(comment.create_date).toLocaleString()}</span>
+                    <span class="comment-date">${new Date(
+                      comment.create_date
+                    ).toLocaleString()}</span>
                 </p>
-                <p class="comment-content">${comment.content}</p>`;
+                <p class="comment-content">${comment.content}</p>
+                <div class="reactions">
+                <div class="like-div">
+                    <button class="btn">
+                    <span class="material-icons">thumb_up</span>
+                    </button>
+                    <span class="count">${comment.likes || 0}</span>
+                </div>
+                <div class="dislike-div">
+                    <button class="btn">
+                    <span class="material-icons">thumb_down</span>
+                    </button>
+                    <span class="count">${comment.dislikes || 0}</span>
+                </div>
+                </div>`;
         commentsList.appendChild(commentElement);
     });
 };
@@ -74,7 +89,6 @@ export const fetchComments = async (postId) => {
     }) 
     });
     const commentsContainer = document.getElementById('commentsList');
-    console.log(commentsContainer)
     const responseData = await response.json();
     if (response.ok) {
         return Array.from(responseData).reverse();

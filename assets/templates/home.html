@@ -94,11 +94,14 @@
 
   <script type="module" hidden>
     import { getPosts,  } from "/static/js/displayPosts.js";
+    import { userReactions } from "/static/js/reaction.js";
    
 
     const UserName = "{{.UserName}}"
    // getPosts(UserName)
-    document.addEventListener('DOMContentLoaded', getPosts(UserName));
+    document.addEventListener('DOMContentLoaded', async()=>{
+      await getPosts(UserName); // add into this func userreaction
+    });
 
   </script>
   {{if .UserName}}

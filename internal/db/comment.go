@@ -5,18 +5,17 @@ import (
 )
 
 type Comment struct {
-	Id           int    `json:"id"`
-	Content      string `json:"content"`
-	UserName     string `json:"username"`
-	PosteID      int    `json:"poste_id"`
-	CreationDate string `json:"create_date"`
+	Id           int               `json:"id"`
+	Content      string            `json:"content"`
+	UserName     string            `json:"username"`
+	PosteID      int               `json:"poste_id"`
+	CreationDate string            `json:"create_date"`
 	Reactions    map[string]string `json:"reactions,omitempty"`
 	Likes        int               `json:"likes,omitempty"`
 	Dislikes     int               `json:"dislikes,omitempty"`
 }
 
 func (d *Database) InsertComment(content, creationDate, userName string, users map[string]*User, postId int) (*Comment, error) {
-
 	userId := users[userName].Id
 
 	InsertComment := `INSERT INTO comments(content, user_id, post_id, create_date) VALUES(?, ?, ?, DATETIME('now'));`
@@ -44,24 +43,24 @@ func (d *Database) InsertComment(content, creationDate, userName string, users m
 }
 
 func (d *Database) GetAllCommentsFromDataBase(Comments map[int][]*Comment) error {
-
 	QueryOfSelectAllComments := `
-	SELECT
-		comments.id,
-		comments.content,
-		users.username,
-		comments.post_id,
-		comments.create_date,
-		likes.comment_id,
-		likes.username,
-		likes.reaction
-	FROM
-		comments
-		JOIN users ON comments.user_id = users.id
-		LEFT JOIN likes ON comment_id = likes.comment_id
+SELECT
+    comments.id,
+    comments.content,
+    users.username,
+    comments.post_id,
+    comments.create_date,
+    likes.comment_id,
+    likes.username AS like_username,
+    likes.reaction
+FROM
+    comments
+JOIN users ON comments.user_id = users.id
+LEFT JOIN likes ON comments.id = likes.comment_id
+
 	`
 
-	rows, err := d.db.Query(QueryOfSelectAllComments);
+	rows, err := d.db.Query(QueryOfSelectAllComments)
 	if err != nil {
 		return err
 	}
@@ -77,12 +76,10 @@ func (d *Database) GetAllCommentsFromDataBase(Comments map[int][]*Comment) error
 		if err := rows.Scan(&comment.Id, &comment.Content, &comment.UserName, &comment.PosteID, &comment.CreationDate, &likedComment, &likedUser, &reaction); err != nil {
 			return err
 		}
-
 		comment.Reactions = make(map[string]string)
-		if _, exists := Comments[comment.PosteID]; !exists {
-
-			Comments[comment.PosteID] = append(Comments[comment.PosteID], &comment)
-		}
+		
+		Comments[comment.PosteID] = append(Comments[comment.PosteID], &comment)
+		
 
 		if likedComment.Valid {
 			comment.Reactions[likedUser.String] = reaction.String
