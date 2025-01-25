@@ -74,7 +74,7 @@ func (api *Api) GetComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	idQuery := r.URL.Path[len("/api/comments/"):]
+	idQuery := r.URL.Path[len("/api/comments/"):] 
 
 	id, err := strconv.Atoi(idQuery)
 	if err != nil {
