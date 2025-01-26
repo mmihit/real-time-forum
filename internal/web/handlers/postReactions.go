@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -52,6 +53,8 @@ func (h *Handler) PostReactions(w http.ResponseWriter, r *http.Request) {
 
 	lastReaction, err := h.DB.GetPostReactionFromDB(loggedUser, userReaction)
 	if err != nil && err != sql.ErrNoRows {
+		fmt.Println("1")
+		fmt.Println("1")
 		response := CommentResponse{Message: "Oops! Internal Server Error."}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -61,6 +64,7 @@ func (h *Handler) PostReactions(w http.ResponseWriter, r *http.Request) {
 
 	if lastReaction == "" {
 		if err := h.DB.InsertPostReactionInDB(loggedUser, userReaction); err != nil {
+			fmt.Println("2")
 			response := CommentResponse{Message: "Oops! Internal Server Error."}
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -70,6 +74,7 @@ func (h *Handler) PostReactions(w http.ResponseWriter, r *http.Request) {
 	} else {
 		if strings.HasPrefix(userReaction.Reaction, "un") {
 			if err := h.DB.DeletePostReactionInDB(loggedUser, userReaction); err != nil {
+				fmt.Println("3")
 				response := CommentResponse{Message: "Oops! Internal Server Error."}
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusInternalServerError)
@@ -78,6 +83,7 @@ func (h *Handler) PostReactions(w http.ResponseWriter, r *http.Request) {
 			}
 		} else {
 			if err := h.DB.UpdatePostReactionInDB(loggedUser, userReaction); err != nil {
+				fmt.Println("4")
 				response := CommentResponse{Message: "Oops! Internal Server Error."}
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusInternalServerError)

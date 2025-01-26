@@ -9,14 +9,12 @@ const userReactions = (element, getUrl, postUrl, userName, postId) => {
     const dislikeBtn = elementDiv.querySelector(".dislike-div .btn");
     const likeCountDisplay = elementDiv.querySelector(".like-div .count");
     const dislikeCountDisplay = elementDiv.querySelector(".dislike-div .count");
-    // console.log(likeDiv)
+
     const currentPost = likeDiv.closest(".post");
-   
-    if (!postId){
+    if (element==".post") {
+
       postId = currentPost.dataset.postId;
     }
-    // console.log(currentPost)
-    // const postId = document.querySelector(".post").dataset.postid;
     console.log(postId)
     let elementObject = await fetchApi(getUrl + postId);
     let commentId = null;
@@ -26,7 +24,7 @@ const userReactions = (element, getUrl, postUrl, userName, postId) => {
       const currentComment = likeDiv.closest(".comment-item");
       commentId = currentComment.dataset.commentId;
       let postComments = await fetchApi(getUrl + postId);
-      elementObject =postComments[Math.max(0, postComments.length - parseInt(commentId))];
+      elementObject = postComments[Math.max(0, postComments.length - parseInt(commentId))];
     }
 
     let likeCount = elementObject.likes || 0;
@@ -56,7 +54,6 @@ const userReactions = (element, getUrl, postUrl, userName, postId) => {
       }
     }
 
-
     likeBtn.addEventListener("click", async () => {
       if (reaction === "like") {
         likeDiv.classList.add("selected");
@@ -74,6 +71,9 @@ const userReactions = (element, getUrl, postUrl, userName, postId) => {
       }
       likeCountDisplay.textContent = likeCount;
       dislikeCountDisplay.textContent = dislikeCount;
+      if (element === ".post") {
+        postId = currentPost.dataset.postId;
+      }
       await fetchRequest(postUrl + postId, { postId, reaction, commentId });
     });
 
@@ -93,15 +93,18 @@ const userReactions = (element, getUrl, postUrl, userName, postId) => {
       }
       likeCountDisplay.textContent = likeCount;
       dislikeCountDisplay.textContent = dislikeCount;
+      if (element === ".post") {
+        postId = currentPost.dataset.postId;
+      }
       await fetchRequest(postUrl + postId, { postId, reaction, commentId });
     });
-  
+
   });
 };
 
 // fetchRequest makes a request to a provided endpoint with a specific body
 const fetchRequest = async (url, body) => {
-
+  console.log(url)
   try {
     const res = await fetch(url, {
       method: "POST",

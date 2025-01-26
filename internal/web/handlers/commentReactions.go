@@ -14,7 +14,7 @@ import (
 func (h *Handler) CommentReactions(w http.ResponseWriter, r *http.Request) {
 
 	loggedUser, err := helpers.CheckCookie(r, h.DB)
-		if err != nil {
+	if err != nil {
 		response := CommentResponse{Message: "Unauthorized: Please log in to continue."}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusUnauthorized)

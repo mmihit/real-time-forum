@@ -106,7 +106,7 @@
        import { userReactions } from "/static/js/reaction.js";
      
     const userName = "{{.UserName}}";
-    const IdPost = parseInt("{{.Id}}");
+    const IdPost = "{{.Id}}";
 
     await displayComments(IdPost)
     await userReactions(

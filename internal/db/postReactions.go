@@ -1,6 +1,9 @@
 package db
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 type UserReaction struct {
 	Id        int64  `json:"id"`
@@ -14,9 +17,16 @@ func (d *Database) InsertPostReactionInDB(userName string, userReaction UserReac
 	insertReaction := fmt.Sprintf(`INSERT INTO likes(username, post_id, comment_id, reaction) VALUES(?, ?, null,  "%s")`, userReaction.Reaction)
 	stmnt, err := d.db.Prepare(insertReaction)
 	if err != nil {
+		fmt.Println("111111")
 		return err
 	}
-	if _, err := stmnt.Exec(userName, userReaction.PostId); err != nil {
+	fmt.Println(userName)
+	postId, err := strconv.Atoi(userReaction.PostId)
+	if err != nil {
+		return err
+	}
+	if _, err := stmnt.Exec(userName, postId); err != nil {
+		fmt.Println("22222222")
 		return err
 	}
 
