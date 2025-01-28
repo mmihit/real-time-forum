@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"forum/helpers"
 	"forum/internal/db"
 	"log"
@@ -42,15 +43,17 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 	if err := json.NewDecoder(r.Body).Decode(&requestBodyOfPost); err != nil {
+		fmt.Println(err)
 		response := PostResponse{Message: "Bad Request: Error decoding JSON."}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(response)
+		err = json.NewEncoder(w).Encode(response)
 		return
 	}
 
 	if post := helpers.IsValidPost(requestBodyOfPost.Title, requestBodyOfPost.Content); len(post.Errors) != 0 || len(requestBodyOfPost.Categories) == 0 {
 		response := PostResponse{Message: "Invalid input: Content, title and selectedCategories are required."}
+		fmt.Println("2")
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(response)

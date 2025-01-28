@@ -27,7 +27,10 @@ func ExecuteTmpl(w http.ResponseWriter, temp string, code int, errMsg string, da
 	err := tmpl.ExecuteTemplate(w, temp, data)
 
 	if err != nil {
-		tmpl.ExecuteTemplate(w, "error_page.html", WriteError(w, "Internal Server Error!", http.StatusInternalServerError))
+		err2 := tmpl.ExecuteTemplate(w, "error_page.html", WriteError(w, "Internal Server Error!", http.StatusInternalServerError))
+		if err2 != nil {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
 		return
 	}
 }

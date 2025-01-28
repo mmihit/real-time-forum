@@ -1,19 +1,18 @@
 export const fetchApi = async (url) => {
-  console.log(url)
   try {
-    const response = await fetch(url,{
-      method: 'POST', // Use POST to fetch data
+    const response = await fetch(url, {
+      method: 'POST',
       headers: {
-          'Content-Type': 'application/json' // Indicate that the body is in JSON format
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-          action: "fetchComments" // Optional: Send additional context if needed
-      }) 
-      });
+        action: "fetchComments"
+      })
+    });
     return await response.json();
   } catch (error) {
     console.error("Error fetching data:", error);
-    return null; // Return null to handle errors gracefully
+    return null;
   }
 };
 
@@ -54,50 +53,49 @@ export const fetchApi = async (url) => {
 //   return createScrollPagination(posts, DisplayAllPosts);
 // };
 
-export const getPosts = async (UserName) => {
-  // GoToTop()
-  // let cleanup = null;
-  let currentPosts = await loadPosts();
-
-  // Initial display
-  // cleanup = scrollingPosts(currentPosts);
+export const getPosts = async (UserName, displayCallback) => {
   const handleClick = async (e) => {
     const category = e.target.dataset.category;
     const isClickOnAllPosts = e.target.id === 'All-Posts';
     const isCLickOnMyLikes = e.target.id === 'Likes';
     const isClickOnMyPosts = e.target.id === 'Post-Created'
-
+    let currentPosts
 
     if (category || isClickOnAllPosts || isClickOnMyPosts || isCLickOnMyLikes) {
-
-      // cleanup();
-
-
       let input = '';
+      let flag = '';
 
       if (category) {
         input = category;
-      } else if (isClickOnMyPosts) {
+      } else if (isClickOnMyPosts || isCLickOnMyLikes) {
         if (!UserName) {
           return
         }
         input = UserName
-      } else if (isCLickOnMyLikes) {
-        return
+        if (isClickOnMyPosts) {
+          flag = "myPosts"
+        } else {
+          flag = "myLikes"
+        }
       }
 
-      DisplayAllPosts(currentPosts)
-      return
-
+      currentPosts = await loadPosts(input, flag)
     }
-    
+    if (currentPosts) {
+      DisplayAllPosts(currentPosts)
+      displayCallback()
+    }
   };
-  DisplayAllPosts(currentPosts)
-  console.log("finish")
+
+  let currentPosts = await loadPosts()
+
+  if (currentPosts) {
+    DisplayAllPosts(currentPosts)
+    displayCallback()
+  }
 
   document.removeEventListener('click', handleClick);
   document.addEventListener('click', handleClick);
-
 };
 
 // export const GoToTop = () => {
@@ -107,33 +105,50 @@ export const getPosts = async (UserName) => {
 //   window.scrollTo(0, 0);
 // }
 
-export const loadPosts = async (input) => {
+export const loadPosts = async (input, flag) => {
   let apiData;
   let posts = [];
+  let postsId = [];
   const categories = ["sport", "games", "news", "lifestyle", "food"]
 
-  // Determine the type of input
+
   const isGategory = categories.includes(input)
   const isUser = input && !isGategory;
 
-  // Fetch data based on input type
+
   if (isUser) {
     apiData = await fetchApi(`/api/users/${input}`);
   } else {
     apiData = await fetchApi(`/api/posts`)
   }
-  // console.log(apiData)
-  // Process fetched data
   if (isUser) {
-    posts = apiData?.posts || [];
+    if (flag === 'myPosts') {
+      posts = apiData?.posts || [];
+    } else if (flag === 'myLikes') {
+      postsId = apiData?.reactions || [];
+      postsId = postsId.like || []
+
+      posts = await GetPostFromIds(postsId)
+
+    }
   } else if (isGategory) {
     posts = FilterByCategory(apiData, input) || [];
   } else {
     posts = apiData || [];
   }
-  // console.log(posts)
+
   return posts
 };
+
+const GetPostFromIds = async (postsId) => {
+  const posts = await Promise.all(
+    postsId.map(async (id) => {
+      const apiData = await fetchApi(`/api/posts/${id}`)
+      return apiData
+    })
+  )
+  return posts.reverse()
+}
 
 const FilterByCategory = (allPosts, category) => {
   return allPosts.filter(obj => obj.categories.includes(category.toLowerCase()))
@@ -142,7 +157,7 @@ const FilterByCategory = (allPosts, category) => {
 // Function to create a post element
 export const RenderPosts = function (post) {
   const postElement = document.createElement("div");
-  postElement.className="post";
+  postElement.className = "post";
   postElement.dataset.postId = post.id;
   const categoryLinks = post.categories
     .map(cat => `<a>${cat}</a>`)
@@ -188,13 +203,10 @@ const DisplayAllPosts = function (posts) {
     return;
   }
   // if (!isLoadPosts) {
-    postContainer.innerHTML = ""
-    // console.log("clear inner html")
-  // }
-
+  postContainer.innerHTML = ""
   posts.forEach(post => {
- 
     const postElement = RenderPosts(post);
     postContainer.appendChild(postElement);
   });
+
 };

@@ -111,16 +111,16 @@ func (d *Database) InsertPostWithCategories(users map[string]*User, userName str
 }
 
 func (d *Database) GetPostsFromDB(users map[string]*User, posts *[]*Post) error {
-	selectUsers := `SELECT
+	selectUsers := `SELECT DISTINCT
     users.id,
     users.username,
     posts.id,
     posts.title,
     posts.content,
     posts.creation_date,
-	post_categories.category_id,
+    post_categories.category_id,
     categories.category,
-    likes.username,
+    likes.username AS like_username,
     likes.post_id,
     likes.reaction
 FROM
@@ -128,7 +128,7 @@ FROM
     LEFT JOIN posts ON users.id = posts.user_id
     LEFT JOIN post_categories ON posts.id = post_categories.post_id
     LEFT JOIN categories ON post_categories.category_id = categories.id
-    LEFT JOIN likes ON users.username = likes.username
+    LEFT JOIN likes ON posts.id = likes.post_id
 ORDER BY
     posts.creation_date DESC`
 
@@ -212,7 +212,6 @@ ORDER BY
 
 			}
 		}
-
 	}
 	if rows.Err() != nil {
 		return err

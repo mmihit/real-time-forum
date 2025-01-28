@@ -1,4 +1,4 @@
-export async function CreateComments(postId) {
+export async function CreateComments(postId, callbackReaction) {
     const content = document.getElementById('commentContent').value.trim();
 
     // Validate inputs
@@ -9,6 +9,7 @@ export async function CreateComments(postId) {
         postId,
         content
     };
+
     try {    const response = await fetch('/create/comment', {
             method: 'POST',
             headers: {
@@ -19,7 +20,9 @@ export async function CreateComments(postId) {
 
         const responseData = await response.json();
         if (response.ok) {
-            document.getElementById('commentContent').value = '';
+            displayComments(postId, callbackReaction)
+            document.getElementById('commentContent').value=""
+            return
         } else if (response.status === 401) {
             alert(responseData.message)
             window.location.href = "/login";
@@ -46,6 +49,7 @@ const RenderComments = (comments) => {
         return;
     }
     comments.forEach((comment) => {
+        // console.log(comment)
         const commentElement = document.createElement("div");
         commentElement.classList.add("comment-item");
         commentElement.dataset.commentId = comment.id;
@@ -89,7 +93,6 @@ export const fetchComments = async (postId) => {
     const responseData = await response.json();
     if (response.ok) {
         return Array.from(responseData).reverse();
-
     } else if (response.status === 404) {
         commentsContainer.innerHTML = `<p>${responseData.message}</p>`;
     } else {
@@ -98,13 +101,14 @@ export const fetchComments = async (postId) => {
     }
 };
 
-export const displayComments = async (postId) => {
+export const displayComments = async (postId, callbackReaction) => {
     const comments = await fetchComments(postId);
 
     const commentsContainer = document.getElementById('commentsList');
     if (comments) {
         commentsContainer.innerHTML = '';
         RenderComments(comments)
+        callbackReaction()
     }
 }
 

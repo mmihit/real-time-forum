@@ -95,14 +95,12 @@
   <script type="module" hidden>
     import { getPosts,  } from "/static/js/displayPosts.js";
     import { userReactions } from "/static/js/reaction.js";
+    // import { createPosts } from "/static/js/createPost.js"
    
 
     const UserName = "{{.UserName}}"
-   // getPosts(UserName)
+    await getPosts(UserName, () => userReactions(".post", "/api/posts/", "/post/reaction/", UserName));
 
-      await getPosts(UserName); // add into this func userreaction
-    console.log()
-    await userReactions(".post", "/api/posts/", "/post/reaction/", UserName);
   </script>
   {{if .UserName}}
   <script type="module" src="/static/js/createPost.js" hidden></script>

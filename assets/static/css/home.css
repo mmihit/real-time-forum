@@ -533,3 +533,51 @@ legend {
     padding: 8px;
   }
 }
+
+.reactions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-flow: row wrap;
+  width: 100%;
+}
+
+.like-div,
+.dislike-div {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-flow: row wrap;
+}
+
+.selected > .btn,
+.selected > .count {
+  color: #6200ea;
+}
+
+.like-div {
+  margin-right: 1rem;
+}
+
+.like-div,
+.dislike-div {
+  border: none;
+  cursor: default;
+  color: #847392;
+}
+
+.btn {
+  border: none;
+  background-color: transparent;
+  color: #847392;
+  margin-right: 0.3rem;
+}
+
+.reactions .active {
+  cursor: pointer;
+}
+
+.reactions .active:not(.selected) > .btn:hover {
+  cursor: pointer;
+  color: blueviolet;
+}

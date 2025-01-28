@@ -54,25 +54,25 @@
     </div>
     <!-- Post Header -->
     <div class="post" data-post-id="{{.Post.Id}}">
-          <div class="post-header">
-              <h3 id="postTitle" class="post-title"> {{.Post.Title}} </h3>
-              <p id="postInfo" class="post-info"> Posted by {{.Post.User}} on {{.Post.CreationDate}}</p>
-              {{if .Post.Categories}}
-                  <div class="category-label">
-                    Categories:        
-                      {{range .Post.Categories}}
-                          <a>{{.}} |  </a>
-                      {{end}}
-                  </div>
-                {{end}}
-          </div>
-        
-    <!-- Post Content -->
-        <div class="post-content" id="postContent">
-          <!-- Content will be dynamically injected -->
-            {{.Post.Content}}
+      <div class="post-header">
+        <h3 id="postTitle" class="post-title"> {{.Post.Title}} </h3>
+        <p id="postInfo" class="post-info"> Posted by {{.Post.User}} on {{.Post.CreationDate}}</p>
+        {{if .Post.Categories}}
+        <div class="category-label">
+          Categories:
+          {{range .Post.Categories}}
+          <a>{{.}} | </a>
+          {{end}}
         </div>
+        {{end}}
       </div>
+
+      <!-- Post Content -->
+      <div class="post-content" id="postContent">
+        <!-- Content will be dynamically injected -->
+        {{.Post.Content}}
+      </div>
+    </div>
     <!-- Reaction Buttons -->
 
     <!-- Comments Section -->
@@ -82,14 +82,13 @@
       <h3>Comments</h3>
       <div id="commentsList">
         <!-- We'll dynamically render existing comments here -->
-      </div>  
+      </div>
 
       <!-- Add New Comment Form -->
       <div id="addCommentContainer">
         <h4>Leave a comment</h4>
-        <form action="/create/comment"  method="post" id="commentForm">
-          <textarea id="commentContent" rows="3"
-            placeholder="Write a comment..." required></textarea>
+        <form action="/create/comment" method="post" id="commentForm">
+          <textarea id="commentContent" rows="3" placeholder="Write a comment..." required></textarea>
           <button type="submit" id="commentSubmit">Post Comment</button>
         </form>
       </div>
@@ -101,30 +100,35 @@
 
 
     <script type="module">
-       import { CreateComments } from "/static/js/createComment.js";
-       import { displayComments } from "/static/js/createComment.js";
-       import { userReactions } from "/static/js/reaction.js";
-     
-    const userName = "{{.UserName}}";
-    const IdPost = "{{.Id}}";
+      import { CreateComments } from "/static/js/createComment.js";
+      import { displayComments } from "/static/js/createComment.js";
+      import { userReactions } from "/static/js/reaction.js";
 
-    await displayComments(IdPost)
-    await userReactions(
-          ".comment-item",
-          "/api/comments/",
-          "/comment/reaction/",
-          userName,
-          IdPost
-        );
-   
-    document.getElementById('commentForm').addEventListener('submit', async function (event) {
-    console.log("click")
-    event.preventDefault(); // Prevent form from reloading the page
-    await CreateComments(IdPost);
-    });
+      const userName = "{{.UserName}}";
+      const IdPost = "{{.Id}}";
+
+      await displayComments(IdPost, () => userReactions(
+        ".comment-item",
+        "/api/comments/",
+        "/comment/reaction/",
+        userName,
+        IdPost
+      ))
+
+      document.getElementById('commentForm').addEventListener('submit', async function (event) {
+        console.log("click")
+        event.preventDefault(); // Prevent form from reloading the page
+        await CreateComments(parseInt(IdPost), () => userReactions(
+        ".comment-item",
+        "/api/comments/",
+        "/comment/reaction/",
+        userName,
+        IdPost
+      )); 
+
+      });
     </script>
 
-  </body>
+</body>
+
 </html>
-
-

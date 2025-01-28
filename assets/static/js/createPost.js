@@ -5,7 +5,7 @@ async function createPosts() {
     const selectedCategories = Array.from(
         document.querySelectorAll('input[name="categories"]:checked')
     ).map(checkbox => checkbox.value);
-    const postsContainer=document.getElementById('post-container')
+    // const postsContainer=document.getElementById('post-container')
     const title = document.getElementById('title').value.trim();
     const content = document.getElementById('content').value.trim();
 
@@ -24,7 +24,6 @@ async function createPosts() {
     };
 
     console.log("Data to be sent:", requestBody);
-
     try {
         const response = await fetch('/create/post', {
             method: 'POST',
@@ -95,6 +94,7 @@ document.getElementById('postForm').addEventListener('submit', async function (e
     await createPosts();
     // Hide the form after submission
     document.getElementById('overlay').style.display = 'none';
+    location.reload()
 
     // Optionally, reset the form
     // this.reset();

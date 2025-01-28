@@ -1,7 +1,12 @@
 import { fetchApi } from "/static/js/displayPosts.js";
 
 // userReactions adds like and dislike functionality for the provided element
-const userReactions = (element, getUrl, postUrl, userName, postId) => {
+const userReactions = async(element, getUrl, postUrl, userName, postId) => {
+  let elementsObject
+  if (postId){
+
+    elementsObject = await fetchApi(getUrl + postId);
+  }
   document.querySelectorAll(element).forEach(async (elementDiv) => {
     const likeDiv = elementDiv.querySelector(".like-div");
     const dislikeDiv = elementDiv.querySelector(".dislike-div");
@@ -9,28 +14,28 @@ const userReactions = (element, getUrl, postUrl, userName, postId) => {
     const dislikeBtn = elementDiv.querySelector(".dislike-div .btn");
     const likeCountDisplay = elementDiv.querySelector(".like-div .count");
     const dislikeCountDisplay = elementDiv.querySelector(".dislike-div .count");
-
+    let elementObject
     const currentPost = likeDiv.closest(".post");
-    if (element==".post") {
-
-      postId = currentPost.dataset.postId;
-    }
-    console.log(postId)
-    let elementObject = await fetchApi(getUrl + postId);
     let commentId = null;
     let reaction = null;
-
-    if (element == ".comment-item") {
+    if (element == ".post") {
+      postId = currentPost.dataset.postId;
+      elementObject = await fetchApi(getUrl + postId);
+    } else {
       const currentComment = likeDiv.closest(".comment-item");
       commentId = currentComment.dataset.commentId;
-      let postComments = await fetchApi(getUrl + postId);
-      elementObject = postComments[Math.max(0, postComments.length - parseInt(commentId))];
+      // let postComments = await fetchApi(getUrl + postId);
+      elementObject = elementsObject.find(comment => comment.id.toString() === commentId);
+    
     }
+    
+    
+    
 
     let likeCount = elementObject.likes || 0;
     let dislikeCount = elementObject.dislikes || 0;
-    likeCountDisplay.textContent = likeCount;
-    dislikeCountDisplay.textContent = dislikeCount;
+    // likeCountDisplay.textContent = likeCount;
+    // dislikeCountDisplay.textContent = dislikeCount;
 
     if (!userName) {
       likeBtn.disabled = true;
@@ -44,7 +49,7 @@ const userReactions = (element, getUrl, postUrl, userName, postId) => {
 
     const userReaction = hasUserReacted(elementObject, userName);
 
-    if (userReaction !== "") {
+    if (userReaction) {
       if (userReaction === "dislike") {
         dislikeDiv.classList.add("selected");
         reaction = "dislike";
@@ -98,13 +103,11 @@ const userReactions = (element, getUrl, postUrl, userName, postId) => {
       }
       await fetchRequest(postUrl + postId, { postId, reaction, commentId });
     });
-
   });
 };
 
 // fetchRequest makes a request to a provided endpoint with a specific body
 const fetchRequest = async (url, body) => {
-  console.log(url)
   try {
     const res = await fetch(url, {
       method: "POST",
@@ -124,11 +127,10 @@ const fetchRequest = async (url, body) => {
 
 // hasUserReacted checks if a user has already reacted to the post
 const hasUserReacted = (element, userName) => {
-  return element.reactions
-    ? userName in element.reactions
-      ? element.reactions[userName]
-      : ""
-    : null;
+  if (!element.reactions) {
+    return null;
+  }
+  return element.reactions[userName] || null;
 };
 
 export { userReactions };
