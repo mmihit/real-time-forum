@@ -17,19 +17,24 @@ form.addEventListener('submit', (event) => {
 
             if (response.ok) {
                 response.json()
+                window.location.href = "/";
             } else if (response.status === 409) {
                 return response.json().then(data => {
                     throw new Error(data.message);
                 });
+            } else {
+                return response.json().then(data => {
+                    alert(data.message);
+                });
             }
         })
-        .then(data => {
-            console.log('login valid', data);
-            window.location.href = "/";
-        })
+        // .then(data => {
+        //     console.log('login valid', data);
+        //     window.location.href = "/";
+        // })
 
         .catch(error => {
-            console.error('Failed to fetch page: ', error)
+           // console.error('Failed to fetch page: ', error)
             document.getElementById('emailError').innerText = error.message;
         })
 })

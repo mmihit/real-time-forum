@@ -1,10 +1,13 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
+	"net/http"
+	"strings"
+
 	"forum/helpers"
 	"forum/internal/db"
-	"net/http"
 
 	"github.com/google/uuid"
 )
@@ -19,33 +22,35 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 
 		if err != nil {
-			helpers.ExecuteTmpl(w, "error.html", 400, "Oops! Bad request.", nil)
+			helpers.JsonResponse(w, http.StatusBadRequest, "Bad Request 🫤")
 			return
 		}
 
 		id, err := h.DB.Authenticate(
 			user.Email, user.Password,
 		)
-
 		if err != nil {
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusConflict)
-			json.NewEncoder(w).Encode(map[string]string{"message": "Username or Password Invalid"})
-			return
+			if err == sql.ErrNoRows || strings.Contains(err.Error(), "hashedPassword") {
+				helpers.JsonResponse(w, http.StatusConflict, "UserName or Password is invalid 🧐")
+				return
+			} else {
+				helpers.JsonResponse(w, http.StatusInternalServerError, "Internal server error 😥")
+				return
+			}
 		}
 
 		token := uuid.New().String()
 
 		if err := h.DB.InsertToken(id, token); err != nil {
-			helpers.ExecuteTmpl(w, "error.html", 500, "Oops! Internal server error.", nil)
+			helpers.JsonResponse(w, http.StatusInternalServerError, "Internal server error 😥")
 			return
 		}
 
 		helpers.AddCookie(w, token)
-		w.WriteHeader(302) // 302 Found
+
+		// w.WriteHeader(302) // 302 Found
 	} else {
-		helpers.ExecuteTmpl(w, "error.html", 405, "Oops! Method not allowed.", nil)
+		helpers.JsonResponse(w, http.StatusMethodNotAllowed, "Method Not Allowed 😥")
 		return
 	}
-
 }

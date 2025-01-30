@@ -7,8 +7,8 @@ import (
 func (a *App) Routes() http.Handler {
 	mux := http.NewServeMux()
 
-	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./assets/static/"))))
-
+	//mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./assets/static/"))))
+	mux.HandleFunc("/static/", a.Handlers.Static)
 	mux.HandleFunc("/", a.Handlers.HomePage)//
 	mux.Handle("/register", a.Handlers.RedirectMiddleware(a.Handlers.Register))//
 	mux.Handle("/login", a.Handlers.RedirectMiddleware(a.Handlers.Login))//
