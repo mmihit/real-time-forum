@@ -53,7 +53,6 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	if post := helpers.IsValidPost(requestBodyOfPost.Title, requestBodyOfPost.Content); len(post.Errors) != 0 || len(requestBodyOfPost.Categories) == 0 {
 		response := PostResponse{Message: "Invalid input: Content, title and selectedCategories are required."}
-		fmt.Println("2")
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(response)

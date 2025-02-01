@@ -225,12 +225,6 @@ func (api *Api) AddPostReactionInApi(loggedUser string, postId int, userReaction
 		user.Reactions["like"] = removePostIdFromReactions(postId, user.Reactions["like"])
 	}
 
-	// for _, p := range api.Posts {
-	// 	if postId == p.Id {
-	// 		post = p
-	// 		break
-	// 	}
-	// }
 	api.Users[loggedUser] = user
 	fmt.Println("here", api.Users[loggedUser])
 }
@@ -247,10 +241,10 @@ func removePostIdFromReactions(postId int, posts []int) []int {
 }
 
 func (api *Api) GetPost(w http.ResponseWriter, r *http.Request) {
-	// if r.Method != http.MethodPost {
-	// 	helpers.ExecuteTmpl(w, "error_page.html", http.StatusMethodNotAllowed, "Method Not Allowed!", nil)
-	// 	return
-	// }
+	if r.Method != http.MethodPost {
+		helpers.ExecuteTmpl(w, "error_page.html", http.StatusMethodNotAllowed, "Method Not Allowed!", nil)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	idQuery := r.URL.Path[len("/api/posts/"):]

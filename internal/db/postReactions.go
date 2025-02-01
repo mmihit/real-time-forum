@@ -17,7 +17,6 @@ func (d *Database) InsertPostReactionInDB(userName string, userReaction UserReac
 	insertReaction := fmt.Sprintf(`INSERT INTO likes(username, post_id, comment_id, reaction) VALUES(?, ?, null,  "%s")`, userReaction.Reaction)
 	stmnt, err := d.db.Prepare(insertReaction)
 	if err != nil {
-		fmt.Println("111111")
 		return err
 	}
 	fmt.Println(userName)
@@ -26,7 +25,6 @@ func (d *Database) InsertPostReactionInDB(userName string, userReaction UserReac
 		return err
 	}
 	if _, err := stmnt.Exec(userName, postId); err != nil {
-		fmt.Println("22222222")
 		return err
 	}
 

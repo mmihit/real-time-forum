@@ -1,7 +1,6 @@
 export async function CreateComments(postId, callbackReaction) {
     const content = document.getElementById('commentContent').value.trim();
 
-    // Validate inputs
     if (!content) {
         return alert("Please fill in all fields correctly!");
     }
@@ -49,7 +48,6 @@ const RenderComments = (comments) => {
         return;
     }
     comments.forEach((comment) => {
-        // console.log(comment)
         const commentElement = document.createElement("div");
         commentElement.classList.add("comment-item");
         commentElement.dataset.commentId = comment.id;
@@ -79,14 +77,14 @@ const RenderComments = (comments) => {
     });
 };
 
-export const fetchComments = async (postId) => {
+const fetchComments = async (postId) => {
     const response = await fetch(`/api/comments/${postId}`, {
-    method: 'POST', // Use POST to fetch data
+    method: 'POST', 
     headers: {
-        'Content-Type': 'application/json' // Indicate that the body is in JSON format
+        'Content-Type': 'application/json' 
     },
     body: JSON.stringify({
-        action: "fetchComments" // Optional: Send additional context if needed
+        action: "fetchComments" 
     }) 
     });
     const commentsContainer = document.getElementById('commentsList');
@@ -111,30 +109,3 @@ export const displayComments = async (postId, callbackReaction) => {
         callbackReaction()
     }
 }
-
-// const createScrollPagination = (comments, displayCallback) => {
-//     let startIndex = 0;
-//     let endIndex = 5;
-//     const commentsContainer = document.getElementById('commentsList')
-
-//     displayCallback(comments.slice(0, endIndex))
-//     const handleScroll = () => {
-
-//         const scrollable = commentsContainer.scrollHeight - commentsContainer.clientHeight
-//         const scrolled = commentsContainer.scrollTop
-//         if (Math.ceil(scrolled) >= scrollable && comments.length > endIndex) {
-//             // isLoading = true
-
-//             startIndex = endIndex
-//             endIndex = Math.min(endIndex + 5, comments.length)
-
-//             displayCallback(comments.slice(startIndex, endIndex))
-
-//             // isLoading = false
-//         }
-//     }
-//     commentsContainer.addEventListener('scroll', handleScroll);
-//     commentsContainer.addEventListener('scroll', handleScroll);
-  
-//     return () => commentsContainer('scroll', handleScroll);
-// }

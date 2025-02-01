@@ -1,10 +1,8 @@
 import { fetchApi } from "/static/js/displayPosts.js";
 
-// userReactions adds like and dislike functionality for the provided element
-const userReactions = async(element, getUrl, postUrl, userName, postId) => {
+export const userReactions = async(element, getUrl, postUrl, userName, postId) => {
   let elementsObject
   if (postId){
-
     elementsObject = await fetchApi(getUrl + postId);
   }
   document.querySelectorAll(element).forEach(async (elementDiv) => {
@@ -24,14 +22,9 @@ const userReactions = async(element, getUrl, postUrl, userName, postId) => {
     } else {
       const currentComment = likeDiv.closest(".comment-item");
       commentId = currentComment.dataset.commentId;
-      // let postComments = await fetchApi(getUrl + postId);
       elementObject = elementsObject.find(comment => comment.id.toString() === commentId);
-    
     }
     
-    
-    
-
     let likeCount = elementObject.likes || 0;
     let dislikeCount = elementObject.dislikes || 0;
     // likeCountDisplay.textContent = likeCount;
@@ -106,7 +99,6 @@ const userReactions = async(element, getUrl, postUrl, userName, postId) => {
   });
 };
 
-// fetchRequest makes a request to a provided endpoint with a specific body
 const fetchRequest = async (url, body) => {
   try {
     const res = await fetch(url, {
@@ -125,12 +117,9 @@ const fetchRequest = async (url, body) => {
   }
 };
 
-// hasUserReacted checks if a user has already reacted to the post
 const hasUserReacted = (element, userName) => {
   if (!element.reactions) {
     return null;
   }
   return element.reactions[userName] || null;
 };
-
-export { userReactions };

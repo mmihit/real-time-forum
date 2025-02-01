@@ -53,7 +53,7 @@
       <a href="/" class="back-link">&larr; Back to Home</a>
     </div>
     <!-- Post Header -->
-    <div class="post" data-post-id="{{.Post.Id}}">
+    <div class="post1" data-post-id="{{.Post.Id}}">
       <div class="post-header">
         <h3 id="postTitle" class="post-title"> {{.Post.Title}} </h3>
         <p id="postInfo" class="post-info"> Posted by {{.Post.User}} on {{.Post.CreationDate}}</p>
@@ -117,7 +117,7 @@
 
       document.getElementById('commentForm').addEventListener('submit', async function (event) {
         console.log("click")
-        event.preventDefault(); // Prevent form from reloading the page
+        event.preventDefault();
         await CreateComments(parseInt(IdPost), () => userReactions(
         ".comment-item",
         "/api/comments/",

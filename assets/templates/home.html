@@ -15,7 +15,7 @@
 <!-- Header -->
 <header class="header">
   <div class="site-title">
-    <i class="fas fa-comments"></i> <!-- Font Awesome icon for chat -->
+    <i class="fas fa-comments"></i> 
     <a href="/" alt="home">Forum Chat</a>
   </div>
 
@@ -60,7 +60,7 @@
 
   <!-- Artical -->
   <div class="artical">
-    <div id="post-container"></div> <!-- Placeholder for posts -->
+    <div id="post-container"></div> 
   </div>
 
   <!-- Hidden form container -->
@@ -94,18 +94,17 @@
 
 
   <script type="module" hidden>
-    import { getPosts,  } from "/static/js/displayPosts.js";
+    import { getPosts } from "/static/js/displayPosts.js";
     import { userReactions } from "/static/js/reaction.js";
-    // import { createPosts } from "/static/js/createPost.js"
+    import { createPosts } from "/static/js/createPost.js"
    
 
     const UserName = "{{.UserName}}"
     await getPosts(UserName, () => userReactions(".post", "/api/posts/", "/post/reaction/", UserName));
+    await createPosts(UserName, () => getPosts(UserName, () => userReactions(".post", "/api/posts/", "/post/reaction/", UserName)))
 
   </script>
-  {{if .UserName}}
-  <script type="module" src="/static/js/createPost.js" hidden></script>
-  {{else}}
+  {{if not .UserName}}
   <script src="/static/js/permissionDenied.js" hidden></script>
   {{end}}
 </body>
