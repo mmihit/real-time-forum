@@ -1,3 +1,4 @@
+import { escapeHTML } from "/static/js/createComment.js"
 export const fetchApi = async (url) => {
   try {
     const response = await fetch(url, {
@@ -119,14 +120,14 @@ const RenderPosts = function (post) {
   postElement.innerHTML = `
       <div>
           <div class="headers">
-              <span class="username">${post.user}</span>
+              <span class="username">${escapeHTML(post.user)}</span>
               <span class="date">${post.creationDate}</span>
           </div>
           <div class="category-label">
               Categories: ${categoryLinks}
           </div>
-          <div class="title">${post.title}</div>
-          <div class="content">${post.content}</div>
+          <div class="title">${escapeHTML(post.title)}</div>
+          <div class="content">${escapeHTML(post.content)}</div>
           <a href="/post?id=${post.id}" class="comment-link">See All Comments</a>
           <div class="reactions">
           <div class="like-div">

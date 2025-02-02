@@ -3,13 +3,17 @@ export async function CreateComments(postId, callbackReaction) {
 
     if (!content) {
         return alert("Please fill in all fields correctly!");
+    } else if (content.length > 2000) {
+        return alert("The content comment is too long")
     }
+
     const requestBody = {
         postId,
         content
     };
 
-    try {    const response = await fetch('/create/comment', {
+    try {
+        const response = await fetch('/create/comment', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -20,7 +24,7 @@ export async function CreateComments(postId, callbackReaction) {
         const responseData = await response.json();
         if (response.ok) {
             displayComments(postId, callbackReaction)
-            document.getElementById('commentContent').value=""
+            document.getElementById('commentContent').value = ""
             return
         } else if (response.status === 401) {
             alert(responseData.message)
@@ -32,10 +36,19 @@ export async function CreateComments(postId, callbackReaction) {
             return alert(`Error: ${errorMessage.message || 'Failed to create comment'}`);
         }
     } catch (error) {
-            console.error("Unexpected error:", error);
-            alert("An unexpected error occurred. Please try again later.");
+        console.error("Unexpected error:", error);
+        alert("An unexpected error occurred. Please try again later.");
     }
 };
+
+export const escapeHTML = (text) => {
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
 const RenderComments = (comments) => {
     const commentsList = document.getElementById("commentsList");
@@ -55,10 +68,10 @@ const RenderComments = (comments) => {
                 <p class="comment-meta">
                     <strong>${comment.username}</strong> 
                     <span class="comment-date">${new Date(
-                      comment.create_date
-                    ).toLocaleString()}</span>
+            comment.create_date
+        ).toLocaleString()}</span>
                 </p>
-                <p class="comment-content">${comment.content}</p>
+                <p class="comment-content">${escapeHTML(comment.content)}</p>
                 <div class="reactions">
                 <div class="like-div">
                     <button class="btn">
@@ -79,16 +92,16 @@ const RenderComments = (comments) => {
 
 const fetchComments = async (postId) => {
     const response = await fetch(`/api/comments/${postId}`, {
-    method: 'POST', 
-    headers: {
-        'Content-Type': 'application/json' 
-    },
-    body: JSON.stringify({
-        action: "fetchComments" 
-    }) 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            action: "fetchComments"
+        })
     });
     const commentsContainer = document.getElementById('commentsList');
-    const responseData = await response.json();
+    const responseData = await response.json()
     if (response.ok) {
         return Array.from(responseData).reverse();
     } else if (response.status === 404) {

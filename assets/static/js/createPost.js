@@ -1,4 +1,5 @@
 export async function createPosts(userName, displayPostsWithReactions) {
+
     if (!userName) {
         return
     }
@@ -23,7 +24,19 @@ export async function createPosts(userName, displayPostsWithReactions) {
     console.log(document.getElementById('postForm'))
 
     document.getElementById('postForm').addEventListener('submit', async function (event) {
+        const title = document.getElementById('title').value.trim();
+        const content = document.getElementById('content').value.trim();
         event.preventDefault();
+        console.log(title.length)
+        
+        if (title.length > 250) {
+            return alert("Post title is too long")
+        }
+        if (content.length > 3000) {
+            return alert("Post content is too long")
+        }
+
+        console.log("test")
         await addPost();
         document.getElementById('overlay').style.display = 'none';
         displayPostsWithReactions()
@@ -35,20 +48,19 @@ export async function createPosts(userName, displayPostsWithReactions) {
         ).map(checkbox => checkbox.value);
         const title = document.getElementById('title').value.trim();
         const content = document.getElementById('content').value.trim();
-    
         if (!title || !content) {
             return alert("Please fill in all fields correctly!");
         }
         if (selectedCategories.length === 0) {
             return alert("Please select at least one category!");
         }
-    
+
         const requestBody = {
             title,
             content,
             selectedCategories
         };
-    
+
         console.log("Data to be sent:", requestBody);
         try {
             const response = await fetch('/create/post', {
@@ -58,13 +70,13 @@ export async function createPosts(userName, displayPostsWithReactions) {
                 },
                 body: JSON.stringify(requestBody),
             });
-    
+
             if (!response.ok) {
                 const errorMessage = await response.json();
                 console.log('Error response:', errorMessage.message);
                 return alert(`${errorMessage.message || 'Failed to create post'}`);
             }
-    
+
             const responseData = await response.json();
             console.log('Response:', responseData);
             alert(responseData.message);
@@ -73,7 +85,7 @@ export async function createPosts(userName, displayPostsWithReactions) {
             document.querySelectorAll('input[name="categories"]').forEach(checkbox => {
                 checkbox.checked = false;
             });
-    
+
         } catch (error) {
             console.error('Unexpected error:', error);
             alert('An unexpected error occurred. Please try again later.');
