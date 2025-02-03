@@ -43,10 +43,10 @@ func (api *Api) ApiHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *Api) GetPosts(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		helpers.ExecuteTmpl(w, "error.html", http.StatusMethodNotAllowed, "Method Not Allowed!", nil)
-		return
-	}
+	// if r.Method != http.MethodPost {
+	// 	helpers.ExecuteTmpl(w, "error.html", http.StatusMethodNotAllowed, "Method Not Allowed!", nil)
+	// 	return
+	// }
 
 	api.Endpoints.PostsEndpoint = r.URL.Path
 
@@ -69,10 +69,10 @@ func (api *Api) GetUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *Api) GetComment(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		helpers.ExecuteTmpl(w, "error.html", http.StatusMethodNotAllowed, "Method Not Allowed!", nil)
-		return
-	}
+	// if r.Method != http.MethodPost {
+	// 	helpers.ExecuteTmpl(w, "error.html", http.StatusMethodNotAllowed, "Method Not Allowed!", nil)
+	// 	return
+	// }
 
 	idQuery := r.URL.Path[len("/api/comments/"):]
 
@@ -154,16 +154,19 @@ func (api *Api) AddCommentReactionInApi(loggedUser string, postId, commentId int
 	for _, comment := range api.Comments[post.Id] {
 		if commentId == comment.Id {
 			if comment.Reactions == nil {
+				fmt.Println("make map")
 				comment.Reactions = make(map[string]string)
 			}
 			comment.Reactions[loggedUser] = userReaction.Reaction
+			fmt.Println(userReaction.Reaction)
 			if userReaction.Reaction == "like" {
 				fmt.Println("add like reaction")
-				comment.Likes = +1
+				comment.Likes++
 			} else if userReaction.Reaction == "dislike" {
 				fmt.Println("add dislike reaction")
-				comment.Dislikes = +1
+				comment.Dislikes++
 			}
+			fmt.Println(comment)
 		}
 	}
 }
@@ -208,7 +211,7 @@ func (api *Api) AddPostReactionInApi(loggedUser string, postId int, userReaction
 	user := api.Users[loggedUser]
 	fmt.Println("liked post: ", post)
 	fmt.Println("liked user: ", user)
-	
+
 	if user.Reactions == nil {
 		user.Reactions = make(map[string][]int)
 	}

@@ -41,7 +41,7 @@ export const userReactions = async(element, getUrl, postUrl, userName, postId) =
     }
 
     const userReaction = hasUserReacted(elementObject, userName);
-
+    
     if (userReaction) {
       if (userReaction === "dislike") {
         dislikeDiv.classList.add("selected");
@@ -51,10 +51,11 @@ export const userReactions = async(element, getUrl, postUrl, userName, postId) =
         reaction = "like";
       }
     }
+    console.log(userReaction, reaction)
 
     likeBtn.addEventListener("click", async () => {
       if (reaction === "like") {
-        likeDiv.classList.add("selected");
+        // likeDiv.classList.add("selected");
         reaction = "unlike";
         likeDiv.classList.remove("selected");
         likeCount = Math.max(0, likeCount - 1);
@@ -72,7 +73,7 @@ export const userReactions = async(element, getUrl, postUrl, userName, postId) =
       if (element === ".post") {
         postId = currentPost.dataset.postId;
       }
-      
+      console.log("fetchRequest:", postUrl+postId,{ postId, reaction, commentId })
       await fetchRequest(postUrl + postId, { postId, reaction, commentId });
     });
 
@@ -95,10 +96,8 @@ export const userReactions = async(element, getUrl, postUrl, userName, postId) =
       if (element === ".post") {
         postId = currentPost.dataset.postId;
       }
-      console.log(postUrl + postId, { postId, reaction, commentId });
-      console.log("////////////////////////////////////////////");
-      
-      
+      console.log("fetchRequest",postUrl + postId, { postId, reaction, commentId });      
+    
       await fetchRequest(postUrl + postId, { postId, reaction, commentId });
     });
   });

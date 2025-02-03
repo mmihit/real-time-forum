@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 	"slices"
 	"strconv"
 	"strings"
@@ -155,7 +156,7 @@ ORDER BY
 		if err := rows.Scan(&u.Id, &u.UserName, &postId, &title, &content, &creationDate, &category, &likedUser, &likedPost, &reaction); err != nil {
 			return err
 		}
-
+		fmt.Println(postId, category.String)
 		u.Reactions = make(map[string][]int)
 		if _, userExists := users[u.UserName]; !userExists {
 			users[u.UserName] = &u
@@ -180,7 +181,7 @@ ORDER BY
 			}
 		}
 		if category.Valid {
-			if slices.Contains(post.Categories, category.String) {
+			if !slices.Contains(post.Categories, category.String) {
 				post.Categories = append(post.Categories, category.String)
 			}
 		}
@@ -200,6 +201,9 @@ ORDER BY
 			}
 
 			user := users[likedUser.String]
+			if user == nil {
+				continue
+			}
 			if _, exists := user.Reactions[likedPost.String]; !exists {
 				postId, err := strconv.Atoi(likedPost.String)
 				if err != nil {
