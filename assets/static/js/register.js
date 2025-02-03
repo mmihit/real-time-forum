@@ -42,29 +42,21 @@ form.addEventListener('submit', async (event) => {
 
                 if (response.ok) {
                     response.json();
-                    console.log("1")
                     window.location.href = "/login";
                 } else if (response.status === 409) {
-                    console.log("2")
                     return response.json().then(data => {
                         throw new Error(data.message);
                     });
                 } else {
                     return response.json().then(data => {
-                        console.log("3")
                         alert(data.message);
                     });
                 }
             })
 
-            // .then(data => {
-            //     console.log('Inscription valid', data);
-            //     window.location.href = "/login";
-            // })
-
             .catch(error => {
                 console.error('Failed to fetch page: ', error);
-                document.getElementById('emailError').innerText = error.message;
+                document.getElementById('Error').innerText = error.message;
             })
     }
 });

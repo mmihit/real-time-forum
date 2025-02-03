@@ -25,6 +25,7 @@ func (h *Handler) Static(w http.ResponseWriter, r *http.Request) {
 		"js/createPost.js":       true,
 		"js/createComment.js":    true,
 		"js/reaction.js":         true,
+		"img/icon.png":           true,
 	}
 	path := r.URL.Path[len("/static/"):]
 	if allowedFiles[path] {

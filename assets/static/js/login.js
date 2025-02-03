@@ -28,13 +28,9 @@ form.addEventListener('submit', (event) => {
                 });
             }
         })
-        // .then(data => {
-        //     console.log('login valid', data);
-        //     window.location.href = "/";
-        // })
-
+     
         .catch(error => {
-           // console.error('Failed to fetch page: ', error)
-            document.getElementById('emailError').innerText = error.message;
+            console.error('Failed to fetch page: ', error)
+            document.getElementById('Error').innerText = error.message;
         })
 })

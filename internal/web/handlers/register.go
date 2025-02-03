@@ -25,14 +25,18 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		exist, err := h.DB.DatabaseVerification(user.UserName, user.Email)
+		existUser, existEmail, err := h.DB.DatabaseVerification(user.UserName, user.Email)
 		if err != nil {
 			helpers.JsonResponse(w, http.StatusInternalServerError, "Internal server error 😥")
 			return
 		}
 
-		if exist {
-			helpers.JsonResponse(w, http.StatusConflict, "This user already exists 🧐")
+		if existUser {
+			helpers.JsonResponse(w, http.StatusConflict, "This username already exists 🧐")
+			return
+		}
+		if existEmail {
+			helpers.JsonResponse(w, http.StatusConflict, "This email already exists 🧐")
 			return
 		}
 
