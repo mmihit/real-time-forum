@@ -3,11 +3,12 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"forum/helpers"
-	"forum/internal/db"
 	"log"
 	"net/http"
 	"time"
+
+	"forum/helpers"
+	"forum/internal/db"
 )
 
 type RequestBodyPost struct {
@@ -21,7 +22,6 @@ type PostResponse struct {
 }
 
 func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
-
 	loggedUser, err := helpers.CheckCookie(r, h.DB)
 	if err != nil {
 		response := PostResponse{Message: "Unauthorized: Please log in to continue."}
@@ -51,7 +51,7 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if post := helpers.IsValidPost(requestBodyOfPost.Title, requestBodyOfPost.Content); len(post.Errors) != 0 || len(requestBodyOfPost.Categories) == 0 {
+	if err := helpers.IsValidPost(requestBodyOfPost.Title, requestBodyOfPost.Content); err != nil || len(requestBodyOfPost.Categories) == 0 {
 		response := PostResponse{Message: "Invalid input: Content, title and selectedCategories are required."}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
@@ -84,5 +84,4 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
-
 }

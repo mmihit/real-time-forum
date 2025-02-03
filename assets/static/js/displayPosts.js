@@ -114,7 +114,7 @@ const RenderPosts = function (post) {
   const postElement = document.createElement("div");
   postElement.className = "post";
   postElement.dataset.postId = post.id;
-  const categoryLinks = post.categories
+  const categoryLinks = [] || post.categories
     .map(cat => `<a>${cat}</a>`)
     .join(" | ");
   postElement.innerHTML = `

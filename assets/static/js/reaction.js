@@ -72,6 +72,7 @@ export const userReactions = async(element, getUrl, postUrl, userName, postId) =
       if (element === ".post") {
         postId = currentPost.dataset.postId;
       }
+      
       await fetchRequest(postUrl + postId, { postId, reaction, commentId });
     });
 
@@ -94,6 +95,10 @@ export const userReactions = async(element, getUrl, postUrl, userName, postId) =
       if (element === ".post") {
         postId = currentPost.dataset.postId;
       }
+      console.log(postUrl + postId, { postId, reaction, commentId });
+      console.log("////////////////////////////////////////////");
+      
+      
       await fetchRequest(postUrl + postId, { postId, reaction, commentId });
     });
   });

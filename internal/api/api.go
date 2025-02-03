@@ -97,7 +97,6 @@ func (api *Api) GetComment(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *Api) GetUser(w http.ResponseWriter, r *http.Request) {
-
 	if r.Method != http.MethodPost {
 		helpers.ExecuteTmpl(w, "error.html", http.StatusMethodNotAllowed, "Method Not Allowed!", nil)
 		return
@@ -201,6 +200,7 @@ func (api *Api) AddPostReactionInApi(loggedUser string, postId int, userReaction
 			break
 		}
 	}
+
 	if post.Reactions == nil {
 		post.Reactions = make(map[string]string)
 	}
@@ -208,13 +208,14 @@ func (api *Api) AddPostReactionInApi(loggedUser string, postId int, userReaction
 	user := api.Users[loggedUser]
 	fmt.Println("liked post: ", post)
 	fmt.Println("liked user: ", user)
+	
+	if user.Reactions == nil {
+		user.Reactions = make(map[string][]int)
+	}
 
 	if userReaction.Reaction == "like" {
 		post.Likes += 1
 		fmt.Println("liked : ", userReaction.Reaction, post)
-		if user.Reactions == nil {
-			user.Reactions = make(map[string][]int)
-		}
 		user.Reactions["like"] = append(user.Reactions["like"], postId)
 		user.Reactions["dislike"] = removePostIdFromReactions(postId, user.Reactions["dislike"])
 	} else if userReaction.Reaction == "dislike" {

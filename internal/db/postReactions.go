@@ -6,8 +6,8 @@ import (
 )
 
 type UserReaction struct {
-	Id        int64  `json:"id"`
-	UserName  string `json:"userId"`
+	// Id        int64  `json:"id"`
+	// UserName  string `json:"userId"`
 	PostId    string `json:"postId"`
 	CommentId string `json:"commentId"`
 	Reaction  string `json:"reaction"`
