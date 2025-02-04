@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
-	"forum/internal/web/server"
 	"log"
 	"net/http"
+
+	"forum/internal/web/server"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -14,8 +14,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Println("app: ", app)
 
 	serveur := http.Server{
 		Addr:    ":8228",
