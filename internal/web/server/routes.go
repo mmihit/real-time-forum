@@ -7,7 +7,6 @@ import (
 func (a *App) Routes() http.Handler {
 	mux := http.NewServeMux()
 
-	//mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./assets/static/"))))
 	mux.HandleFunc("/static/", a.Handlers.Static)
 	mux.HandleFunc("/", a.Handlers.HomePage)//
 	mux.Handle("/register", a.Handlers.RedirectMiddleware(a.Handlers.Register))//
@@ -15,7 +14,7 @@ func (a *App) Routes() http.Handler {
 	mux.HandleFunc("/logout", a.Handlers.Logout)//
 	mux.Handle("/create/post", a.Handlers.AccessMiddleware(a.Handlers.CreatePost))//
 	mux.Handle("/create/comment", a.Handlers.AccessMiddleware(a.Handlers.CreateComment))//
-	mux.Handle("/users/", a.Handlers.AccessMiddleware(a.Handlers.UserPosts))//
+	//Handle("/users/", a.Handlers.AccessMiddleware(a.Handlers.UserPosts))//
 	mux.HandleFunc("/post", a.Handlers.DisplayPostWithComments)//
 	mux.HandleFunc("/comment/reaction/", a.Handlers.CommentReactions)//
 	mux.HandleFunc("/post/reaction/", a.Handlers.PostReactions)//

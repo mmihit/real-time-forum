@@ -31,7 +31,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		)
 		if err != nil {
 			if err == sql.ErrNoRows || strings.Contains(err.Error(), "hashedPassword") {
-				helpers.JsonResponse(w, http.StatusConflict, "UserName or Password is invalid 🧐")
+				helpers.JsonResponse(w, http.StatusConflict, "Email or Password is invalid 🧐")
 				return
 			} else {
 				helpers.JsonResponse(w, http.StatusInternalServerError, "Internal server error 😥")

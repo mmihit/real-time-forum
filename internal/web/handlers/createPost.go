@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -43,7 +42,6 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 	if err := json.NewDecoder(r.Body).Decode(&requestBodyOfPost); err != nil {
-		fmt.Println(err)
 		response := PostResponse{Message: "Bad Request: Error decoding JSON."}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)

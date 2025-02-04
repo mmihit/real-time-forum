@@ -27,7 +27,7 @@ form.addEventListener('submit', async (event) => {
 
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.+[@$!-_%*?&])[a-zA-Z\d@$!-_%*#?&]{8,}$/;
     if (!passwordRegex.test(password)) {
-        document.getElementById('passwordError').innerText = 'your password should include at least one uppercase letter, one lowercase letter, a number, and a special character 😅';
+        document.getElementById('passwordError').innerText = 'your password needs to have a minimum of 8 characters, including an uppercase letter, a lowercase letter, a number, and a special character 😅';
         isValid = false;
     }
 
