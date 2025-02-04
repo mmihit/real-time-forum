@@ -32,7 +32,7 @@ cd forum
 ```
 go run cmd/*
 ```
-4. Open your web browser and go to http://localhost:8228
+4. Open your web browser and go to http://localhost:8080
 
 ### <span style="color:pink">Implementation Details
 

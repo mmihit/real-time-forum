@@ -24,7 +24,7 @@ body {
   top: 0;           
   left: 0;          
   width: 100%;      
-  z-index: 1000;
+  z-index: 98;
 }
 
 .header .site-title {
@@ -336,6 +336,7 @@ h1 {
   margin-bottom: 10px;
   max-height: 200px;
   overflow: hidden;
+  word-break: break-word;
 }
 
 .post .comment-link {
@@ -481,7 +482,7 @@ legend {
 }
 
 
-@keyframes fadeIn {
+@keyframes  fadeIn {
   from {
     opacity: 0;
   }

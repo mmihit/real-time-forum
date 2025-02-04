@@ -108,7 +108,7 @@ func (api *Api) GetUser(w http.ResponseWriter, r *http.Request) {
 
 	user, exists := api.Users[UserName]
 	if !exists {
-		w.WriteHeader(http.StatusNotFound)
+		w.WriteHeader(http.StatusBadRequest)
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]string{"message": fmt.Sprintf("This ${%s} does not exist", UserName)})
 		return

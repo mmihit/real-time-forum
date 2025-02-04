@@ -1,3 +1,5 @@
+import { showAlert } from "/static/js/alert.js";
+
 export async function createPosts(userName, displayPostsWithReactions) {
 
     if (!userName) {
@@ -21,22 +23,19 @@ export async function createPosts(userName, displayPostsWithReactions) {
     document.getElementById('closeFormBtn').addEventListener('click', function () {
         document.getElementById('overlay').style.display = 'none';
     });
-    console.log(document.getElementById('postForm'))
 
     document.getElementById('postForm').addEventListener('submit', async function (event) {
         const title = document.getElementById('title').value.trim();
         const content = document.getElementById('content').value.trim();
         event.preventDefault();
-        console.log(title.length)
         
         if (title.length > 250) {
-            return alert("Post title is too long")
+            return showAlert("Post title is too long")
         }
         if (content.length > 3000) {
-            return alert("Post content is too long")
+            return showAlert("Post content is too long")
         }
 
-        console.log("test")
         await addPost();
         document.getElementById('overlay').style.display = 'none';
         displayPostsWithReactions()
@@ -49,10 +48,10 @@ export async function createPosts(userName, displayPostsWithReactions) {
         const title = document.getElementById('title').value.trim();
         const content = document.getElementById('content').value.trim();
         if (!title || !content) {
-            return alert("Please fill in all fields correctly!");
+            return showAlert("Please fill in all fields correctly!");
         }
         if (selectedCategories.length === 0) {
-            return alert("Please select at least one category!");
+            return showAlert("Please select at least one category!");
         }
 
         const requestBody = {
@@ -61,7 +60,6 @@ export async function createPosts(userName, displayPostsWithReactions) {
             selectedCategories
         };
 
-        console.log("Data to be sent:", requestBody);
         try {
             const response = await fetch('/create/post', {
                 method: 'POST',
@@ -73,13 +71,11 @@ export async function createPosts(userName, displayPostsWithReactions) {
 
             if (!response.ok) {
                 const errorMessage = await response.json();
-                console.log('Error response:', errorMessage.message);
-                return alert(`${errorMessage.message || 'Failed to create post'}`);
+                return showAlert(`${errorMessage.message || 'Failed to create post'}`);
             }
 
             const responseData = await response.json();
-            console.log('Response:', responseData);
-            alert(responseData.message);
+            showAlert(responseData.message);
             document.getElementById('title').value = '';
             document.getElementById('content').value = '';
             document.querySelectorAll('input[name="categories"]').forEach(checkbox => {
@@ -88,7 +84,7 @@ export async function createPosts(userName, displayPostsWithReactions) {
 
         } catch (error) {
             console.error('Unexpected error:', error);
-            alert('An unexpected error occurred. Please try again later.');
+            showAlert('An unexpected error occurred. Please try again later.');
         }
     }
 

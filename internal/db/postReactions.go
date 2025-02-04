@@ -19,7 +19,6 @@ func (d *Database) InsertPostReactionInDB(userName string, userReaction UserReac
 	if err != nil {
 		return err
 	}
-	fmt.Println(userName)
 	postId, err := strconv.Atoi(userReaction.PostId)
 	if err != nil {
 		return err

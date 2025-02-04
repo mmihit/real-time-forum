@@ -2,7 +2,6 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
 	"slices"
 	"strconv"
 	"strings"
@@ -156,7 +155,6 @@ ORDER BY
 		if err := rows.Scan(&u.Id, &u.UserName, &postId, &title, &content, &creationDate, &category, &likedUser, &likedPost, &reaction); err != nil {
 			return err
 		}
-		fmt.Println(postId, category.String)
 		u.Reactions = make(map[string][]int)
 		if _, userExists := users[u.UserName]; !userExists {
 			users[u.UserName] = &u

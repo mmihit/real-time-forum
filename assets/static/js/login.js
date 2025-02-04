@@ -1,3 +1,5 @@
+import { showAlert } from "/static/js/alert.js";
+
 const form = document.getElementById('loginForm');
 form.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -13,8 +15,6 @@ form.addEventListener('submit', (event) => {
         body: JSON.stringify({ 'email': email, 'password': password })
     })
         .then(response => {
-            console.log(response.status);
-
             if (response.ok) {
                 response.json()
                 window.location.href = "/";
@@ -24,7 +24,7 @@ form.addEventListener('submit', (event) => {
                 });
             } else {
                 return response.json().then(data => {
-                    alert(data.message);
+                    showAlert(data.message);
                 });
             }
         })

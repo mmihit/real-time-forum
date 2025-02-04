@@ -1,3 +1,5 @@
+import { showAlert } from "/static/js/alert.js";
+
 const form = document.getElementById('registerForm');
 
 form.addEventListener('submit', async (event) => {
@@ -49,7 +51,7 @@ form.addEventListener('submit', async (event) => {
                     });
                 } else {
                     return response.json().then(data => {
-                        alert(data.message);
+                        showAlert(data.message);
                     });
                 }
             })

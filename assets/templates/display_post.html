@@ -7,12 +7,15 @@
   <link rel="stylesheet" type="text/css" href="/static/css/home.css" />
   <link rel="stylesheet" type="text/css" href="/static/css/post.css" />
   <link rel="stylesheet" type="text/css" href="/static/css/comments.css" />
+  <link rel="stylesheet" type="text/css" href="/static/css/alert.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <title>Post</title>
 </head>
 
 <body>
+
+  <div id="customAlert"></div>
 
   {{if .UserName}}
   <!-- Header -->
@@ -116,15 +119,14 @@
       ))
 
       document.getElementById('commentForm').addEventListener('submit', async function (event) {
-        console.log("click")
         event.preventDefault();
         await CreateComments(parseInt(IdPost), () => userReactions(
-        ".comment-item",
-        "/api/comments/",
-        "/comment/reaction/",
-        userName,
-        IdPost
-      )); 
+          ".comment-item",
+          "/api/comments/",
+          "/comment/reaction/",
+          userName,
+          IdPost
+        ));
 
       });
     </script>

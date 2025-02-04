@@ -51,7 +51,6 @@ export const userReactions = async(element, getUrl, postUrl, userName, postId) =
         reaction = "like";
       }
     }
-    console.log(userReaction, reaction)
 
     likeBtn.addEventListener("click", async () => {
       if (reaction === "like") {
@@ -73,7 +72,6 @@ export const userReactions = async(element, getUrl, postUrl, userName, postId) =
       if (element === ".post") {
         postId = currentPost.dataset.postId;
       }
-      console.log("fetchRequest:", postUrl+postId,{ postId, reaction, commentId })
       await fetchRequest(postUrl + postId, { postId, reaction, commentId });
     });
 
@@ -95,9 +93,7 @@ export const userReactions = async(element, getUrl, postUrl, userName, postId) =
       dislikeCountDisplay.textContent = dislikeCount;
       if (element === ".post") {
         postId = currentPost.dataset.postId;
-      }
-      console.log("fetchRequest",postUrl + postId, { postId, reaction, commentId });      
-    
+      }    
       await fetchRequest(postUrl + postId, { postId, reaction, commentId });
     });
   });

@@ -49,8 +49,6 @@ func (h *Handler) PostReactions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// fmt.Println("post id:", postId)
-
 	lastReaction, err := h.DB.GetPostReactionFromDB(loggedUser, userReaction)
 	if err != nil && err != sql.ErrNoRows {
 		response := CommentResponse{Message: "Oops! Internal Server Error."}
@@ -62,7 +60,6 @@ func (h *Handler) PostReactions(w http.ResponseWriter, r *http.Request) {
 
 	if lastReaction == "" {
 		if err := h.DB.InsertPostReactionInDB(loggedUser, userReaction); err != nil {
-
 			response := CommentResponse{Message: "Oops! Internal Server Error."}
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -72,7 +69,6 @@ func (h *Handler) PostReactions(w http.ResponseWriter, r *http.Request) {
 	} else {
 		if strings.HasPrefix(userReaction.Reaction, "un") {
 			if err := h.DB.DeletePostReactionInDB(loggedUser, userReaction); err != nil {
-
 				response := CommentResponse{Message: "Oops! Internal Server Error."}
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusInternalServerError)
@@ -81,7 +77,6 @@ func (h *Handler) PostReactions(w http.ResponseWriter, r *http.Request) {
 			}
 		} else {
 			if err := h.DB.UpdatePostReactionInDB(loggedUser, userReaction); err != nil {
-
 				response := CommentResponse{Message: "Oops! Internal Server Error."}
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusInternalServerError)

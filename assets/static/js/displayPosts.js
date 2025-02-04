@@ -1,4 +1,6 @@
 import { escapeHTML } from "/static/js/createComment.js"
+import { showAlert } from "/static/js/alert.js";
+
 export const fetchApi = async (url) => {
   try {
     const response = await fetch(url, {
@@ -69,15 +71,20 @@ const loadPosts = async (input, flag) => {
 
 
   const isGategory = categories.includes(input)
-  const isUser = input && !isGategory;
+  const isUser = input && !isGategory
 
-
+  
   if (isUser) {
     apiData = await fetchApi(`/api/users/${input}`);
   } else {
     apiData = await fetchApi(`/api/posts`)
   }
-  if (isUser) {
+  
+  if (input && !isGategory && isUser && !flag) {
+    return showAlert("Please enter the right category")
+  }
+  
+  if (isUser && flag) {
     if (flag === 'myPosts') {
       posts = apiData?.posts || [];
     } else if (flag === 'myLikes') {
@@ -124,7 +131,7 @@ const RenderPosts = function (post) {
               <span class="date">${post.creationDate}</span>
           </div>
           <div class="category-label">
-              Categories: ${categoryLinks}
+              Categories: <a>${categoryLinks}</a>
           </div>
           <div class="title">${escapeHTML(post.title)}</div>
           <div class="content">${escapeHTML(post.content)}</div>

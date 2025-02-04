@@ -1,10 +1,12 @@
+import { showAlert } from "/static/js/alert.js";
+
 export async function CreateComments(postId, callbackReaction) {
     const content = document.getElementById('commentContent').value.trim();
 
     if (!content) {
-        return alert("Please fill in all fields correctly!");
+        return showAlert("Please fill in all fields correctly!");
     } else if (content.length > 2000) {
-        return alert("The content comment is too long")
+        return showAlert("The content comment is too long")
     }
 
     const requestBody = {
@@ -23,21 +25,21 @@ export async function CreateComments(postId, callbackReaction) {
 
         const responseData = await response.json();
         if (response.ok) {
+            showAlert(responseData.message)
             displayComments(postId, callbackReaction)
             document.getElementById('commentContent').value = ""
             return
         } else if (response.status === 401) {
-            alert(responseData.message)
+            showAlert(responseData.message)
             window.location.href = "/login";
             return
         } else {
             const errorMessage = await response.json();
-            console.log('Error response:', errorMessage.message);
-            return alert(`Error: ${errorMessage.message || 'Failed to create comment'}`);
+            return showAlert(`Error: ${errorMessage.message || 'Failed to create comment'}`);
         }
     } catch (error) {
         console.error("Unexpected error:", error);
-        alert("An unexpected error occurred. Please try again later.");
+        showAlert("An unexpected error occurred. Please try again later.");
     }
 };
 
@@ -53,7 +55,6 @@ export const escapeHTML = (text) => {
 const RenderComments = (comments) => {
     const commentsList = document.getElementById("commentsList");
     if (!commentsList) {
-        console.error("Element with ID 'commentsList' not found.");
         return;
     }
     if (!comments || comments.length === 0) {
@@ -107,7 +108,6 @@ const fetchComments = async (postId) => {
     } else if (response.status === 404) {
         commentsContainer.innerHTML = `<p>${responseData.message}</p>`;
     } else {
-        console.log('Response:', responseData);
         alert(responseData.error);
     }
 };
