@@ -43,10 +43,10 @@ func (api *Api) ApiHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *Api) GetPosts(w http.ResponseWriter, r *http.Request) {
-	// if r.Method != http.MethodPost {
-	// 	helpers.ExecuteTmpl(w, "error.html", http.StatusMethodNotAllowed, "Method Not Allowed!", nil)
-	// 	return
-	// }
+	if r.Method != http.MethodPost {
+		helpers.ExecuteTmpl(w, "error.html", http.StatusMethodNotAllowed, "Method Not Allowed!", nil)
+		return
+	}
 
 	api.Endpoints.PostsEndpoint = r.URL.Path
 
@@ -69,10 +69,10 @@ func (api *Api) GetUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *Api) GetComment(w http.ResponseWriter, r *http.Request) {
-	// if r.Method != http.MethodPost {
-	// 	helpers.ExecuteTmpl(w, "error.html", http.StatusMethodNotAllowed, "Method Not Allowed!", nil)
-	// 	return
-	// }
+	if r.Method != http.MethodPost {
+		helpers.ExecuteTmpl(w, "error.html", http.StatusMethodNotAllowed, "Method Not Allowed!", nil)
+		return
+	}
 
 	idQuery := r.URL.Path[len("/api/comments/"):]
 
@@ -142,7 +142,6 @@ func (api *Api) DeleteCommentReactionInApi(loggedUser string, postId, commentId 
 }
 
 func (api *Api) AddCommentReactionInApi(loggedUser string, postId, commentId int, userReaction db.UserReaction) {
-	fmt.Println("add Comment Reaction In Api")
 	var post *db.Post
 	for _, p := range api.Posts {
 		if postId == p.Id {
@@ -154,26 +153,20 @@ func (api *Api) AddCommentReactionInApi(loggedUser string, postId, commentId int
 	for _, comment := range api.Comments[post.Id] {
 		if commentId == comment.Id {
 			if comment.Reactions == nil {
-				fmt.Println("make map")
 				comment.Reactions = make(map[string]string)
 			}
 			comment.Reactions[loggedUser] = userReaction.Reaction
-			fmt.Println(userReaction.Reaction)
 			if userReaction.Reaction == "like" {
-				fmt.Println("add like reaction")
 				comment.Likes++
 			} else if userReaction.Reaction == "dislike" {
-				fmt.Println("add dislike reaction")
 				comment.Dislikes++
 			}
-			fmt.Println(comment)
 		}
 	}
 }
 
 func (api *Api) DeletePostReactionInApi(loggedUser string, postId int, userReaction db.UserReaction) {
 	var post *db.Post
-	fmt.Println("reaction", userReaction.Reaction)
 	for _, p := range api.Posts {
 		if postId == p.Id {
 			post = p
@@ -203,14 +196,11 @@ func (api *Api) AddPostReactionInApi(loggedUser string, postId int, userReaction
 			break
 		}
 	}
-
 	if post.Reactions == nil {
 		post.Reactions = make(map[string]string)
 	}
 	post.Reactions[loggedUser] = userReaction.Reaction
 	user := api.Users[loggedUser]
-	fmt.Println("liked post: ", post)
-	fmt.Println("liked user: ", user)
 
 	if user.Reactions == nil {
 		user.Reactions = make(map[string][]int)
@@ -218,19 +208,15 @@ func (api *Api) AddPostReactionInApi(loggedUser string, postId int, userReaction
 
 	if userReaction.Reaction == "like" {
 		post.Likes += 1
-		fmt.Println("liked : ", userReaction.Reaction, post)
 		user.Reactions["like"] = append(user.Reactions["like"], postId)
 		user.Reactions["dislike"] = removePostIdFromReactions(postId, user.Reactions["dislike"])
 	} else if userReaction.Reaction == "dislike" {
-		fmt.Println(userReaction.Reaction)
 		post.Dislikes += 1
-		fmt.Println("disliked : ", post)
 		user.Reactions["dislike"] = append(user.Reactions["dislike"], postId)
 		user.Reactions["like"] = removePostIdFromReactions(postId, user.Reactions["like"])
 	}
 
 	api.Users[loggedUser] = user
-	fmt.Println("here", api.Users[loggedUser])
 }
 
 func removePostIdFromReactions(postId int, posts []int) []int {

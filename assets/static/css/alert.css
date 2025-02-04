@@ -7,8 +7,8 @@
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: #e7d4ff;
-    color: #595959;
+    background: linear-gradient(90deg, #6200ea, #bb86fc);
+    color: #ffffff;
     padding: 30px 30px;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgb(110 19 236 / 35%);

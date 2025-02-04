@@ -1,5 +1,5 @@
 ### Install docker 
-curl -fsSL https://get.docker.com/rootless | sh
+###curl -fsSL https://get.docker.com/rootless | sh
 
 ## build image
 docker build -t forum .

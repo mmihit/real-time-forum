@@ -45,7 +45,7 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		response := PostResponse{Message: "Bad Request: Error decoding JSON."}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
-		err = json.NewEncoder(w).Encode(response)
+		json.NewEncoder(w).Encode(response)
 		return
 	}
 

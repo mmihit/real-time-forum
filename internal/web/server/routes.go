@@ -14,7 +14,6 @@ func (a *App) Routes() http.Handler {
 	mux.HandleFunc("/logout", a.Handlers.Logout)//
 	mux.Handle("/create/post", a.Handlers.AccessMiddleware(a.Handlers.CreatePost))//
 	mux.Handle("/create/comment", a.Handlers.AccessMiddleware(a.Handlers.CreateComment))//
-	//Handle("/users/", a.Handlers.AccessMiddleware(a.Handlers.UserPosts))//
 	mux.HandleFunc("/post", a.Handlers.DisplayPostWithComments)//
 	mux.HandleFunc("/comment/reaction/", a.Handlers.CommentReactions)//
 	mux.HandleFunc("/post/reaction/", a.Handlers.PostReactions)//

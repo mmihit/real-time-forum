@@ -114,7 +114,10 @@ const GetPostFromIds = async (postsId) => {
 }
 
 const FilterByCategory = (allPosts, category) => {
-  return allPosts.filter(obj => obj.categories.includes(category.toLowerCase()))
+  if (allPosts) {
+    return allPosts.filter(obj => obj.categories.includes(category.toLowerCase()))
+  }
+ 
 }
 
 const RenderPosts = function (post) {

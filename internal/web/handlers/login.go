@@ -48,7 +48,6 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 		helpers.AddCookie(w, token)
 
-		// w.WriteHeader(302) // 302 Found
 	} else {
 		helpers.JsonResponse(w, http.StatusMethodNotAllowed, "Method Not Allowed 😥")
 		return

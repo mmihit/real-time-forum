@@ -27,8 +27,6 @@ export const userReactions = async(element, getUrl, postUrl, userName, postId) =
     
     let likeCount = elementObject.likes || 0;
     let dislikeCount = elementObject.dislikes || 0;
-    // likeCountDisplay.textContent = likeCount;
-    // dislikeCountDisplay.textContent = dislikeCount;
 
     if (!userName) {
       likeBtn.disabled = true;
@@ -54,7 +52,6 @@ export const userReactions = async(element, getUrl, postUrl, userName, postId) =
 
     likeBtn.addEventListener("click", async () => {
       if (reaction === "like") {
-        // likeDiv.classList.add("selected");
         reaction = "unlike";
         likeDiv.classList.remove("selected");
         likeCount = Math.max(0, likeCount - 1);

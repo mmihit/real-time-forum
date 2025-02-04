@@ -40,8 +40,6 @@ form.addEventListener('submit', async (event) => {
             body: JSON.stringify({ 'name': name, 'email': email, 'password': password })
         })
             .then(response => {
-                console.log(response.status);
-
                 if (response.ok) {
                     response.json();
                     window.location.href = "/login";

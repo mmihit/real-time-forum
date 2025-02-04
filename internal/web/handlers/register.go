@@ -51,7 +51,6 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		
-		//w.WriteHeader(302)
 	} else {
 		helpers.JsonResponse(w, http.StatusMethodNotAllowed, "Method Not Allowed 😥")
 		return
