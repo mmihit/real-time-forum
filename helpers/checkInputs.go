@@ -79,6 +79,7 @@ func IsValidPost(title, content string) error {
 	return nil
 }
 
+/********************** JsonResponse Function ***********************/
 func JsonResponse(w http.ResponseWriter, status int, message string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
