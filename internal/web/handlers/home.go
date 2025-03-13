@@ -14,7 +14,7 @@ type Handler struct {
 }
 
 func (h *Handler) HomePage(w http.ResponseWriter, r *http.Request) {
-	
+
 	if r.URL.Path != "/" {
 		helpers.ExecuteTmpl(w, "error.html", 404, "Oops! Not found", nil)
 		return
@@ -27,14 +27,10 @@ func (h *Handler) HomePage(w http.ResponseWriter, r *http.Request) {
 		userName = tem
 		if err != nil {
 			helpers.DeleteCookie(w)
-			helpers.ExecuteTmpl(w, "home.html", 200, "", nil)
-			return
+			h.Api.Params.Home.UserName = ""
 		} else {
-			helpers.ExecuteTmpl(w, "home.html", 200, "", h.Api.Users[userName])
-			return
+			h.Api.Params.Home.UserName = userName
 		}
-	} else {
-		helpers.ExecuteTmpl(w, "home.html", 200, "", nil)
-		return
 	}
+	helpers.ExecuteTmpl(w, "index.html", 200, "", nil)
 }

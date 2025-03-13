@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" type="text/css" href="/static/css/home.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/home.css" />
   <link rel="stylesheet" type="text/css" href="/static/css/post.css" />
   <link rel="stylesheet" type="text/css" href="/static/css/comments.css" />
   <link rel="stylesheet" type="text/css" href="/static/css/alert.css" />
@@ -48,53 +48,55 @@
     </div>
   </header>
   {{end}}
-  <div id="navbarContainer"></div>
-  <div class="container">
-    <!-- Back to Home -->
-    <div class="back-home">
-      <a href="/" class="back-link">&larr; Back to Home</a>
-    </div>
-    <!-- Post Header -->
-    <div class="post1" data-post-id="{{.Post.Id}}">
-      <div class="post-header">
-        <h3 id="postTitle" class="post-title"> {{.Post.Title}} </h3>
-        <p id="postInfo" class="post-info"> Posted by {{.Post.User}} on {{.Post.CreationDate}}</p>
-        {{if .Post.Categories}}
-        <div class="category-label">
-          Categories:
-          {{range .Post.Categories}}
-          <a>{{.}} | </a>
+  <div id="body">
+    <div id="navbarContainer"></div>
+    <div class="container">
+      <!-- Back to Home -->
+      <div class="back-home">
+        <a href="/" class="back-link">&larr; Back to Home</a>
+      </div>
+      <!-- Post Header -->
+      <div class="post1" data-post-id="{{.Post.Id}}">
+        <div class="post-header">
+          <h3 id="postTitle" class="post-title"> {{.Post.Title}} </h3>
+          <p id="postInfo" class="post-info"> Posted by {{.Post.User}} on {{.Post.CreationDate}}</p>
+          {{if .Post.Categories}}
+          <div class="category-label">
+            Categories:
+            {{range .Post.Categories}}
+            <a>{{.}} | </a>
+            {{end}}
+          </div>
           {{end}}
         </div>
-        {{end}}
+
+        <!-- Post Content -->
+        <div class="post-content" id="postContent">
+          <!-- Content will be dynamically injected -->
+          {{.Post.Content}}
+        </div>
       </div>
+      <!-- Reaction Buttons -->
 
-      <!-- Post Content -->
-      <div class="post-content" id="postContent">
-        <!-- Content will be dynamically injected -->
-        {{.Post.Content}}
+      <!-- Comments Section -->
+      <div id="commentsSection">
+
+        <!-- Existing Comments List -->
+        <h3>Comments</h3>
+        <div id="commentsList">
+          <!-- We'll dynamically render existing comments here -->
+        </div>
+
+        <!-- Add New Comment Form -->
+        <div id="addCommentContainer">
+          <h4>Leave a comment</h4>
+          <form action="/create/comment" method="post" id="commentForm">
+            <textarea id="commentContent" rows="3" placeholder="Write a comment..." required></textarea>
+            <button type="submit" id="commentSubmit">Post Comment</button>
+          </form>
+        </div>
+
       </div>
-    </div>
-    <!-- Reaction Buttons -->
-
-    <!-- Comments Section -->
-    <div id="commentsSection">
-
-      <!-- Existing Comments List -->
-      <h3>Comments</h3>
-      <div id="commentsList">
-        <!-- We'll dynamically render existing comments here -->
-      </div>
-
-      <!-- Add New Comment Form -->
-      <div id="addCommentContainer">
-        <h4>Leave a comment</h4>
-        <form action="/create/comment" method="post" id="commentForm">
-          <textarea id="commentContent" rows="3" placeholder="Write a comment..." required></textarea>
-          <button type="submit" id="commentSubmit">Post Comment</button>
-        </form>
-      </div>
-
     </div>
     {{if not .UserName}}
     <script src="/static/js/permissionDenied.js"></script>

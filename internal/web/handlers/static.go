@@ -27,6 +27,7 @@ func (h *Handler) Static(w http.ResponseWriter, r *http.Request) {
 		"js/createComment.js":    true,
 		"js/reaction.js":         true,
 		"js/alert.js":            true,
+		"js/loadHtmlElems.js":    true,
 		"img/icon.png":           true,
 	}
 	path := r.URL.Path[len("/static/"):]

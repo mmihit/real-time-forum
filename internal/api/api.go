@@ -16,12 +16,23 @@ type Api struct {
 	Users     map[string]*db.User   `json:"users"`
 	Posts     []*db.Post            `json:"posts"`
 	Comments  map[int][]*db.Comment `json:"comments"`
+	Params    *Params               `json:"params"`
 }
 
 type Endpoints struct {
 	PostsEndpoint   string `json:"posts"`
 	UsersEndpoint   string `json:"users"`
 	CommentEndpoint string `json:"comments"`
+}
+
+type Params struct {
+	Home struct {
+		UserName string `json:"username"`
+	} `json:"home"`
+	Post struct {
+		Post     *db.Post `json:"post"`
+		UserName string   `json:"username"`
+	} `json:"post"`
 }
 
 // https://medium.com/@oshankkumar/project-layout-of-golang-web-application-bae212d8f4b6
@@ -255,4 +266,28 @@ func (api *Api) GetPost(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusNotFound)
 	json.NewEncoder(w).Encode(map[string]string{"error": "Post Not Found!"})
+}
+
+func (api *Api) SendRealTimeTools(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var response struct {
+		// Html   string      `json:"html,omitempty"`
+		// Script string      `json:"script,omitempty"`
+		Params interface{} `json:"params,omitempty"`
+	}
+
+	page := r.URL.Path[len("/api/params/"):]
+
+	switch page {
+	case "Home":
+		response.Params = api.Params.Home
+	case "Post":
+		response.Params = api.Params.Post
+	default:
+		http.Error(w, `{"error": "Page not found"}`, http.StatusNotFound)
+		return
+	}
+
+	json.NewEncoder(w).Encode(response.Params)
 }

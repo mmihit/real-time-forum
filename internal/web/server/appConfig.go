@@ -27,8 +27,10 @@ func NewApp() (*App, error) {
 			DB: database,
 		},
 		Api: api.Api{
-			Users: make(map[string]*db.User),
-			Comments : make(map[int][]*db.Comment),
+			Users:    make(map[string]*db.User),
+			Comments: make(map[int][]*db.Comment),
+
+			Params: &api.Params{},
 		},
 		DB: database,
 	}, nil
@@ -43,7 +45,7 @@ func InitApp() (*App, error) {
 	if err := app.DB.GetPostsFromDB(app.Api.Users, &app.Api.Posts); err != nil {
 		return nil, err
 	}
-	
+
 	if err := app.DB.GetAllCommentsFromDataBase(app.Api.Comments); err != nil {
 		return nil, err
 	}

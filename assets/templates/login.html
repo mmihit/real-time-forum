@@ -12,12 +12,12 @@
 </head>
 
 <body>
-    <div id="customAlert"></div>
-    <body>
+    <div id="body">
+        <div id="customAlert"></div>
         <div class="container">
             <h1>Sign In</h1>
             <p>Welcome back! Register to access the Forum Chat platform.</p>
-            
+
             <br>
             <form id="loginForm">
                 <input type="text" id="email" name="email" placeholder="Email" required>
@@ -26,14 +26,15 @@
                 <span id="passwordError" class="error"></span>
 
                 <span id="Error" class="error"></span>
-                <button type="submit" class="submit-btn" >Continue</button>
+                <button type="submit" class="submit-btn">Continue</button>
             </form>
             <div class="footer">
                 <a href="/">Home</a>
                 <a href="/register">Sign Up</a>
             </div>
         </div>
-        <script type="module" src="/static/js/login.js"></script>
+    </div>
+    <script type="module" src="/static/js/login.js"></script>
 </body>
 
 </html>
