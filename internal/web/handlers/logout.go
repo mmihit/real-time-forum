@@ -11,6 +11,10 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 		helpers.ExecuteTmpl(w, "error.html", 405, "Oops! Method not allowed.", nil)
 		return
 	}
+
 	helpers.DeleteCookie(w)
+
+	h.Api.Params.Home.UserName = ""
+
 	http.Redirect(w, r, "/login", http.StatusFound)
 }

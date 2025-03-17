@@ -14,23 +14,22 @@ type Handler struct {
 }
 
 func (h *Handler) HomePage(w http.ResponseWriter, r *http.Request) {
-
 	if r.URL.Path != "/" {
 		helpers.ExecuteTmpl(w, "error.html", 404, "Oops! Not found", nil)
 		return
 	}
 
-	userName := ""
-	session, _ := r.Cookie("session")
-	if session != nil {
-		tem, err := h.DB.TokenVerification(session.Value)
-		userName = tem
-		if err != nil {
-			helpers.DeleteCookie(w)
-			h.Api.Params.Home.UserName = ""
-		} else {
+	h.Api.Params.Home.UserName = ""
+
+	session, err := r.Cookie("session")
+	if err == nil && session != nil {
+		userName, err := h.DB.TokenVerification(session.Value)
+		if err == nil {
 			h.Api.Params.Home.UserName = userName
+		} else {
+			helpers.DeleteCookie(w)
 		}
 	}
+
 	helpers.ExecuteTmpl(w, "index.html", 200, "", nil)
 }

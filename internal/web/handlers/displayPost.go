@@ -1,18 +1,19 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"forum/helpers"
-	"forum/internal/db"
+	// "forum/internal/db"
 )
 
-type PostData struct {
-	Post     db.Post
-	Id       string
-	UserName string
-}
+// type postData struct {
+// 	Post     db.Post
+// 	Id       string
+// 	UserName string
+// }
 
 func (h *Handler) DisplayPostWithComments(w http.ResponseWriter, r *http.Request) {
 
@@ -26,6 +27,7 @@ func (h *Handler) DisplayPostWithComments(w http.ResponseWriter, r *http.Request
 	}
 
 	idTarget, err := strconv.Atoi(r.URL.Query().Get("id"))
+	fmt.Println(idTarget)
 	if err != nil {
 		helpers.ExecuteTmpl(w, "error.html", http.StatusBadRequest, "Oops! Bad Request error !", nil)
 		return

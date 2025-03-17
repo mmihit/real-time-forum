@@ -13,7 +13,7 @@ import (
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		helpers.ExecuteTmpl(w, "login.html", 200, "", nil)
+		helpers.ExecuteTmpl(w, "index.html", 200, "", nil)
 		return
 	} else if r.Method == http.MethodPost {
 		type Slogin struct {
@@ -48,6 +48,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		}
 
 		helpers.AddCookie(w, token)
+		helpers.JsonResponse(w, http.StatusOK, "sign in succeful")
 
 	} else {
 		helpers.JsonResponse(w, http.StatusMethodNotAllowed, "Method Not Allowed 😥")
