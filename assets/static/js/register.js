@@ -5,19 +5,27 @@ const form = document.getElementById('registerForm');
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
+    const nickname = document.getElementById('nickname').value;
+    const age = parseInt(document.getElementById('age').value);
+    const gender = document.getElementById('gender').value;
+    const firstName = document.getElementById('firstName').value;
+    const lastName = document.getElementById('lastName').value;
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
-    const name = document.getElementById('name').value;
-
+    
+    document.getElementById('nicknameError').innerText = '';
+    document.getElementById('ageError').innerText = '';
+    document.getElementById('genderError').innerText = '';
+    document.getElementById('firstNameError').innerText = '';
+    document.getElementById('lastNameError').innerText = '';
     document.getElementById('emailError').innerText = '';
     document.getElementById('passwordError').innerText = '';
-    document.getElementById('nameError').innerText = '';
 
     let isValid = true;
 
     const nameRegex = /^[A-Za-z0-9._-]{2,15}$/;
-    if (!nameRegex.test(name)) {
-        document.getElementById('nameError').innerText = 'Invalid name';
+    if (!nameRegex.test(nickname)) {
+        document.getElementById('nickname').innerText = 'Invalid nickname';
         isValid = false;
     }
 
@@ -37,7 +45,7 @@ form.addEventListener('submit', async (event) => {
         fetch("/register", {
             method: 'POST',
             headers: { 'Content-Type': "application/json" },
-            body: JSON.stringify({ 'name': name, 'email': email, 'password': password })
+            body: JSON.stringify({ 'name': nickname, 'age': age, 'gender': gender, 'firstName': firstName, 'lastName': lastName, 'email': email, 'password': password })
         })
             .then(response => {
                 if (response.ok) {

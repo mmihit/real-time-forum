@@ -19,7 +19,6 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 		var user db.User
 		err := json.NewDecoder(r.Body).Decode(&user)
 		defer r.Body.Close()
-
 		if err != nil {
 			helpers.JsonResponse(w, http.StatusBadRequest, "Bad Request 🫤")
 			return
@@ -30,7 +29,6 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 			helpers.JsonResponse(w, http.StatusInternalServerError, "Internal server error 😥")
 			return
 		}
-
 		if existUser {
 			helpers.JsonResponse(w, http.StatusConflict, "This username already exists 🧐")
 			return
@@ -41,7 +39,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if helpers.IsValidInput(user) == "" {
-			err = h.DB.InsertUser(h.Api.Users, user.UserName, user.Email, user.Password)
+			err = h.DB.InsertUser(h.Api.Users, user.UserName, user.Gender, user.FirstName, user.LastName, user.Email, user.Password, user.Age)
 			if err != nil {
 				helpers.JsonResponse(w, http.StatusInternalServerError, "Internal server error 😥")
 				return
@@ -50,7 +48,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 			helpers.JsonResponse(w, http.StatusConflict, helpers.IsValidInput(user))
 			return
 		}
-		
+
 	} else {
 		helpers.JsonResponse(w, http.StatusMethodNotAllowed, "Method Not Allowed 😥")
 		return

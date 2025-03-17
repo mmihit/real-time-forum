@@ -3,17 +3,21 @@ package db
 func (db *Database) CreateAllTablesInDatabase() []string {
 
 	TableUsers := `
-			 -- DROP TABLE IF EXISTS users;
-			 -- DROP TABLE IF EXISTS posts;
-			 -- DROP TABLE IF EXISTS comments;
-			 -- DROP TABLE IF EXISTS categories;
-			 -- DROP TABLE IF EXISTS likes; 
-			 -- DROP TABLE IF EXISTS post_categories;
-			 -- DROP TABLE IF EXISTS categories;
+			 --DROP TABLE IF EXISTS users;
+			 --DROP TABLE IF EXISTS posts;
+			 --DROP TABLE IF EXISTS comments;
+			 --DROP TABLE IF EXISTS categories;
+			 --DROP TABLE IF EXISTS likes; 
+			 --DROP TABLE IF EXISTS post_categories;
+			 --DROP TABLE IF EXISTS categories;
 
 			CREATE TABLE IF NOT EXISTS users (
     				id INTEGER PRIMARY KEY AUTOINCREMENT,
     				username TEXT NOT NULL,
+					age	INTEGER NOT NULL,
+					gender TEXT NOT NULL,
+					firstname TEXT NOT NULL,
+					lastname TEXT NOT NULL,
     				email TEXT NOT NULL,
     				password TEXT NOT NULL,
 					token TEXT 

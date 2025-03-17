@@ -8,7 +8,7 @@ import (
 	"forum/internal/db"
 )
 
-type postData struct {
+type PostData struct {
 	Post     db.Post
 	Id       string
 	UserName string

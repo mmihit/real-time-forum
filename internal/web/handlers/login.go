@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"forum/helpers"
-	"forum/internal/db"
 
 	"github.com/google/uuid"
 )
@@ -17,8 +16,12 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		helpers.ExecuteTmpl(w, "login.html", 200, "", nil)
 		return
 	} else if r.Method == http.MethodPost {
-		var user db.User
-		err := json.NewDecoder(r.Body).Decode(&user)
+		type Slogin struct {
+			Login    string `json:"email,omitempty"`
+			Password string `json:"password,omitempty"`
+		}
+		var login Slogin
+		err := json.NewDecoder(r.Body).Decode(&login)
 		defer r.Body.Close()
 
 		if err != nil {
@@ -26,9 +29,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		id, err := h.DB.Authenticate(
-			user.Email, user.Password,
-		)
+		id, err := h.DB.Authenticate(login.Login, login.Password,)
 		if err != nil {
 			if err == sql.ErrNoRows || strings.Contains(err.Error(), "hashedPassword") {
 				helpers.JsonResponse(w, http.StatusConflict, "Email or Password is invalid 🧐")

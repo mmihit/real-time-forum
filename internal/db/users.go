@@ -1,29 +1,32 @@
 package db
 
 import (
-	
 	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
-	Id       int64             `json:"id"`
-	UserName string            `json:"name"`
-	Email    string            `json:"email,omitempty"`
-	Password string            `json:"password,omitempty"`
-	Token    string            `json:"-"`
-	Posts    []*Post           `json:"posts,omitempty"`
-	Errors   map[string]string `json:"-,omitempty"`
+	Id        int64             `json:"id"`
+	UserName  string            `json:"name"`
+	Age		  int				`json:"age"`
+	Gender	  string			`json:"gender"`
+	FirstName string			`json:"firstName"`
+	LastName  string			`json:"lastName"`
+	Email     string            `json:"email,omitempty"`
+	Password  string            `json:"password,omitempty"`
+	Token     string            `json:"-"`
+	Posts     []*Post              `json:"posts,omitempty"`
+	Errors    map[string]string `json:"-,omitempty"`
 	Reactions map[string][]int `json:"reactions,omitempty"`
 }
 
-func (d *Database) InsertUser(users map[string]*User, name, email, Password string) error {
+func (d *Database) InsertUser(users map[string]*User, name, gender string ,firstname, lastname string ,email, Password string, age int) error {
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(Password), 12) // 2¹² times
 	if err != nil {
 		return err
 	}
 
-	expression := `INSERT INTO users (username, email, password)
-	VALUES (?, ?, ?)`
+	expression := `INSERT INTO users (username, gender, firstname, lastname, email, password, age)
+	VALUES (?, ?, ?, ?, ?, ?, ?)`
 
 	stmnt, err := d.db.Prepare(expression)
 	if err != nil {
@@ -32,7 +35,7 @@ func (d *Database) InsertUser(users map[string]*User, name, email, Password stri
 
 	defer stmnt.Close()
 
-	row, err := stmnt.Exec(name, email, passwordHash)
+	row, err := stmnt.Exec(name, gender, firstname, lastname, email, passwordHash, age)
 	if err != nil {
 		return err
 	}
@@ -54,8 +57,8 @@ func (d *Database) Authenticate(email, Password string) (int, error) {
 	var id int
 	var passwordHash []byte
 
-	expression := `SELECT id, password From users WHERE email = ?`
-	row := d.db.QueryRow(expression, email)
+	expression := `SELECT id, password From users WHERE email = ? OR username = ?`
+	row := d.db.QueryRow(expression, email, email)
 	err := row.Scan(&id, &passwordHash)
 	if err != nil {
 		return 0, err
