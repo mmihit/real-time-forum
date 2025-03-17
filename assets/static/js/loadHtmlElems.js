@@ -1,22 +1,19 @@
-// Remove dynamic event listeners by replacing containers with clones (which have no attached listeners)
 function removeDynamicEventListeners() {
-    // Reset the container where the dynamic HTML is loaded.
     const defaultHtml = document.getElementById("defaultHtml");
     if (defaultHtml) {
-        // Create a shallow clone (without children or event listeners)
+
         const newDefaultHtml = document.createElement("div");
         newDefaultHtml.id = "defaultHtml";
-        // Replace the old container with the new one
         defaultHtml.parentNode.replaceChild(newDefaultHtml, defaultHtml);
     }
 
-    // Reset the container for dynamically injected scripts.
     const dynamicScript = document.getElementById("dyanamicScript");
     if (dynamicScript) {
         const newDynamicScript = document.createElement("div");
         newDynamicScript.id = "dyanamicScript";
         dynamicScript.parentNode.replaceChild(newDynamicScript, dynamicScript);
     }
+
 }
 
 function applyPermissionDenied() {
@@ -37,8 +34,6 @@ function applyPermissionDenied() {
             });
         }
     });
-
-    // console.log("Permission denied restrictions applied");
 }
 
 const fetchApi = async (url) => {
@@ -78,21 +73,6 @@ function addStylesheet(href, type = "text/css") {
 }
 
 async function LoginContent() {
-    // Make a request to set the backend state correctly
-    // if (isLogout) {
-    //     console.log("oui")
-    //     try {
-    //         await fetch("/logout", {
-    //             method: "GET",
-    //             headers: { 'Content-Type': 'application/json' },
-    //             cache: "no-cache"
-    //         });
-    //     } catch (error) {
-    //         console.error("Error fetching login endpoint:", error);
-    //     }
-    // }
-
-
     const html = document.getElementById("defaultHtml");
 
     const htmlTemp = `
@@ -121,34 +101,20 @@ async function LoginContent() {
 
     html.innerHTML = htmlTemp;
 
-    // Clear any previous dynamic script content
     const container = document.getElementById("dyanamicScript");
     if (container) container.innerHTML = '';
 
-    // Create and append the script module for login functionality
     const scriptModule = document.createElement('script');
     scriptModule.type = 'module';
     scriptModule.src = "/static/js/login.js";
     container.appendChild(scriptModule);
 
-    // Update stylesheets
     removeAllStylesheets();
     addStylesheet("/static/css/styles.css");
     addStylesheet("/static/css/alert.css");
 }
 
 async function RegisterContent() {
-    // Make a request to set the backend state correctly
-    // try {
-    //     await fetch("/register", {
-    //         method: "GET",
-    //         headers: { 'Content-Type': 'application/json' },
-    //         cache: "no-cache"
-    //     });
-    // } catch (error) {
-    //     console.error("Error fetching register endpoint:", error);
-    // }
-
     const html = document.getElementById("defaultHtml");
 
     const htmlTemp = `
@@ -215,7 +181,6 @@ async function RegisterContent() {
     scriptModule.src = "/static/js/register.js";
     container.appendChild(scriptModule);
 
-    // Update stylesheets
     removeAllStylesheets();
     addStylesheet("/static/css/styles.css");
     addStylesheet("/static/css/alert.css");
@@ -224,7 +189,6 @@ async function RegisterContent() {
 async function HomeContent() {
     const homeData = await fetchApi(`/api/params/Home?_=${new Date().getTime()}`);
     const username = homeData.username;
-    // console.log(username)
     const html = document.getElementById("defaultHtml");
 
     let htmlTemp = `  
@@ -313,11 +277,9 @@ async function HomeContent() {
           </div>
       </div>`;
 
-    // Clear any previous dynamic script content
     const container = document.getElementById("dyanamicScript");
     if (container) container.innerHTML = '';
 
-    // Create and append the script module for home page functionality
     const scriptModule = document.createElement('script');
     scriptModule.type = 'module';
     scriptModule.textContent = `
@@ -331,7 +293,6 @@ async function HomeContent() {
     `;
     container.appendChild(scriptModule);
 
-    // Update stylesheets
     removeAllStylesheets();
     addStylesheet("/static/css/home.css");
     addStylesheet("/static/css/alert.css");
@@ -485,7 +446,6 @@ async function LoadContent(endpoint) {
     console.log("url", uniqueUrl);
 
     try {
-        // Await the GET request so the backend receives it and updates h.Api.Params
         await fetch(uniqueUrl, {
             method: "GET",
             headers: { 'Content-Type': 'application/json' },
@@ -495,14 +455,8 @@ async function LoadContent(endpoint) {
         console.error("Error fetching endpoint:", error);
     }
 
-    // If we're on login or register page after logout, 
-    // make sure we can't go back to authenticated pages
-    if (endpoint === "/login" || endpoint === "/register") {
-        // Clear any stored session info in browser
-        removeDynamicEventListeners();
-    }
+    removeDynamicEventListeners();
 
-    // Now load the appropriate content once the backend has updated its state
     if (endpoint === "/" || !endpoint) {
         if (await HomeContent())
             setTimeout(applyPermissionDenied, 100);
@@ -514,11 +468,9 @@ async function LoadContent(endpoint) {
     } else if (endpoint === "/register") {
         await RegisterContent();
     }
-    // We handle logout separately in the navigateTo function
 }
 
 document.addEventListener('click', (e) => {
-    // Intercept internal link clicks
     const link = e.target.closest('a');
     if (link && link.getAttribute('href').startsWith('/') && !link.getAttribute('target')) {
         e.preventDefault();
@@ -526,5 +478,4 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// Initial load based on current path
 LoadContent(window.location.pathname);

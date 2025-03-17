@@ -1,10 +1,8 @@
 import { showAlert } from "/static/js/alert.js";
 import { navigateTo } from "/static/js/loadHtmlElems.js";
 
-// const form = document.getElementById('registerForm');
-
 document.addEventListener('submit', async (event) => {
-    if (event.target.id === 'registerForm') { // التأكد من أن الحدث مرتبط بالفورم الصحيح
+    if (event.target.id === 'registerForm') {
         event.preventDefault();
 
         const nickname = document.getElementById('nickname').value;
