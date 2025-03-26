@@ -1,20 +1,35 @@
-function removeDynamicEventListeners() {
-    const defaultHtml = document.getElementById("defaultHtml");
-    if (defaultHtml) {
+window.appRegistry = {
+    
+    eventListeners: [],
 
-        const newDefaultHtml = document.createElement("div");
-        newDefaultHtml.id = "defaultHtml";
-        defaultHtml.parentNode.replaceChild(newDefaultHtml, defaultHtml);
+
+
+    registerEventListener: function(element, event, callback) {
+        if (element) {
+            element.addEventListener(event, callback);
+            this.eventListeners.push({ element, event, callback });
+            return callback;
+        }
+    },
+
+    cleanup: function() {
+        // Remove all event listeners
+        this.eventListeners.forEach(({ element, event, callback }) => {
+            console.log('remove event', element, event)
+            element.removeEventListener(event, callback);
+        });
+        this.eventListeners = [];
+
+        // // Remove all stored variables
+        // Object.keys(this.variables).forEach(key => {
+        //     this.variables[key] = null; // Clear reference
+        // });
+
+        // this.variables = {}; // Reset object
+
+        console.log('Registry cleaned up');
     }
-
-    const dynamicScript = document.getElementById("dyanamicScript");
-    if (dynamicScript) {
-        const newDynamicScript = document.createElement("div");
-        newDynamicScript.id = "dyanamicScript";
-        dynamicScript.parentNode.replaceChild(newDynamicScript, dynamicScript);
-    }
-
-}
+};
 
 function applyPermissionDenied() {
     const btns = [
@@ -207,7 +222,8 @@ async function HomeContent() {
           <button class="dropdown-button">${username} <i class="fa fa-caret-down" aria-hidden="true"></i></button>
           <div class="dropdown-menu">
             <a href="/logout" alt="logout" id="logout-btn" title="Logout">Logout</a>
-            <a href="/posts/create" alt="create post" id="create-post-btn"> + Create</a>
+            <a alt="create post" id="create-post-btn"> + Create</a>
+            <a href="/messenger" alt="create post" id="create-post-btn"> Messenger</a>
           </div>`;
     } else {
         htmlTemp += `      
@@ -436,6 +452,77 @@ async function PostContent() {
 
 }
 
+function MessengerContent() {
+    // removeDynamicEventListeners()
+    const html = document.getElementById("defaultHtml");
+
+    let htmlTemp = `<div id="customAlert"></div>`;
+
+    htmlTemp += `
+        <header class="header">
+            <div class="site-title">
+                <i class="fas fa-comments"></i>
+                <a href="/" alt="home">Forum Chat</a>
+            </div>
+            <div class="dropdown">
+                <button class="dropdown-button"><i class="fa fa-caret-down" aria-hidden="true"></i></button>
+                <div class="dropdown-menu">
+                    <a href="/logout" alt="logout" id="logout-btn" title="Logout">Logout</a>
+                </div>
+            </div>
+        </header>
+
+        <div id="body">
+            // <div id="navbarContainer"></div>
+            <div class="container">
+                    <!-- Back to Home -->
+                <div class="back-home">
+                        <a href="/" class="back-link">&larr; Back to Home</a>
+                </div>
+                <div class="main"   >
+                    <div class="users-box">
+                        <div class="top-bar">
+                            <h2>Chats</h2>
+                            <span class="search-icon">🔍</span>
+                        </div>
+                        <div class="search-box">
+                            <input type="text" id="search-user" placeholder="Search user...">
+                            <span class="remove-icon">❌</span>
+                        </div>
+                        
+                        <ul class="chat-list" id="chat-list">
+                        </ul>
+                    </div>
+                    <div class="chat-container">
+                        <div class="chat-header" id="chat-header">Select a chat</div>
+                        <div class="messages" id="messages"></div>
+                        <div class="input-group">
+                            <input type="text" id="message" placeholder="Type a message..." readonly>
+                            <button id="send-button">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>`
+
+    html.innerHTML = htmlTemp
+
+
+    const container = document.getElementById("dyanamicScript");
+    if (container) container.innerHTML = '';
+
+    const scriptModule = document.createElement('script');
+    // scriptModule.type = 'module';
+    scriptModule.src = "/static/js/messenger.js";
+    container.appendChild(scriptModule);
+
+
+
+    removeAllStylesheets();
+    addStylesheet("/static/css/alert.css");
+    addStylesheet("/static/css/messenger.css");
+}
+
 export function navigateTo(endpoint) {
     history.pushState(null, null, endpoint);
     LoadContent(endpoint).catch(error => console.error("Error loading content:", error));
@@ -455,7 +542,9 @@ async function LoadContent(endpoint) {
         console.error("Error fetching endpoint:", error);
     }
 
-    removeDynamicEventListeners();
+    window.appRegistry.cleanup();
+
+    // removeDynamicEventListeners();
 
     if (endpoint === "/" || !endpoint) {
         if (await HomeContent())
@@ -467,6 +556,8 @@ async function LoadContent(endpoint) {
         await LoginContent();
     } else if (endpoint === "/register") {
         await RegisterContent();
+    } else if (endpoint === "/messenger") {
+        MessengerContent();
     }
 }
 

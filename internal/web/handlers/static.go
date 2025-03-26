@@ -19,6 +19,7 @@ func (h *Handler) Static(w http.ResponseWriter, r *http.Request) {
 		"css/alert.css":          true,
 		"css/comments.css":       true,
 		"css/error.css":          true,
+		"css/messenger.css":      true,
 		"js/register.js":         true,
 		"js/login.js":            true,
 		"js/permissionDenied.js": true,
@@ -28,6 +29,7 @@ func (h *Handler) Static(w http.ResponseWriter, r *http.Request) {
 		"js/reaction.js":         true,
 		"js/alert.js":            true,
 		"js/loadHtmlElems.js":    true,
+		"js/messenger.js":        true,
 		"img/icon.png":           true,
 	}
 	path := r.URL.Path[len("/static/"):]

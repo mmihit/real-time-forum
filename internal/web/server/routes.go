@@ -14,6 +14,7 @@ func (a *App) Routes() http.Handler {
 	mux.HandleFunc("/logout", a.Handlers.Logout)                                         //
 	mux.Handle("/create/post", a.Handlers.AccessMiddleware(a.Handlers.CreatePost))       //
 	mux.Handle("/create/comment", a.Handlers.AccessMiddleware(a.Handlers.CreateComment)) //
+	mux.Handle("/messenger", a.Handlers.AccessMiddleware(a.Handlers.Messenger))          //
 	mux.HandleFunc("/post", a.Handlers.DisplayPostWithComments)                          //
 	mux.HandleFunc("/comment/reaction/", a.Handlers.CommentReactions)                    //
 	mux.HandleFunc("/post/reaction/", a.Handlers.PostReactions)                          //
@@ -24,6 +25,7 @@ func (a *App) Routes() http.Handler {
 	mux.HandleFunc("/api/users", a.Api.GetUsers)       //
 	mux.HandleFunc("/api/users/", a.Api.GetUser)       //
 	mux.HandleFunc("/api/params/", a.Api.SendRealTimeTools)
+	mux.HandleFunc("/ws", a.Handlers.WsHandler)
 
 	return mux
 }
