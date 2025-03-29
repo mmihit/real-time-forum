@@ -10,6 +10,7 @@ func (db *Database) CreateAllTablesInDatabase() []string {
 			 --DROP TABLE IF EXISTS likes; 
 			 --DROP TABLE IF EXISTS post_categories;
 			 --DROP TABLE IF EXISTS categories;
+			 --DROP TABLE IF EXISTS chats;
 
 			CREATE TABLE IF NOT EXISTS users (
     				id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -81,6 +82,19 @@ func (db *Database) CreateAllTablesInDatabase() []string {
 			);
 	`
 
+	TableChats := `
+			CREATE TABLE chats (
+    				id INTEGER PRIMARY KEY AUTOINCREMENT,
+    				sender_id INTEGER NOT NULL,
+    				receiver_id INTEGER NOT NULL,
+    				message TEXT NOT NULL,
+    				create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    				FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+    				FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
+			);
+
+	`
+
 	TableInsertCategories := `
 			INSERT OR IGNORE INTO
     			categories (category)
@@ -92,7 +106,7 @@ func (db *Database) CreateAllTablesInDatabase() []string {
 					('food')
 			`
 
-	return []string{TableUsers, TableCategories, TablePosts, TablePostsCategories, TableLikes, TableComments, TableInsertCategories}
+	return []string{TableUsers, TableCategories, TablePosts, TablePostsCategories, TableLikes, TableComments, TableChats, TableInsertCategories}
 }
 
 func (db *Database) ExecuteAllTableInDataBase() error {

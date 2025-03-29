@@ -26,6 +26,7 @@ func (a *App) Routes() http.Handler {
 	mux.HandleFunc("/api/users/", a.Api.GetUser)       //
 	mux.HandleFunc("/api/params/", a.Api.SendRealTimeTools)
 	mux.HandleFunc("/ws", a.Handlers.WsHandler)
+	mux.HandleFunc("/api/chat-history", a.Handlers.GetChatHistoryHandler)
 
 	return mux
 }
