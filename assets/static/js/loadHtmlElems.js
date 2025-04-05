@@ -1,10 +1,10 @@
 window.appRegistry = {
-    
+
     eventListeners: [],
 
 
 
-    registerEventListener: function(element, event, callback) {
+    registerEventListener: function (element, event, callback) {
         if (element) {
             element.addEventListener(event, callback);
             this.eventListeners.push({ element, event, callback });
@@ -12,7 +12,7 @@ window.appRegistry = {
         }
     },
 
-    cleanup: function() {
+    cleanup: function () {
         // Remove all event listeners
         this.eventListeners.forEach(({ element, event, callback }) => {
             console.log('remove event', element, event)
@@ -30,6 +30,12 @@ window.appRegistry = {
         console.log('Registry cleaned up');
     }
 };
+
+
+async function insertUserInCach() {
+    var UserResponse = await fetchApi("/LoggedUser")
+    UserResponse ? window.loggedUser = UserResponse.message : window.loggedUser = ""
+}
 
 function applyPermissionDenied() {
     const btns = [
@@ -51,7 +57,7 @@ function applyPermissionDenied() {
     });
 }
 
-const fetchApi = async (url) => {
+async function fetchApi(url) {
     try {
         const response = await fetch(url, {
             method: 'GET',
@@ -240,6 +246,10 @@ async function HomeContent() {
       <div id="body">
           <!-- main -->
           <main class="main">
+                <div class="card online-box">
+                    <h3 class="title"> Online Users </h3>
+                    <div class="online-users-list" id="online-users-list"></div>
+                </div>
               <div class="card">
                   <button id="All-Posts">All Posts</button>
                   <button id="Post-Created">My Posts</button>
@@ -312,6 +322,7 @@ async function HomeContent() {
     removeAllStylesheets();
     addStylesheet("/static/css/home.css");
     addStylesheet("/static/css/alert.css");
+    addStylesheet("/static/css/online_users.css")
 
     html.innerHTML = htmlTemp;
 
@@ -457,6 +468,7 @@ function MessengerContent() {
     const html = document.getElementById("defaultHtml");
 
     let htmlTemp = `<div id="customAlert"></div>`;
+    console.log(window.loggedUser)
 
     htmlTemp += `
         <header class="header">
@@ -465,7 +477,7 @@ function MessengerContent() {
                 <a href="/" alt="home">Forum Chat</a>
             </div>
             <div class="dropdown">
-                <button class="dropdown-button"><i class="fa fa-caret-down" aria-hidden="true"></i></button>
+                <button class="dropdown-button"><i class="fa fa-caret-down" aria-hidden="true"></i> ${window.loggedUser}</button>
                 <div class="dropdown-menu">
                     <a href="/logout" alt="logout" id="logout-btn" title="Logout">Logout</a>
                 </div>
@@ -479,7 +491,11 @@ function MessengerContent() {
                 <div class="back-home">
                         <a href="/" class="back-link">&larr; Back to Home</a>
                 </div>
-                <div class="main"   >
+                <div class="card online-box">
+                    <h3 class="title">Online Users</h3>
+                    <div id="online-users-list" class="online-users-list"></div>
+                </div>
+                <div class="main">
                     <div class="users-box">
                         <div class="top-bar">
                             <h2>Chats</h2>
@@ -495,7 +511,9 @@ function MessengerContent() {
                     </div>
                     <div class="chat-container">
                         <div class="chat-header" id="chat-header">Select a chat</div>
-                        <div class="messages" id="messages"></div>
+                        <div class="messages" id="messages">
+                            
+                        </div>
                         <div class="input-group">
                             <input type="text" id="message" placeholder="Type a message..." readonly>
                             <button id="send-button">Send</button>
@@ -521,6 +539,7 @@ function MessengerContent() {
     removeAllStylesheets();
     addStylesheet("/static/css/alert.css");
     addStylesheet("/static/css/messenger.css");
+    addStylesheet("/static/css/online_users.css")
 }
 
 export function navigateTo(endpoint) {
@@ -544,21 +563,37 @@ async function LoadContent(endpoint) {
 
     window.appRegistry.cleanup();
 
-    // removeDynamicEventListeners();
-
     if (endpoint === "/" || !endpoint) {
         if (await HomeContent())
             setTimeout(applyPermissionDenied, 100);
+        if (window.WebSocketManager) {
+            createOnlineUsers()
+        }
     } else if (endpoint.includes("/post")) {
         if (await PostContent())
             setTimeout(applyPermissionDenied, 100);
     } else if (endpoint === "/login" || endpoint === "/logout") {
         await LoginContent();
+        await insertUserInCach();
+        if (window.WebSocketManager.connection.readyState === WebSocket.OPEN) {
+            window.WebSocketManager.connection.close()
+        }
     } else if (endpoint === "/register") {
         await RegisterContent();
+        await insertUserInCach();
+        if (window.WebSocketManager.connection.readyState === WebSocket.OPEN) {
+            window.WebSocketManager.connection.close()
+        }
     } else if (endpoint === "/messenger") {
         MessengerContent();
+        if (window.WebSocketManager) {
+            createOnlineUsers()
+        }
     }
+
+    console.log(endpoint, window.loggedUser)
+
+
 }
 
 document.addEventListener('click', (e) => {
@@ -569,4 +604,55 @@ document.addEventListener('click', (e) => {
     }
 });
 
+// function connect() {
+//     const wsUrl = `ws://${window.location.host}/ws`;
+//     window.ws = new WebSocket(wsUrl);
+//     window.ws.onpen = () => { }
+//     window.ws.onmessage = (event) => {
+//         var chatData = JSON.parse(event.data)
+//         alert(`${chatData.sender} send a message`)
+//     }
+//     window.ws.onclose = (e) => {
+//         console.log("connection closed", e)
+//     }
+// }
+
+window.addEventListener('popstate', () => {
+    LoadContent(window.location.pathname);
+});
+
+await insertUserInCach()
 LoadContent(window.location.pathname);
+// Initialize WebSocket connection if user is logged in
+if (window.loggedUser && window.WebSocketManager) {
+    window.WebSocketManager.initializeOnlineUsersHandler(createOnlineUsers)
+    window.WebSocketManager.connect();
+}
+
+
+function createOnlineUsers(users) {
+
+    // Example: Update a sidebar with online users
+    const onlineUsersElement = document.getElementById('online-users-list');
+    if (onlineUsersElement) {
+        onlineUsersElement.innerHTML = '';
+        const onlineUsers = (users === undefined) ? window.WebSocketManager.Users : users
+        console.log((!undefined), window.WebSocketManager.Users)
+        console.log((!!undefined), users)
+        if (onlineUsers) {
+            onlineUsers.forEach(user => {
+                const userElement = document.createElement('button');
+                userElement.className = 'online-user';
+                userElement.textContent = user;
+                onlineUsersElement.appendChild(userElement);
+            });
+        } else {
+            onlineUsersElement.innerHTML = ''
+        }
+    }
+}
+
+// // Add this script element to include the WebSocketManager
+// const scriptElement = document.createElement('script');
+// scriptElement.src = "static/js/ws-manager.js"; // Save the first artifact as this file
+// document.head.appendChild(scriptElement);

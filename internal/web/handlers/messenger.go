@@ -24,6 +24,11 @@ func (h *Handler) Messenger(w http.ResponseWriter, r *http.Request) {
 		var SearchingInputRequest SearchingInputRequest
 		var SearchingInputResponse SearchingInputResponse
 
+		currentUser, err := helpers.CheckCookie(r, h.DB)
+		if err != nil {
+			helpers.JsonResponse(w, http.StatusUnauthorized, "Please login")
+		}
+
 		defer r.Body.Close()
 		if err := json.NewDecoder(r.Body).Decode(&SearchingInputRequest); err != nil {
 			helpers.JsonResponse(w, http.StatusBadRequest, "Bad Request: Error decoding JSON.")
@@ -32,7 +37,7 @@ func (h *Handler) Messenger(w http.ResponseWriter, r *http.Request) {
 
 		if len(SearchingInputRequest.Input) > 0 && len(SearchingInputRequest.Input) < 40 && SearchingInputRequest.Index >= 0 {
 			var err error
-			SearchingInputResponse.Users, SearchingInputResponse.IsDone, err = h.DB.SearchUsersInDb(SearchingInputRequest.Input, SearchingInputRequest.Index)
+			SearchingInputResponse.Users, SearchingInputResponse.IsDone, err = h.DB.SearchUsersInDb(SearchingInputRequest.Input, currentUser, SearchingInputRequest.Index)
 			if err != nil {
 				helpers.JsonResponse(w, http.StatusInternalServerError, "Internal error: Oops! Internal Server Error.")
 				return

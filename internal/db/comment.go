@@ -19,7 +19,7 @@ func (d *Database) InsertComment(content, creationDate, userName string, users m
 	userId := users[userName].Id
 
 	InsertComment := `INSERT INTO comments(content, user_id, post_id, create_date) VALUES(?, ?, ?, DATETIME('now'));`
-	stmnt, err := d.db.Prepare(InsertComment)
+	stmnt, err := d.Db.Prepare(InsertComment)
 	if err != nil {
 		return &Comment{}, err
 	}
@@ -59,7 +59,7 @@ func (d *Database) GetAllCommentsFromDataBase(Comments map[int][]*Comment) error
     LEFT JOIN likes ON comments.id = likes.comment_id
     `
 
-	rows, err := d.db.Query(QueryOfSelectAllComments)
+	rows, err := d.Db.Query(QueryOfSelectAllComments)
 	if err != nil {
 		return err
 	}

@@ -83,7 +83,7 @@ func (db *Database) CreateAllTablesInDatabase() []string {
 	`
 
 	TableChats := `
-			CREATE TABLE chats (
+			CREATE TABLE IF NOT EXISTS chats (
     				id INTEGER PRIMARY KEY AUTOINCREMENT,
     				sender_id INTEGER NOT NULL,
     				receiver_id INTEGER NOT NULL,
@@ -92,7 +92,6 @@ func (db *Database) CreateAllTablesInDatabase() []string {
     				FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
     				FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
 			);
-
 	`
 
 	TableInsertCategories := `
@@ -112,7 +111,7 @@ func (db *Database) CreateAllTablesInDatabase() []string {
 func (db *Database) ExecuteAllTableInDataBase() error {
 
 	for _, Table := range db.CreateAllTablesInDatabase() {
-		_, err := db.db.Exec(Table)
+		_, err := db.Db.Exec(Table)
 		if err != nil {
 			return err
 		}

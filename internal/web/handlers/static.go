@@ -18,6 +18,7 @@ func (h *Handler) Static(w http.ResponseWriter, r *http.Request) {
 		"css/styles.css":         true,
 		"css/alert.css":          true,
 		"css/comments.css":       true,
+		"css/online_users.css":   true,
 		"css/error.css":          true,
 		"css/messenger.css":      true,
 		"js/register.js":         true,
@@ -30,6 +31,7 @@ func (h *Handler) Static(w http.ResponseWriter, r *http.Request) {
 		"js/alert.js":            true,
 		"js/loadHtmlElems.js":    true,
 		"js/messenger.js":        true,
+		"js/ws-manager.js":       true,
 		"img/icon.png":           true,
 	}
 	path := r.URL.Path[len("/static/"):]

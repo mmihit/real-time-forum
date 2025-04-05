@@ -21,7 +21,7 @@ type Post struct {
 
 func (d *Database) InsertPost(userId int64, title, content, creationDate string) (int64, error) {
 	insertPost := `INSERT INTO posts(user_id, title, content, creation_date) VALUES(?, ?, ?, DATETIME('now'));`
-	stmnt, err := d.db.Prepare(insertPost)
+	stmnt, err := d.Db.Prepare(insertPost)
 	if err != nil {
 		return 0, err
 	}
@@ -41,7 +41,7 @@ func (d *Database) InsertPost(userId int64, title, content, creationDate string)
 func (d *Database) InsertCategories(postId int, categories []string) error {
 	for _, category := range categories {
 		insertCategories := `INSERT INTO post_categories(post_id, category_id) VALUES(?,?)`
-		stmnt, err := d.db.Prepare(insertCategories)
+		stmnt, err := d.Db.Prepare(insertCategories)
 		if err != nil {
 			return err
 		}
@@ -57,7 +57,7 @@ func (d *Database) SelectCategories(categories []string) ([]string, error) {
 	var categoriesIDs []string
 	insertCategories := `SELECT * FROM categories`
 
-	rows, err := d.db.Query(insertCategories)
+	rows, err := d.Db.Query(insertCategories)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +130,7 @@ FROM
 ORDER BY
     posts.creation_date DESC`
 
-	rows, err := d.db.Query(selectUsers)
+	rows, err := d.Db.Query(selectUsers)
 	if err != nil {
 		return err
 	}

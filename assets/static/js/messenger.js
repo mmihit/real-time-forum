@@ -6,17 +6,19 @@
     let chatList = document.getElementById("chat-list");
     let chatHeader = document.getElementById("chat-header")
     const sendBtn = document.getElementById("send-button");
-    let isSelected = false;
+    let messageDisplay = document.getElementById("messages");
+
     const requestBody = {
         input: searchUser.value,
         index: 0
     }
-    let ws;
-    let messageDisplay = document.getElementById("messages");
-    const defaultListOfUsers = `
-    <li data-user="John Doe">John Doe</li>
-    <li data-user="Jane Smith">Jane Smith</li>
-    <li data-user="Michael Brown">Michael Brown</li>`;
+
+    const selectedUser = {
+        receiver: null,
+        index: 0,
+        isSelected: false,
+        page: 10
+    }
 
     function attachUserListeners() {
         const usersInChatBox = document.querySelectorAll("#chat-list > li");
@@ -26,7 +28,6 @@
         });
     }
 
-    chatList.innerHTML = defaultListOfUsers;
     attachUserListeners();
 
     function debounce(func, wait) {
@@ -58,7 +59,7 @@
         let responseData;
 
         if (requestBody.input === searchUser.value) {
-            requestBody.index++
+            ++requestBody.index
         } else {
             requestBody.index = 0
             requestBody.input = searchUser.value
@@ -82,11 +83,15 @@
     }
 
     function selectChat(e) {
-        const selectedUser = e.target.dataset.user;
-        isSelected = true
-        chatHeader.innerHTML = selectedUser
+        messageDisplay.innerHTML = ""
+        selectedUser.receiver = e.target.dataset.user;
+        selectedUser.isSelected = true
+        selectedUser.index = 0
+        chatHeader.innerHTML = selectedUser.receiver
+        chatList.innerHTML = ""
+        searchUser.value = ""
         document.getElementById('message').removeAttribute('readonly');
-        // loadingChat(selectedUser)
+        loadingChat()
         console.log("Selected user:", selectedUser);
     }
 
@@ -96,42 +101,105 @@
 
     function hideSearchBox() {
         searchBox.classList.remove('visible');
-        chatList.innerHTML = defaultListOfUsers;
+        chatList.innerHTML = "";
         attachUserListeners();
     }
 
-    function connect() {
-        const wsUrl = `ws://${window.location.host}/ws`;
-        ws = new WebSocket(wsUrl);
+    function createMessage(message, action) {
+        const now = new Date();
+        const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const day = now.toLocaleDateString([], { weekday: 'short' });
 
-        ws.onopen = () => console.log("Connected to WebSocket server");
-        ws.onmessage = (event) => {
-            messageDisplay.innerHTML += `<p>${event.data}</p>`;
-        };
-        ws.onclose = (event) => {
-            console.log("WebSocket connection closed:", event);
-            setTimeout(connect, 1000);
-        };
-        ws.onerror = (error) => {
-            console.error("WebSocket error:", error);
-        };
+        // Add message to display with timestamp
+        messageDisplay.innerHTML += `<div class="message-box ${action}">
+                <div class="message-body">${message}</div>
+                <p class="message-info">${day}, ${time}</p>
+            </div>`;
+
+        // Scroll to bottom
+        messageDisplay.scrollTop = messageDisplay.scrollHeight;
+    }
+
+    // Message handler for the Messenger page
+    function handleMessengerMessage(chatData) {
+        // Only process messages for the current chat
+        if ((chatData.sender === window.loggedUser && chatData.receiver === selectedUser.receiver) ||
+            (chatData.receiver === window.loggedUser && chatData.sender === selectedUser.receiver)) {
+            const action = chatData.sender === window.loggedUser ? "sent" : "received";
+            createMessage(chatData.message, action);
+        }
     }
 
     function sendMessage() {
         let input = document.getElementById("message");
-        let message = input.value;
-        if (isSelected) {
-            ws.send(message);
+        let messageInput = input.value.trim();
+
+        if (messageInput === "" || !selectedUser.isSelected) {
+            return;
+        }
+
+        const message = {
+            sender: window.loggedUser,
+            receiver: selectedUser.receiver,
+            message: messageInput
+        };
+
+        // Use the WebSocket manager to send the message
+        if (window.WebSocketManager && window.WebSocketManager.sendMessage(message)) {
             input.value = "";
+        }
+    }
+
+    async function loadingChat() {
+        ++selectedUser.index;
+        const responseData = await fetchChat();
+        console.log(responseData);
+
+        if (responseData && responseData.chats) {
+            responseData.chats.forEach((chat) => {
+                const flag = chat.sender == window.loggedUser ? "sent" : "received";
+                createMessage(chat.message, flag);
+            });
+
+            if (!responseData.hasMore) {
+                messageDisplay.innerHTML = `<p style="order:-10000000; text-align:center;">Start Chatting</p>` + messageDisplay.innerHTML;
+            }
+        }
+    }
+
+    async function fetchChat() {
+        try {
+            const response = await fetch("/api/load_messages", {
+                method: 'Post',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(selectedUser)
+            });
+
+            if (response.ok) {
+                return response.json();
+            }
+        } catch (error) {
+            console.log(error);
+            return { chats: [], hasMore: false };
         }
     }
 
     const debouncedPrint = debounce(userSearch, 500);
 
-    window.appRegistry.registerEventListener(searchIcon, 'click', searchIcon.addEventListener('click', displaySearchBox));
-    window.appRegistry.registerEventListener(removeIcon, 'click', removeIcon.addEventListener('click', hideSearchBox));
-    window.appRegistry.registerEventListener(searchUser, 'click', searchUser.addEventListener('input', debouncedPrint));
-    window.appRegistry.registerEventListener(sendBtn, 'click', sendBtn.addEventListener('click', sendMessage));
+    window.appRegistry.registerEventListener(searchIcon, 'click', displaySearchBox);
+    window.appRegistry.registerEventListener(removeIcon, 'click', hideSearchBox);
+    window.appRegistry.registerEventListener(searchUser, 'input', debouncedPrint);
+    window.appRegistry.registerEventListener(sendBtn, 'click', sendMessage);
 
-    connect();
-})()
+    // Register message handler for this page
+    if (window.WebSocketManager) {
+        window.WebSocketManager.registerMessageHandler(handleMessengerMessage);
+
+        // Clean up when navigating away
+        window.appRegistry.registerEventListener(window, 'beforeunload', function () {
+            window.WebSocketManager.removeMessageHandler(handleMessengerMessage);
+        });
+    }
+})();

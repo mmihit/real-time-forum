@@ -16,9 +16,11 @@ document.addEventListener('submit', async (event) => {
             headers: { 'Content-Type': "application/json" },
             body: JSON.stringify({ 'email': email, 'password': password })
         })
-            .then(response => {
+            .then(async response => {
                 if (response.ok) {
-                    response.json()
+                    response.json().then(data => {window.loggedUser = data.username;console.log("data",data.username)})
+                    console.log(window.loggedUser)
+                    window.WebSocketManager.connect()
                     navigateTo('/')
                 } else if (response.status === 409) {
                     return response.json().then(data => {

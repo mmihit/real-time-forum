@@ -15,7 +15,7 @@ type UserReaction struct {
 
 func (d *Database) InsertPostReactionInDB(userName string, userReaction UserReaction) error {
 	insertReaction := fmt.Sprintf(`INSERT INTO likes(username, post_id, comment_id, reaction) VALUES(?, ?, null,  "%s")`, userReaction.Reaction)
-	stmnt, err := d.db.Prepare(insertReaction)
+	stmnt, err := d.Db.Prepare(insertReaction)
 	if err != nil {
 		return err
 	}
@@ -35,7 +35,7 @@ func (d *Database) GetPostReactionFromDB(userName string, userReaction UserReact
 
 	selectPost := `SELECT reaction FROM likes WHERE post_id = ? AND username = ? AND comment_id IS NULL;`
 
-	row := d.db.QueryRow(selectPost, userReaction.PostId, userName)
+	row := d.Db.QueryRow(selectPost, userReaction.PostId, userName)
 	err := row.Scan(&postReaction)
 	if err != nil {
 		return "", err
@@ -46,7 +46,7 @@ func (d *Database) GetPostReactionFromDB(userName string, userReaction UserReact
 
 func (d *Database) UpdatePostReactionInDB(userName string, userReaction UserReaction) error {
 	expression := `UPDATE likes SET reaction = ? WHERE post_id = ? AND username = ? AND comment_id IS NULL;`
-	_, err := d.db.Exec(expression, userReaction.Reaction, userReaction.PostId, userName)
+	_, err := d.Db.Exec(expression, userReaction.Reaction, userReaction.PostId, userName)
 	if err != nil {
 		return err
 	}
@@ -56,7 +56,7 @@ func (d *Database) UpdatePostReactionInDB(userName string, userReaction UserReac
 
 func (d *Database) DeletePostReactionInDB(userName string, userReaction UserReaction) error {
 	expression := `DELETE FROM likes  WHERE post_id = ? AND username = ? AND comment_id IS NULL;`
-	_, err := d.db.Exec(expression, userReaction.PostId, userName)
+	_, err := d.Db.Exec(expression, userReaction.PostId, userName)
 	if err != nil {
 		return err
 	}

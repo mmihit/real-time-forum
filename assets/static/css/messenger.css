@@ -140,7 +140,7 @@ body {
 
 .main {
     display: flex;
-    height: 500px;
+    min-height: 500px;
 }
 
 .users-box {
@@ -218,6 +218,8 @@ body {
     display: flex;
     flex-direction: column;
     background: #fff;
+    max-width: 530px;
+    min-width: 350px;
 }
 
 .chat-header {
@@ -230,26 +232,78 @@ body {
 .messages {
     flex: 1;
     padding: 15px;
-    overflow-y: auto;
+    overflow-y: scroll;
     display: flex;
     flex-direction: column;
 }
 
-.message {
-    padding: 10px;
-    border-radius: 5px;
+/* General message styling */
+.message-box {
+    display: flex;
+    align-items: flex-end;
     margin: 5px 0;
-    max-width: 70%;
 }
 
-.sent {
-    align-self: flex-end;
-    background: #dcf8c6;
+
+
+.message-body {
+    background: blue;
+    padding: 10px 15px;
+    border-radius: 50px;
+    color: white;
+    /* min-width: 14%; */
+    display: inline-block;
 }
 
-.received {
-    align-self: flex-start;
-    background: #f1f0f0;
+.message-info {
+    display: inline-block;
+    font-size: .7rem;
+}
+
+.message-box.sent {
+    justify-content: flex-end;
+}
+
+/* If message is received, align left */
+.message-box.received {
+    justify-content: flex-start;
+}
+
+/* Message bubble */
+.message-body {
+    padding: 10px 15px;
+    border-radius: 18px;
+    color: white;
+    font-size: 14px;
+    max-width: 65%;
+    word-wrap: break-word;
+}
+
+/* Sent messages (user) */
+.sent .message-body {
+    background-color: #0084ff;
+    /* Messenger blue */
+    border-bottom-right-radius: 5px;
+}
+
+/* Received messages (other users) */
+.received .message-body {
+    background-color: #e4e6eb;
+    /* Light grey */
+    color: black;
+    border-bottom-left-radius: 5px;
+}
+
+/* Message info (timestamp) */
+.message-info {
+    font-size: 0.75rem;
+    color: gray;
+    margin-top: 2px;
+    display: block;
+}
+
+.sent .message-info {
+    order: -1;
 }
 
 .input-group {

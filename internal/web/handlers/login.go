@@ -29,7 +29,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		id, err := h.DB.Authenticate(login.Login, login.Password,)
+		id, userName, err := h.DB.Authenticate(login.Login, login.Password)
 		if err != nil {
 			if err == sql.ErrNoRows || strings.Contains(err.Error(), "hashedPassword") {
 				helpers.JsonResponse(w, http.StatusConflict, "Email or Password is invalid 🧐")
@@ -48,8 +48,9 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		}
 
 		helpers.AddCookie(w, token)
-		helpers.JsonResponse(w, http.StatusOK, "sign in succeful")
-
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]string{"message": "sign in succeful", "username": userName})
 	} else {
 		helpers.JsonResponse(w, http.StatusMethodNotAllowed, "Method Not Allowed 😥")
 		return

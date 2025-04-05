@@ -35,6 +35,8 @@ type Params struct {
 	} `json:"post"`
 }
 
+
+
 // https://medium.com/@oshankkumar/project-layout-of-golang-web-application-bae212d8f4b6
 
 func (api *Api) ApiHome(w http.ResponseWriter, r *http.Request) {

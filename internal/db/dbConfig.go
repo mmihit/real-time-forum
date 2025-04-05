@@ -7,7 +7,11 @@ import (
 )
 
 type Database struct {
-	db *sql.DB
+	Db *sql.DB
+}
+
+func (d *Database) CheckCookie() (any, any) {
+	panic("unimplemented")
 }
 
 func NewDatabase() (*Database, error) {
@@ -21,6 +25,6 @@ func NewDatabase() (*Database, error) {
 	}
 
 	return &Database{
-		db: db,
+		Db: db,
 	}, nil
 }
