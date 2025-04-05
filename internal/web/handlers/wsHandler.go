@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"forum/helpers"
+	"forum/internal/db"
 	"net/http"
 	"sync"
 
@@ -16,20 +17,20 @@ type Chat struct {
 	Message  string `json:"message"`
 }
 
-type Client struct {
-	Conn     *websocket.Conn
-	Username string
-}
-
-type OnlineUsers struct {
-	Type  string   `json:"type"`
-	Users []string `json:"users"`
+type OnlineUser struct {
+	Type  string           `json:"type"`
+	Users []db.OnlineUsers `json:"users"`
 }
 
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		return true
 	},
+}
+
+type Client struct {
+	Conn     *websocket.Conn
+	Username string
 }
 
 var (
@@ -139,6 +140,7 @@ func (h *Handler) handleMessage(chat Chat) {
 }
 
 func (h *Handler) broadcastOnlineUsers() {
+
 	// Get list of online users
 	mutex.Lock()
 	userList := make([]string, 0, len(clients))
@@ -151,6 +153,7 @@ func (h *Handler) broadcastOnlineUsers() {
 
 	// Broadcast to all connected clients
 	mutex.Lock()
+	var OnlineChatUsers []db.OnlineUsers
 	for username, client := range clients {
 		var onlineUsers []string
 		for _, user := range userList {
@@ -158,10 +161,14 @@ func (h *Handler) broadcastOnlineUsers() {
 				onlineUsers = append(onlineUsers, user)
 			}
 		}
-		
-		onlineUsersMsg := OnlineUsers{
+		var err error
+		OnlineChatUsers, err = h.DB.GetOnlineChatUsers(username, onlineUsers); if err != nil {
+			fmt.Printf("Error: %v\n", err)
+			return
+		}
+		onlineUsersMsg := OnlineUser{
 			Type:  "online_users",
-			Users: onlineUsers,
+			Users: OnlineChatUsers,
 		}
 
 		jsonMessage, err := json.Marshal(&onlineUsersMsg)

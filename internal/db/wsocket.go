@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+
 type Chat struct {
 	ID         int    `json:"Id"`
 	Sender     string `json:"sender"`
@@ -18,6 +19,13 @@ type LoadingChatResponse struct {
 	Chats   []Chat `json:"chats"`
 	HasMore bool   `json:"hasMore"`
 }
+
+type OnlineUsers struct {
+
+	UserName string `json:"userName"`
+	Status   string `json:"status"`
+}
+
 
 func (d *Database) GetIdOfSenderOrReciever(user string) (int, error) {
 
@@ -145,6 +153,74 @@ func (d *Database) GetChatHistory(sender, receiver string, page int, pageSize in
 	fmt.Println(Response.Chats)
 
 	return Response, nil
+}
+
+func IsExist(UserName string, onlineUsers []string) bool {
+
+	for _, User := range onlineUsers {
+		
+		if User == UserName {
+			return true
+		}
+	}
+	return false
+}
+
+func (d *Database) GetOnlineChatUsers(userName string, onlineUsers []string) ([]OnlineUsers, error) {
+
+	queryOfFetchingOnlineChatUsers := `  
+		SELECT DISTINCT
+            u.username
+        FROM users u
+        LEFT JOIN chats c ON (u.id = c.sender_id AND c.receiver_id = ?) 
+            OR (u.id = c.receiver_id AND c.sender_id = ?)
+        WHERE u.id != ?
+        ORDER BY 
+            CASE 
+                WHEN c.create_date IS NULL THEN 2
+                ELSE 1 
+            END,
+            c.create_date DESC,
+            u.username COLLATE NOCASE
+	`
+
+	senderID, err := d.GetIdOfSenderOrReciever(userName)
+	if err != nil {
+		return nil, fmt.Errorf("User not found: %w", err)
+	}
+
+	rows, err := d.Db.Query(queryOfFetchingOnlineChatUsers, senderID, senderID, senderID)
+	if err != nil {
+		return nil, fmt.Errorf("failed fetching online chat users from db: %w", err)
+	}
+
+	defer rows.Close()
+
+	var Users []OnlineUsers
+	var user OnlineUsers
+
+	for rows.Next() {
+
+		if err := rows.Scan(&user.UserName); err != nil {
+			return nil, fmt.Errorf("failed scanning chat history from db : %w", err)
+		}
+		
+		if IsExist(userName, onlineUsers) {
+			user.Status = "Online"
+		} else {
+			user.Status = "Ofline"
+		}
+
+		Users = append(Users, user)
+
+		user = OnlineUsers{}
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("failed iterating over rows: %w", err)
+	}
+
+	return Users, nil
 }
 
 func (d *Database) SearchUsersInDb(input string, currentUser string, index int) ([]string, bool, error) {
