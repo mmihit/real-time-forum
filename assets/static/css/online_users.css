@@ -1,41 +1,56 @@
-.online-box {
-    display: block;
-    overflow-x: scroll;
-    overflow-y: hidden;
-}
-
 .online-users-list {
     display: flex;
     width: 100%;
     gap: 18px;
 }
 
-.online-box button {
-    min-width: 150px !important;
-}
-
-.online-box .title {
-    margin-bottom: 8px;
-}
-
-.card button {
+.online-box {
     display: block;
-    background: linear-gradient(90deg, #6200ea, #bb86fc);
-    color: #fff;
-    font-size: 1.2em;
-    text-align: center;
-    font-weight: bold;
-    padding: 10px 15px;
-    width: 150px;
-    border-radius: 5px;
-    font-size: 1em;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin: 5px 0;
-    transition: background-color 0.3s, box-shadow 0.3s;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    height: auto;
+
 }
 
-.card button.Ofline{
-    opacity: .5;
-}
+.simple-profile {
+    width: 102px;
+    font-family: sans-serif;
+    text-align: center;
+  }
+  
+  .image-container {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .avatar {
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .status-dot {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid white;
+  }
+  
+  .status-dot.Online {
+    background-color: #34c759; /* Green */
+  }
+  
+  .status-dot.Ofline {
+    background-color: #d1d1d6; /* Gray */
+  }
+  
+  .username {
+    margin-top: 0.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+  }

@@ -247,7 +247,6 @@ async function HomeContent() {
           <!-- main -->
           <main class="main">
                 <div class="card online-box">
-                    <h3 class="title"> Online Users </h3>
                     <div class="online-users-list" id="online-users-list"></div>
                 </div>
               <div class="card">
@@ -492,7 +491,6 @@ function MessengerContent() {
                         <a href="/" class="back-link">&larr; Back to Home</a>
                 </div>
                 <div class="card online-box">
-                    <h3 class="title">Online Users</h3>
                     <div id="online-users-list" class="online-users-list"></div>
                 </div>
                 <div class="main">
@@ -629,6 +627,49 @@ if (window.loggedUser && window.WebSocketManager) {
     window.WebSocketManager.connect();
 }
 
+function createUserProfile(user, onlineUsersElement) {
+    // Convert name to URL-friendly format for the avatar
+    const avatarName = encodeURIComponent(user.userName);
+    const avatarURL = `https://ui-avatars.com/api/?name=${avatarName}&background=6c63ff&color=fff&size=150`;
+  
+    // Create main container
+    const profileDiv = document.createElement('div');
+    profileDiv.className = 'simple-profile';
+  
+    // Create image container
+    const imageContainer = document.createElement('div');
+    imageContainer.className = 'image-container';
+  
+    // Create image element
+    const img = document.createElement('img');
+    img.src = avatarURL;
+    img.alt = user.userName;
+    img.className = 'avatar';
+  
+    // Create status dot
+    const statusDot = document.createElement('span');
+    statusDot.className = `status-dot ${user.status}`;
+  
+    // Create username div
+    const usernameDiv = document.createElement('div');
+    usernameDiv.className = 'username';
+    usernameDiv.textContent = user.userName;
+    usernameDiv.dataset.user = user.userName;
+  
+    // Assemble elements
+    imageContainer.appendChild(img);
+    imageContainer.appendChild(statusDot);
+    profileDiv.appendChild(imageContainer);
+    profileDiv.appendChild(usernameDiv);
+  
+    // Add to body (or any container)
+    onlineUsersElement.appendChild(profileDiv);
+  }
+  
+  // Example usage
+//   createUserProfile("Alice Smith", true);
+//   createUserProfile("John Doe", false);
+  
 
 function createOnlineUsers(users) {
 
@@ -641,11 +682,12 @@ function createOnlineUsers(users) {
         console.log((!!undefined), users)
         if (onlineUsers) {
             onlineUsers.forEach(user => {
-                const userElement = document.createElement('button');
-                userElement.className = `online-user ${user.status}`;
-                userElement.textContent = user.userName;
-                userElement.dataset.user = user.userName
-                onlineUsersElement.appendChild(userElement);
+                // const userElement = document.createElement('button');
+                // userElement.className = `online-user ${user.status}`;
+                // userElement.textContent = user.userName;
+                // userElement.dataset.user = user.userName
+                // onlineUsersElement.appendChild(userElement);
+                createUserProfile(user, onlineUsersElement);
             });
             onlineUsersElement.childNodes.forEach(element => element.addEventListener('click', goToChat))
         } else {
