@@ -642,14 +642,24 @@ function createOnlineUsers(users) {
         if (onlineUsers) {
             onlineUsers.forEach(user => {
                 const userElement = document.createElement('button');
-                userElement.className = 'online-user';
-                userElement.textContent = user;
+                userElement.className = `online-user ${user.status}`;
+                userElement.textContent = user.userName;
+                userElement.dataset.user = user.userName
                 onlineUsersElement.appendChild(userElement);
             });
+            onlineUsersElement.childNodes.forEach(element => element.addEventListener('click', goToChat))
         } else {
             onlineUsersElement.innerHTML = ''
         }
     }
+}
+
+function goToChat(e) {
+    if (window.location.pathname != "/messenger") navigateTo("/messenger");
+    setTimeout(() => {
+        window.selectChatFromOnlineUsers.initializeElement(e)
+        window.selectChatFromOnlineUsers.goToChat()
+    }, 500)
 }
 
 // // Add this script element to include the WebSocketManager

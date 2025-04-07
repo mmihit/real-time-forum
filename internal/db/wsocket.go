@@ -4,7 +4,6 @@ import (
 	"fmt"
 )
 
-
 type Chat struct {
 	ID         int    `json:"Id"`
 	Sender     string `json:"sender"`
@@ -21,11 +20,9 @@ type LoadingChatResponse struct {
 }
 
 type OnlineUsers struct {
-
 	UserName string `json:"userName"`
 	Status   string `json:"status"`
 }
-
 
 func (d *Database) GetIdOfSenderOrReciever(user string) (int, error) {
 
@@ -158,7 +155,7 @@ func (d *Database) GetChatHistory(sender, receiver string, page int, pageSize in
 func IsExist(UserName string, onlineUsers []string) bool {
 
 	for _, User := range onlineUsers {
-		
+
 		if User == UserName {
 			return true
 		}
@@ -204,8 +201,8 @@ func (d *Database) GetOnlineChatUsers(userName string, onlineUsers []string) ([]
 		if err := rows.Scan(&user.UserName); err != nil {
 			return nil, fmt.Errorf("failed scanning chat history from db : %w", err)
 		}
-		
-		if IsExist(userName, onlineUsers) {
+
+		if IsExist(user.UserName, onlineUsers) {
 			user.Status = "Online"
 		} else {
 			user.Status = "Ofline"

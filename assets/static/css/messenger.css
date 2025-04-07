@@ -141,6 +141,7 @@ body {
 .main {
     display: flex;
     min-height: 500px;
+    max-height: 500px;
 }
 
 .users-box {
@@ -340,6 +341,7 @@ button:hover {
 @media (max-width: 768px) {
     .main {
         flex-direction: column;
+        /* max */
     }
 
     .users-box {
