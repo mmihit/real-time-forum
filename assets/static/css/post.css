@@ -5,14 +5,14 @@
   background-color: #f0f2f5;
   font-family: 'Roboto', sans-serif;
   color: #444;
-  max-width: 800px;
-  width: 90%; /* Use a percentage for better responsiveness */
+  /* max-width: 800px; */
+  width: 74%;
   background: #ffffff;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  margin: 110px auto; /* Center the container and add vertical spacing */
-  text-align: left; /* Ensure content alignment */
+  margin: 23px auto 110px auto;
+  text-align: left;
 }
 
 /* Back to Home */
