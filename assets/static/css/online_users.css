@@ -1,56 +1,59 @@
 .online-users-list {
-    display: flex;
-    width: 100%;
-    gap: 18px;
+  display: flex;
+  width: 100%;
+  gap: 18px;
 }
 
 .online-box {
-    display: block;
-    overflow-x: scroll;
-    overflow-y: hidden;
-    height: auto;
+  display: block;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  height: auto;
 
 }
 
 .simple-profile {
-    width: 102px;
-    font-family: sans-serif;
-    text-align: center;
-  }
-  
-  .image-container {
-    position: relative;
-    display: inline-block;
-  }
-  
-  .avatar {
-    width: 85px;
-    height: 85px;
-    border-radius: 50%;
-    object-fit: cover;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .status-dot {
-    position: absolute;
-    bottom: 8px;
-    right: 8px;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    border: 2px solid white;
-  }
-  
-  .status-dot.Online {
-    background-color: #34c759; /* Green */
-  }
-  
-  .status-dot.Ofline {
-    background-color: #d1d1d6; /* Gray */
-  }
-  
-  .username {
-    margin-top: 0.5rem;
-    font-size: 1rem;
-    font-weight: bold;
-  }
+  cursor: pointer;
+  width: 102px;
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.image-container {
+  position: relative;
+  display: inline-block;
+}
+
+.avatar {
+  width: 85px;
+  height: 85px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.status-dot {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.status-dot.Online {
+  background-color: #34c759;
+  /* Green */
+}
+
+.status-dot.Ofline {
+  background-color: #d1d1d6;
+  /* Gray */
+}
+
+.username {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+}

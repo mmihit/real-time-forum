@@ -1,4 +1,3 @@
-import { showAlert } from "/static/js/alert.js";
 
 export async function createPosts(userName, displayPostsWithReactions) {
 
@@ -30,10 +29,10 @@ export async function createPosts(userName, displayPostsWithReactions) {
         event.preventDefault();
         
         if (title.length > 250) {
-            return showAlert("Post title is too long")
+            return window.showAlert("Post title is too long")
         }
         if (content.length > 3000) {
-            return showAlert("Post content is too long")
+            return window.showAlert("Post content is too long")
         }
 
         await addPost();
@@ -48,10 +47,10 @@ export async function createPosts(userName, displayPostsWithReactions) {
         const title = document.getElementById('title').value.trim();
         const content = document.getElementById('content').value.trim();
         if (!title || !content) {
-            return showAlert("Please fill in all fields correctly!");
+            return window.showAlert("Please fill in all fields correctly!");
         }
         if (selectedCategories.length === 0) {
-            return showAlert("Please select at least one category!");
+            return window.showAlert("Please select at least one category!");
         }
 
         const requestBody = {
@@ -71,11 +70,11 @@ export async function createPosts(userName, displayPostsWithReactions) {
 
             if (!response.ok) {
                 const errorMessage = await response.json();
-                return showAlert(`${errorMessage.message || 'Failed to create post'}`);
+                return window.showAlert(`${errorMessage.message || 'Failed to create post'}`);
             }
 
             const responseData = await response.json();
-            showAlert(responseData.message);
+            window.showAlert(responseData.message);
             document.getElementById('title').value = '';
             document.getElementById('content').value = '';
             document.querySelectorAll('input[name="categories"]').forEach(checkbox => {
@@ -84,7 +83,7 @@ export async function createPosts(userName, displayPostsWithReactions) {
 
         } catch (error) {
             console.error('Unexpected error:', error);
-            showAlert('An unexpected error occurred. Please try again later.');
+            window.showAlert('An unexpected error occurred. Please try again later.');
         }
     }
 

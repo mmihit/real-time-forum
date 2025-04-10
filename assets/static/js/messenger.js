@@ -1,3 +1,5 @@
+// import { showAlert } from "/static/js/alert.js";
+
 (function () {
     const searchIcon = document.querySelector('.search-icon');
     const removeIcon = document.querySelector('.remove-icon');
@@ -23,8 +25,10 @@
     const scrollHelper = {
         hasMore: false,
         isLoading: false,
-        scrollThreshold: 5,
-        scrollTop: messageDisplay.scrollTop
+        scrollThreshold: 50,
+        scrollTop: messageDisplay.scrollTop,
+        scrollHeight: 0,
+        newScrollHeight: 0
     }
 
     function attachUserListeners() {
@@ -95,16 +99,14 @@
         element: null,
         goToChat(e) {
             messageDisplay.innerHTML = "";
-
             selectedUser.receiver = !e ? this.element.target.dataset.user : e.target.dataset.user
             selectedUser.isSelected = true
             selectedUser.index = 0
-            chatHeader.innerHTML = selectedUser.receiver
             chatList.innerHTML = ""
             searchUser.value = ""
-            document.getElementById('message').removeAttribute('readonly');
             loadingChat()
             console.log("Selected user:", selectedUser);
+
         },
         initializeElement(e) {
             this.element = e
@@ -123,30 +125,67 @@
         attachUserListeners();
     }
 
-    function createMessage(message, action, isSendNow) {
+    function formatMessageDate(dateString) {
+        // Parse the input date string or use current date
+        const date = !dateString ? new Date() : new Date(dateString);
         const now = new Date();
-        const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const day = now.toLocaleDateString([], { weekday: 'short' });
 
-        // Add message to display with timestamp
+        // Format time (HH:MM)
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        const timeFormat = `${hours}:${minutes}`;
+
+        // Format day and month
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+
+        // Check if date is from current year
+        const isCurrentYear = date.getFullYear() === now.getFullYear();
+
+        // Check if date is from today
+        const isToday = date.toDateString() === now.toDateString();
+
+        // Format based on how recent the date is
+        if (isToday) {
+            // If message is from today, just show the time
+            return timeFormat;
+        } else if (isCurrentYear) {
+            // If message is from this year but not today, show day/month, time
+            return `${day}/${month}, ${timeFormat}`;
+        } else {
+            // If message is from previous years, show day/month/year, time
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}, ${timeFormat}`;
+        }
+    }
+
+    function createMessage(message, sender, action, date) {
+
+        // if (!date) date=
+        const newDate = formatMessageDate(date);
+
         const tempContainer = document.createElement('div')
-        tempContainer.innerHTML = `<div class="message-box ${action}">
-                <div class="message-body">${message}</div>
-                <p class="message-info">${day}, ${time}</p>
-            </div>`;
+        tempContainer.innerHTML = `
+        <div class="message-box ${action}">
+            <div class="message-body">
+                <div class="sender-container">
+                    <p class="sender-name">${sender}</p>
+                </div>
+                <div style="display:flex;gap:5px;">
+                    <p>${message}</p>
+                    <p class="message-info">${newDate}</p>
+                </div>
+            </div>
+        </div>`;
 
-        // console.log(messageDisplay.hasChildNodes)
-        if (!messageDisplay.hasChildNodes() || isSendNow) {
-            // console.log("mmmmmmmmmmmmmm")
+        if (!messageDisplay.hasChildNodes() || !date) {
             messageDisplay.appendChild(tempContainer)
         } else {
-            // console.log("ttttttttttttttt")
             messageDisplay.insertBefore(tempContainer, messageDisplay.firstElementChild)
         }
 
+        !scrollHelper.isLoading ? messageDisplay.scrollTop = messageDisplay.scrollHeight : false;
 
-        // Scroll to bottom
-        messageDisplay.scrollTop = messageDisplay.scrollHeight;
     }
 
     // Message handler for the Messenger page
@@ -155,7 +194,7 @@
         if ((chatData.sender === window.loggedUser && chatData.receiver === selectedUser.receiver) ||
             (chatData.receiver === window.loggedUser && chatData.sender === selectedUser.receiver)) {
             const action = chatData.sender === window.loggedUser ? "sent" : "received";
-            createMessage(chatData.message, action, true);
+            createMessage(chatData.message, window.loggedUser, action);
         }
     }
 
@@ -185,25 +224,29 @@
         console.log(responseData);
 
         if (responseData && responseData.chats) {
+            chatHeader.innerHTML = selectedUser.receiver
+            document.getElementById('message').removeAttribute('readonly');
             scrollHelper.hasMore = responseData.hasMore
-            // console.log("reverse:   ",responseData.chats.reverse())
+            const scrollHeight = messageDisplay.scrollHeight;
             responseData.chats.reverse().forEach((chat) => {
-                // console.log("hani:",chat.message)
                 const flag = chat.sender == window.loggedUser ? "sent" : "received";
-                createMessage(chat.message, flag);
+                createMessage(chat.message, chat.sender, flag, chat.create_date);
             });
-
+            // scrollHelper.newScrollHeight = 
+            const newScrollHeight = messageDisplay.scrollHeight;
+            messageDisplay.scrollTop = newScrollHeight - scrollHeight;
             if (!responseData.hasMore) {
                 messageDisplay.innerHTML = `<p style="order:-10000000; text-align:center;">Start Chatting</p>` + messageDisplay.innerHTML;
             }
         }
+
         scrollHelper.isLoading = false
     }
 
     async function fetchChat() {
         try {
             const response = await fetch("/api/load_messages", {
-                method: 'Post',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -211,11 +254,17 @@
             });
 
             if (response.ok) {
-                return response.json();
+                const data = await response.json();
+                console.log(data);
+                return data; // This return is correct
+            } else {
+                const data = await response.json();
+                window.showAlert(data.message);
+                // return { chats: [], hasMore: false }; // Return default value on error
             }
         } catch (error) {
             console.log(error);
-            return { chats: [], hasMore: false };
+            // return { chats: [], hasMore: false }; // Return default value on exception
         }
     }
 

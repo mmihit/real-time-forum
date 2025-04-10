@@ -166,19 +166,32 @@ func IsExist(UserName string, onlineUsers []string) bool {
 func (d *Database) GetOnlineChatUsers(userName string, onlineUsers []string) ([]OnlineUsers, error) {
 
 	queryOfFetchingOnlineChatUsers := `  
-		SELECT DISTINCT
-            u.username
-        FROM users u
-        LEFT JOIN chats c ON (u.id = c.sender_id AND c.receiver_id = ?) 
-            OR (u.id = c.receiver_id AND c.sender_id = ?)
-        WHERE u.id != ?
-        ORDER BY 
-            CASE 
-                WHEN c.create_date IS NULL THEN 2
-                ELSE 1 
-            END,
-            c.create_date DESC,
-            u.username COLLATE NOCASE
+SELECT DISTINCT
+    u.username
+FROM users u
+LEFT JOIN (
+    -- Subquery li katjib akher message (create_date) bin kol user w luser dyalna
+    SELECT 
+        CASE 
+            WHEN sender_id = ? THEN receiver_id
+            ELSE sender_id
+        END AS other_user_id,
+        MAX(create_date) AS latest_chat_date
+    FROM chats
+    WHERE sender_id = ? OR receiver_id = ?
+    GROUP BY other_user_id
+) latest ON latest.other_user_id = u.id
+WHERE u.id != ?
+ORDER BY 
+    -- L-users li 3ndhom chats kayjiu lewlin
+    CASE 
+        WHEN latest.latest_chat_date IS NULL THEN 2
+        ELSE 1 
+    END,
+    -- Tretib 7sb akher date
+    latest.latest_chat_date DESC,
+    -- Users li ma3ndhoumš chats kayjiw mertbin alfabitikman
+    u.username COLLATE NOCASE
 	`
 
 	senderID, err := d.GetIdOfSenderOrReciever(userName)
@@ -186,7 +199,7 @@ func (d *Database) GetOnlineChatUsers(userName string, onlineUsers []string) ([]
 		return nil, fmt.Errorf("User not found: %w", err)
 	}
 
-	rows, err := d.Db.Query(queryOfFetchingOnlineChatUsers, senderID, senderID, senderID)
+	rows, err := d.Db.Query(queryOfFetchingOnlineChatUsers, senderID, senderID, senderID, senderID)
 	if err != nil {
 		return nil, fmt.Errorf("failed fetching online chat users from db: %w", err)
 	}

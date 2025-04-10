@@ -1,4 +1,3 @@
-import { showAlert } from "/static/js/alert.js";
 import { navigateTo } from "/static/js/loadHtmlElems.js";
 
 
@@ -28,7 +27,7 @@ document.addEventListener('submit', async (event) => {
                     });
                 } else {
                     return response.json().then(data => {
-                        showAlert(data.message);
+                        window.showAlert(data.message);
                     });
                 }
             })

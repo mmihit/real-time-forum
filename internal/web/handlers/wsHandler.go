@@ -137,6 +137,7 @@ func (h *Handler) handleMessage(chat Chat) {
 	}
 
 	h.DB.InsertMessageInDatabase(chat.Sender, chat.Receiver, chat.Message)
+	go h.broadcastOnlineUsers()
 }
 
 func (h *Handler) broadcastOnlineUsers() {
@@ -162,7 +163,8 @@ func (h *Handler) broadcastOnlineUsers() {
 			}
 		}
 		var err error
-		OnlineChatUsers, err = h.DB.GetOnlineChatUsers(username, onlineUsers); if err != nil {
+		OnlineChatUsers, err = h.DB.GetOnlineChatUsers(username, onlineUsers)
+		if err != nil {
 			fmt.Printf("Error: %v\n", err)
 			return
 		}

@@ -114,7 +114,6 @@ async function LoginContent() {
                 <button type="submit" class="submit-btn">Continue</button>
             </form>
             <div class="footer">
-                <a href="/">Home</a>
                 <a href="/register">Sign Up</a>
             </div>
         </div>
@@ -186,7 +185,6 @@ async function RegisterContent() {
             <button type="submit">Continue</button>
         </form>
             <div class="footer">
-                <a href="/">Home</a>
                 <a href="/login">Sign In</a>
             </div>
         </div>
@@ -546,6 +544,7 @@ export function navigateTo(endpoint) {
 }
 
 async function LoadContent(endpoint) {
+    // console.log(end)
     const uniqueUrl = endpoint + (endpoint.includes('?') ? '&' : '?') + '_=' + new Date().getTime();
     console.log("url", uniqueUrl);
 
@@ -562,6 +561,7 @@ async function LoadContent(endpoint) {
     window.appRegistry.cleanup();
 
     if (endpoint === "/" || !endpoint) {
+        // console.log('enter here')
         if (await HomeContent())
             setTimeout(applyPermissionDenied, 100);
         if (window.WebSocketManager) {
@@ -619,6 +619,18 @@ window.addEventListener('popstate', () => {
     LoadContent(window.location.pathname);
 });
 
+function showAlert(msj) {
+    const alertBox = document.getElementById("customAlert");
+    alertBox.style.display = "block";
+    alertBox.textContent = msj
+  
+    setTimeout(() => {
+      alertBox.style.display = "none";
+    }, 5000);
+  }
+  
+  window.showAlert = showAlert
+
 await insertUserInCach()
 LoadContent(window.location.pathname);
 // Initialize WebSocket connection if user is logged in
@@ -631,45 +643,51 @@ function createUserProfile(user, onlineUsersElement) {
     // Convert name to URL-friendly format for the avatar
     const avatarName = encodeURIComponent(user.userName);
     const avatarURL = `https://ui-avatars.com/api/?name=${avatarName}&background=6c63ff&color=fff&size=150`;
-  
+
     // Create main container
     const profileDiv = document.createElement('div');
     profileDiv.className = 'simple-profile';
-  
+
+
     // Create image container
     const imageContainer = document.createElement('div');
     imageContainer.className = 'image-container';
-  
+    ;
+
+
     // Create image element
     const img = document.createElement('img');
     img.src = avatarURL;
     img.alt = user.userName;
     img.className = 'avatar';
-  
+    img.dataset.user = user.userName
+
     // Create status dot
     const statusDot = document.createElement('span');
     statusDot.className = `status-dot ${user.status}`;
-  
+    statusDot.dataset.user = `${user.userName}`;
+
     // Create username div
-    const usernameDiv = document.createElement('div');
+    const usernameDiv = document.createElement('h3');
     usernameDiv.className = 'username';
     usernameDiv.textContent = user.userName;
-    usernameDiv.dataset.user = user.userName;
-  
+    usernameDiv.dataset.user = `${user.userName}`;
+
+
     // Assemble elements
     imageContainer.appendChild(img);
     imageContainer.appendChild(statusDot);
     profileDiv.appendChild(imageContainer);
     profileDiv.appendChild(usernameDiv);
-  
+
     // Add to body (or any container)
     onlineUsersElement.appendChild(profileDiv);
-  }
-  
-  // Example usage
+}
+
+// Example usage
 //   createUserProfile("Alice Smith", true);
 //   createUserProfile("John Doe", false);
-  
+
 
 function createOnlineUsers(users) {
 
@@ -678,8 +696,8 @@ function createOnlineUsers(users) {
     if (onlineUsersElement) {
         onlineUsersElement.innerHTML = '';
         const onlineUsers = (users === undefined) ? window.WebSocketManager.Users : users
-        console.log((!undefined), window.WebSocketManager.Users)
-        console.log((!!undefined), users)
+        // console.log((!undefined), window.WebSocketManager.Users)
+        // console.log((!!undefined), users)
         if (onlineUsers) {
             onlineUsers.forEach(user => {
                 // const userElement = document.createElement('button');
@@ -689,7 +707,8 @@ function createOnlineUsers(users) {
                 // onlineUsersElement.appendChild(userElement);
                 createUserProfile(user, onlineUsersElement);
             });
-            onlineUsersElement.childNodes.forEach(element => element.addEventListener('click', goToChat))
+            console.log(document.querySelectorAll('.simple-profile'))
+            document.querySelectorAll('.simple-profile').forEach(element => element.addEventListener('click', goToChat))
         } else {
             onlineUsersElement.innerHTML = ''
         }

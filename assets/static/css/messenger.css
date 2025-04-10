@@ -54,7 +54,7 @@ body {
 }
 
 .dropdown-button {
-    background: linear-gradient(90deg, #6200ea, #b77ffa);
+    background: #6C63FF;
     color: #fff;
     font-size: 1.2em;
     font-weight: bold;
@@ -109,7 +109,7 @@ body {
     background-color: #f0f2f5;
     font-family: 'Roboto', sans-serif;
     color: #444;
-    max-width: 800px;
+    /* max-width: 800px; */
     width: 90%;
     /* Use a percentage for better responsiveness */
     background: #ffffff;
@@ -220,7 +220,7 @@ body {
     display: flex;
     flex-direction: column;
     background: #fff;
-    max-width: 530px;
+    /* max-width: 530px; */
     min-width: 350px;
 }
 
@@ -244,24 +244,29 @@ body {
 .message-box {
     display: flex;
     align-items: flex-end;
-    margin: 5px 0;
+    margin-bottom: 10px;
 }
 
+/* .sender-container.sent {
+    justify-content: end;
+} */
 
+.sender-container {
+    display: flex;
+}
 
-.message-body {
-    background: blue;
+.sender-name {
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+/* .message-body {
     padding: 10px 15px;
     border-radius: 50px;
+    display: ;
     color: white;
-    /* min-width: 14%; */
     display: inline-block;
-}
-
-.message-info {
-    display: inline-block;
-    font-size: .7rem;
-}
+} */
 
 .message-box.sent {
     justify-content: flex-end;
@@ -274,6 +279,9 @@ body {
 
 /* Message bubble */
 .message-body {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
     padding: 10px 15px;
     border-radius: 18px;
     color: white;
@@ -285,14 +293,12 @@ body {
 /* Sent messages (user) */
 .sent .message-body {
     background-color: #0084ff;
-    /* Messenger blue */
     border-bottom-right-radius: 5px;
 }
 
 /* Received messages (other users) */
 .received .message-body {
     background-color: #e4e6eb;
-    /* Light grey */
     color: black;
     border-bottom-left-radius: 5px;
 }
@@ -300,14 +306,22 @@ body {
 /* Message info (timestamp) */
 .message-info {
     font-size: 0.75rem;
-    color: gray;
-    margin-top: 2px;
     display: block;
+    place-self: end;
 }
 
-.sent .message-info {
-    order: -1;
+.sent .message-info{
+    color: #d2d2d2;
 }
+
+.received .message-info{
+    color:#70767c;
+}
+
+
+/* .sent .message-info {
+    order: -1;
+} */
 
 .input-group {
     display: flex;
@@ -329,7 +343,7 @@ input {
 }
 
 button {
-    background: #007bff;
+    background: #6C63FF;
     color: white;
     cursor: pointer;
     border-radius: 5px;
@@ -343,7 +357,10 @@ button:hover {
 @media (max-width: 768px) {
     .main {
         flex-direction: column;
-        /* max */
+    }
+
+    .chat-container{
+        max-height: 399.22px;
     }
 
     .users-box {

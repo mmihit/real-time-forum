@@ -1,12 +1,10 @@
-import { showAlert } from "/static/js/alert.js";
-
 export async function CreateComments(postId, callbackReaction) {
     const content = document.getElementById('commentContent').value.trim();
 
     if (!content) {
-        return showAlert("Please fill in all fields correctly!");
+        return window.showAlert("Please fill in all fields correctly!");
     } else if (content.length > 2000) {
-        return showAlert("The content comment is too long")
+        return window.showAlert("The content comment is too long")
     }
 
     const requestBody = {
@@ -25,21 +23,21 @@ export async function CreateComments(postId, callbackReaction) {
 
         const responseData = await response.json();
         if (response.ok) {
-            showAlert(responseData.message)
+            window.showAlert(responseData.message)
             displayComments(postId, callbackReaction)
             document.getElementById('commentContent').value = ""
             return
         } else if (response.status === 401) {
-            showAlert(responseData.message)
+            window.showAlert(responseData.message)
             window.location.href = "/login";
             return
         } else {
             const errorMessage = await response.json();
-            return showAlert(`Error: ${errorMessage.message || 'Failed to create comment'}`);
+            return window.showAlert(`Error: ${errorMessage.message || 'Failed to create comment'}`);
         }
     } catch (error) {
         console.error("Unexpected error:", error);
-        showAlert("An unexpected error occurred. Please try again later.");
+        window.showAlert("An unexpected error occurred. Please try again later.");
     }
 };
 
@@ -108,7 +106,7 @@ const fetchComments = async (postId) => {
     } else if (response.status === 404) {
         commentsContainer.innerHTML = `<p>${responseData.message}</p>`;
     } else {
-        alert(responseData.error);
+        window.showAlert(responseData.error);
     }
 };
 

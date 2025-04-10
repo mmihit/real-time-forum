@@ -8,14 +8,14 @@ func (a *App) Routes() http.Handler {
 	mux := http.NewServeMux()
 	// mux.HandleFunc("/test/",a.Handlers.Test)
 	mux.HandleFunc("/static/", a.Handlers.Static)
-	mux.HandleFunc("/", a.Handlers.HomePage)                                             //
+	mux.Handle("/", a.Handlers.AccessMiddleware(a.Handlers.HomePage))                    //
 	mux.Handle("/register", a.Handlers.RedirectMiddleware(a.Handlers.Register))          //
 	mux.Handle("/login", a.Handlers.RedirectMiddleware(a.Handlers.Login))                //
 	mux.HandleFunc("/logout", a.Handlers.Logout)                                         //
 	mux.Handle("/create/post", a.Handlers.AccessMiddleware(a.Handlers.CreatePost))       //
 	mux.Handle("/create/comment", a.Handlers.AccessMiddleware(a.Handlers.CreateComment)) //
 	mux.Handle("/messenger", a.Handlers.AccessMiddleware(a.Handlers.Messenger))          //
-	mux.HandleFunc("/post", a.Handlers.DisplayPostWithComments)                          //
+	mux.Handle("/post", a.Handlers.AccessMiddleware(a.Handlers.DisplayPostWithComments)) //
 	mux.HandleFunc("/comment/reaction/", a.Handlers.CommentReactions)                    //
 	mux.HandleFunc("/post/reaction/", a.Handlers.PostReactions)                          //
 	mux.HandleFunc("/LoggedUser", a.Handlers.GetLoggedUser)                              //

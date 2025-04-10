@@ -78,7 +78,7 @@ select:focus {
 button {
   width: 100%;
   padding: 15px;
-  background: linear-gradient(90deg, #6200ea, #bb86fc);
+  background: #007bff;
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -89,7 +89,7 @@ button {
 }
 
 button:hover {
-  background: linear-gradient(90deg, #3700b3, #6200ea);
+  background: #e0e0e0;
 }
 
 .footer {

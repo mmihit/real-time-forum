@@ -35,7 +35,7 @@ const WebSocketManager = {
                 this.messageHandlers.forEach(handler => handler(chatData));
                 // Default notification if not on messenger page
                 if (!window.location.pathname.includes('/messenger')) {
-                    this.showNotification(chatData);
+                    window.showAlert(`${chatData.sender} sent you a  message`);
                 }
             }
 
@@ -91,14 +91,14 @@ const WebSocketManager = {
     },
 
     // Show a notification for new messages
-    showNotification(chatData) {
-        // Use the existing alert function or custom notification
-        if (typeof alert === 'function') {
-            alert(`${chatData.sender} sent you a message`);
-        } else {
-            console.log("New message from:", chatData.sender);
-        }
-    }
+    // showNotification(chatData) {
+    //     // Use the existing alert function or custom notification
+    //     if (typeof alert === 'function') {
+    //         alert(`${chatData.sender} sent you a message`);
+    //     } else {
+    //         console.log("New message from:", chatData.sender);
+    //     }
+    // }
 };
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -106,7 +106,7 @@ window.addEventListener('DOMContentLoaded', () => {
         if (window.loggedUser) {
             WebSocketManager.connect();
         }
-    }, 500);
+    }, 1000);
 });
 
 window.WebSocketManager = WebSocketManager;

@@ -1,6 +1,4 @@
 import { escapeHTML } from "/static/js/createComment.js"
-import { showAlert } from "/static/js/alert.js";
-
 export const fetchApi = async (url) => {
   try {
     const response = await fetch(url, {
@@ -81,7 +79,7 @@ const loadPosts = async (input, flag) => {
   }
   
   if (input && !isGategory && isUser && !flag) {
-    return showAlert("Please enter the right category")
+    return window.showAlert("Please enter the right category")
   }
   
   if (isUser && flag) {

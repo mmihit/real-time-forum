@@ -36,7 +36,7 @@ func (h *Handler) LoadMessages(w http.ResponseWriter, r *http.Request) {
 
 		chatHistory, err := h.DB.GetChatHistory(sender, LoadingChatRequest.Receiver, LoadingChatRequest.Id, LoadingChatRequest.Page)
 		if err != nil {
-			helpers.JsonResponse(w, http.StatusInternalServerError, "Error fetching chat history")
+			helpers.JsonResponse(w, http.StatusBadRequest, "Error fetching chat history")
 			return
 		}
 
