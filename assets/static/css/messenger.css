@@ -27,6 +27,22 @@ body {
     z-index: 98;
 }
 
+.card {
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    gap: 20px;
+    height: 162px;
+    /* Adjusted to be consistent with card content */
+    box-sizing: border-box;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
 .header .site-title {
     font-size: 1.5em;
     font-weight: bold;
@@ -116,7 +132,7 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
-    margin: 110px auto;
+    margin: 30px auto;
     /* Center the container and add vertical spacing */
     text-align: left;
     /* Ensure content alignment */
@@ -310,12 +326,12 @@ body {
     place-self: end;
 }
 
-.sent .message-info{
+.sent .message-info {
     color: #d2d2d2;
 }
 
-.received .message-info{
-    color:#70767c;
+.received .message-info {
+    color: #70767c;
 }
 
 
@@ -359,7 +375,12 @@ button:hover {
         flex-direction: column;
     }
 
-    .chat-container{
+    .card {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .chat-container {
         max-height: 399.22px;
     }
 

@@ -14,10 +14,10 @@ type Handler struct {
 }
 
 func (h *Handler) HomePage(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		helpers.ExecuteTmpl(w, "error.html", 404, "Oops! Not found", nil)
-		return
-	}
+	// if r.URL.Path != "/" {
+	// 	helpers.ExecuteTmpl(w, "error.html", 404, "Oops! Not found", nil)
+	// 	return
+	// }
 
 	h.Api.Params.Home.UserName = ""
 

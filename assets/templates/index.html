@@ -11,7 +11,28 @@
 </head>
 
 <body>
-  <div id="defaultHtml"></div>
+  <div id="customAlert"></div>
+  <div id="fixedHtml">
+    <header class="header">
+      <div class="site-title">
+        <i class="fas fa-comments"></i>
+        <a href="/" alt="home">Forum Chat</a>
+      </div>
+      <div class="dropdown">
+        <input type="hidden" id="Name">
+        <button class="dropdown-button"><i class="fa fa-caret-down" aria-hidden="true"></i></button>
+        <div class="dropdown-menu">
+          <a href="/logout" alt="logout" id="logout-btn" title="Logout">Logout</a>
+          <a alt="create post" id="create-post-btn"> + Create</a>
+          <a href="/messenger" alt="create post" id="create-post-btn"> Messenger</a>
+        </div>
+      </div>
+    </header>
+    <div class="card online-box">
+      <div class="online-users-list" id="online-users-list"></div>
+    </div>
+  </div>
+  <div id="dynamicHtml"></div>
   <div id="dyanamicScript"></div>
   <script type="module" src="static/js/loadHtmlElems.js"></script>
   <script type="module" src="static/js/ws-manager.js"></script>

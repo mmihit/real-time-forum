@@ -8,7 +8,7 @@ export async function createPosts(userName, displayPostsWithReactions) {
     const create_post = [document.getElementById('Create-Post'), document.getElementById('create-post-btn')]
 
     create_post.forEach(btn => {
-
+        if (btn)
         btn.addEventListener('click', function (e) {
             document.getElementById('overlay').style.display = 'flex';
             e.preventDefault()

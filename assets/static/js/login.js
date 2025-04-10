@@ -17,8 +17,13 @@ document.addEventListener('submit', async (event) => {
         })
             .then(async response => {
                 if (response.ok) {
-                    response.json().then(data => {window.loggedUser = data.username;console.log("data",data.username)})
-                    console.log(window.loggedUser)
+                    response.json().then(data => {
+                        window.loggedUser = data.username; console.log("data", data.username)
+                        document.getElementById('Name').setAttribute('value', window.loggedUser);
+                        document.querySelector('.dropdown-button').innerHTML = `<i class="fa fa-caret-down" aria-hidden="true"></i> ${window.loggedUser}`;
+                        console.log(document.getElementById('Name'))
+                    })
+
                     window.WebSocketManager.connect()
                     navigateTo('/')
                 } else if (response.status === 409) {

@@ -94,7 +94,7 @@ function addStylesheet(href, type = "text/css") {
 }
 
 async function LoginContent() {
-    const html = document.getElementById("defaultHtml");
+    const html = document.getElementById("dynamicHtml");
 
     const htmlTemp = `
     <div id="body">
@@ -135,7 +135,7 @@ async function LoginContent() {
 }
 
 async function RegisterContent() {
-    const html = document.getElementById("defaultHtml");
+    const html = document.getElementById("dynamicHtml");
 
     const htmlTemp = `
     <div id="body">
@@ -208,45 +208,12 @@ async function RegisterContent() {
 async function HomeContent() {
     const homeData = await fetchApi(`/api/params/Home?_=${new Date().getTime()}`);
     const username = homeData.username;
-    const html = document.getElementById("defaultHtml");
+    const html = document.getElementById("dynamicHtml");
 
-    let htmlTemp = `  
-      <div id="customAlert"></div>
-      <!-- Header -->
-      <header class="header">
-        <div class="site-title">
-          <i class="fas fa-comments"></i>
-          <a href="/" alt="home">Forum Chat</a>
-        </div>
-        <div class="dropdown">
-          <input type="hidden" id="Name" value="${username}">`;
-
-    if (username) {
-        htmlTemp += `      
-          <button class="dropdown-button">${username} <i class="fa fa-caret-down" aria-hidden="true"></i></button>
-          <div class="dropdown-menu">
-            <a href="/logout" alt="logout" id="logout-btn" title="Logout">Logout</a>
-            <a alt="create post" id="create-post-btn"> + Create</a>
-            <a href="/messenger" alt="create post" id="create-post-btn"> Messenger</a>
-          </div>`;
-    } else {
-        htmlTemp += `      
-          <button class="dropdown-button">Account <i class="fa fa-caret-down" aria-hidden="true"></i></button>
-          <div class="dropdown-menu">
-            <a href="/login">Login</a>
-            <a href="/register">Signup</a>
-          </div>`;
-    }
-
-    htmlTemp += `    
-        </div>
-      </header>
-      <div id="body">
+    let htmlTemp = `     
+    <div id="body">
           <!-- main -->
           <main class="main">
-                <div class="card online-box">
-                    <div class="online-users-list" id="online-users-list"></div>
-                </div>
               <div class="card">
                   <button id="All-Posts">All Posts</button>
                   <button id="Post-Created">My Posts</button>
@@ -298,7 +265,8 @@ async function HomeContent() {
                   </form>
               </div>
           </div>
-      </div>`;
+      </div>;`
+
 
     const container = document.getElementById("dyanamicScript");
     if (container) container.innerHTML = '';
@@ -332,45 +300,9 @@ async function PostContent() {
     const apiData = await fetchApi("/api/params/Post");
     const post = apiData.post;
     const username = apiData.username;
-    const html = document.getElementById("defaultHtml");
+    const html = document.getElementById("dynamicHtml");
 
-    let htmlTemp = `<div id="customAlert"></div>`;
-    if (username) {
-        htmlTemp += `
-        <!-- Header with user logged in -->
-        <header class="header">
-            <div class="site-title">
-                <i class="fas fa-comments"></i>
-                <a href="/" alt="home">Forum Chat</a>
-            </div>
-            <div class="dropdown">
-                <button class="dropdown-button">${username} <i class="fa fa-caret-down" aria-hidden="true"></i></button>
-                <div class="dropdown-menu">
-                    <a href="/logout" alt="logout" id="logout-btn" title="Logout">Logout</a>
-                </div>
-            </div>
-        </header>`;
-    } else {
-        htmlTemp += `
-        <!-- Header without logged in user -->
-        <header class="header">
-            <div class="site-title">
-                <i class="fas fa-comments"></i>
-                <a href="/" alt="home">Forum Chat</a>
-            </div>
-            <div class="dropdown">
-                <button class="dropdown-button">Account <i class="fa fa-caret-down" aria-hidden="true"></i></button>
-                <div class="dropdown-menu">
-                    <a href="/login">Login</a>
-                    <a href="/register">Signup</a>
-                </div>
-            </div>
-        </header>`;
-    }
-
-    htmlTemp += `
-    <div id="body">
-        <div id="navbarContainer"></div>
+    let htmlTemp = `<div id="body">
         <div class="container">
             <!-- Back to Home -->
             <div class="back-home">
@@ -453,6 +385,7 @@ async function PostContent() {
     addStylesheet("/static/css/alert.css");
     addStylesheet("/static/css/comments.css");
     addStylesheet("/static/css/home.css");
+    addStylesheet("/static/css/online_users.css");
 
     if (!username) {
         return true
@@ -461,35 +394,12 @@ async function PostContent() {
 }
 
 function MessengerContent() {
-    // removeDynamicEventListeners()
-    const html = document.getElementById("defaultHtml");
-
-    let htmlTemp = `<div id="customAlert"></div>`;
-    console.log(window.loggedUser)
-
-    htmlTemp += `
-        <header class="header">
-            <div class="site-title">
-                <i class="fas fa-comments"></i>
-                <a href="/" alt="home">Forum Chat</a>
-            </div>
-            <div class="dropdown">
-                <button class="dropdown-button"><i class="fa fa-caret-down" aria-hidden="true"></i> ${window.loggedUser}</button>
-                <div class="dropdown-menu">
-                    <a href="/logout" alt="logout" id="logout-btn" title="Logout">Logout</a>
-                </div>
-            </div>
-        </header>
-
+    const html = document.getElementById("dynamicHtml");
+    let htmlTemp = `
         <div id="body">
-            // <div id="navbarContainer"></div>
             <div class="container">
-                    <!-- Back to Home -->
                 <div class="back-home">
                         <a href="/" class="back-link">&larr; Back to Home</a>
-                </div>
-                <div class="card online-box">
-                    <div id="online-users-list" class="online-users-list"></div>
                 </div>
                 <div class="main">
                     <div class="users-box">
@@ -526,7 +436,6 @@ function MessengerContent() {
     if (container) container.innerHTML = '';
 
     const scriptModule = document.createElement('script');
-    // scriptModule.type = 'module';
     scriptModule.src = "/static/js/messenger.js";
     container.appendChild(scriptModule);
 
@@ -535,7 +444,35 @@ function MessengerContent() {
     removeAllStylesheets();
     addStylesheet("/static/css/alert.css");
     addStylesheet("/static/css/messenger.css");
-    addStylesheet("/static/css/online_users.css")
+    addStylesheet("/static/css/online_users.css");
+}
+
+function PageNotFound() {
+    let tempHtml = `
+        <div class="container">
+            <div class="error-code">400</div>
+            <div class="error-message">Page Not Found</div>
+            <div class="error-actions">
+                <a href="/"><button>Go to Home</button></a>
+            </div>
+        </div>
+    `
+    let ErrorSection;
+    if (!document.getElementById('Error-section')) {
+        console.log("not here")
+        ErrorSection = document.createElement('div');
+        ErrorSection.id = 'Error-section';
+        document.body.appendChild(ErrorSection)
+    } else {
+        ErrorSection = getElementById('Error-section')
+    }
+    console.log(ErrorSection)
+
+    document.getElementById('fixedHtml').style.display = "none";
+    ErrorSection.innerHTML = tempHtml;
+
+    removeAllStylesheets();
+    addStylesheet("/static/css/error.css");
 }
 
 export function navigateTo(endpoint) {
@@ -560,37 +497,40 @@ async function LoadContent(endpoint) {
 
     window.appRegistry.cleanup();
 
+    if (document.getElementById("Error-section")) document.getElementById('Error-section').remove();
+    if (document.getElementById('fixedHtml')) {
+        document.getElementById('fixedHtml').style.display = "block";
+        // if (document.getElementById('Name'))
+    };
+
+
     if (endpoint === "/" || !endpoint) {
-        // console.log('enter here')
         if (await HomeContent())
             setTimeout(applyPermissionDenied, 100);
-        if (window.WebSocketManager) {
-            createOnlineUsers()
-        }
     } else if (endpoint.includes("/post")) {
         if (await PostContent())
             setTimeout(applyPermissionDenied, 100);
     } else if (endpoint === "/login" || endpoint === "/logout") {
         await LoginContent();
+        if (document.getElementById('fixedHtml')) document.getElementById('fixedHtml').style.display = "none";
         await insertUserInCach();
         if (window.WebSocketManager.connection.readyState === WebSocket.OPEN) {
             window.WebSocketManager.connection.close()
         }
     } else if (endpoint === "/register") {
         await RegisterContent();
+        if (document.getElementById('fixedHtml')) document.getElementById('fixedHtml').style.display = "none";
         await insertUserInCach();
         if (window.WebSocketManager.connection.readyState === WebSocket.OPEN) {
             window.WebSocketManager.connection.close()
         }
     } else if (endpoint === "/messenger") {
         MessengerContent();
-        if (window.WebSocketManager) {
-            createOnlineUsers()
-        }
+    } else {
+        PageNotFound();
     }
 
     console.log(endpoint, window.loggedUser)
-
 
 }
 
@@ -623,13 +563,13 @@ function showAlert(msj) {
     const alertBox = document.getElementById("customAlert");
     alertBox.style.display = "block";
     alertBox.textContent = msj
-  
+
     setTimeout(() => {
-      alertBox.style.display = "none";
+        alertBox.style.display = "none";
     }, 5000);
-  }
-  
-  window.showAlert = showAlert
+}
+
+window.showAlert = showAlert
 
 await insertUserInCach()
 LoadContent(window.location.pathname);
@@ -723,7 +663,13 @@ function goToChat(e) {
     }, 500)
 }
 
-// // Add this script element to include the WebSocketManager
-// const scriptElement = document.createElement('script');
-// scriptElement.src = "static/js/ws-manager.js"; // Save the first artifact as this file
-// document.head.appendChild(scriptElement);
+function insertUserValue() {
+    document.getElementById('Name').setAttribute('value', window.loggedUser)
+    document.querySelector('.dropdown-button').innerHTML += " " + window.loggedUser
+    if (window.WebSocketManager) {
+        createOnlineUsers()
+    }
+}
+
+if (document.readyState !== 'loading') insertUserValue();
+window.addEventListener('DOMContentLoaded', insertUserValue)
