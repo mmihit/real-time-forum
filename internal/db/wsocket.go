@@ -22,6 +22,7 @@ type LoadingChatResponse struct {
 type OnlineUsers struct {
 	UserName string `json:"userName"`
 	Status   string `json:"status"`
+	LastMessage any `json:"lastMessage"`
 }
 
 func (d *Database) GetIdOfSenderOrReciever(user string) (int, error) {
@@ -147,8 +148,6 @@ func (d *Database) GetChatHistory(sender, receiver string, page int, pageSize in
 		}
 	}
 
-	fmt.Println(Response.Chats)
-
 	return Response, nil
 }
 
@@ -167,7 +166,8 @@ func (d *Database) GetOnlineChatUsers(userName string, onlineUsers []string) ([]
 
 	queryOfFetchingOnlineChatUsers := `  
 SELECT DISTINCT
-    u.username
+    u.username,
+	c.message
 FROM users u
 LEFT JOIN (
     -- Subquery li katjib akher message (create_date) bin kol user w luser dyalna
@@ -181,6 +181,11 @@ LEFT JOIN (
     WHERE sender_id = ? OR receiver_id = ?
     GROUP BY other_user_id
 ) latest ON latest.other_user_id = u.id
+ LEFT JOIN chats c ON (
+    ((c.sender_id = ? AND c.receiver_id = u.id) OR 
+     (c.sender_id = u.id AND c.receiver_id = ?)) 
+     AND c.create_date = latest.latest_chat_date
+)
 WHERE u.id != ?
 ORDER BY 
     -- L-users li 3ndhom chats kayjiu lewlin
@@ -199,7 +204,7 @@ ORDER BY
 		return nil, fmt.Errorf("User not found: %w", err)
 	}
 
-	rows, err := d.Db.Query(queryOfFetchingOnlineChatUsers, senderID, senderID, senderID, senderID)
+	rows, err := d.Db.Query(queryOfFetchingOnlineChatUsers, senderID, senderID, senderID, senderID, senderID, senderID)
 	if err != nil {
 		return nil, fmt.Errorf("failed fetching online chat users from db: %w", err)
 	}
@@ -211,7 +216,8 @@ ORDER BY
 
 	for rows.Next() {
 
-		if err := rows.Scan(&user.UserName); err != nil {
+	
+		if err := rows.Scan(&user.UserName, &user.LastMessage); err != nil {
 			return nil, fmt.Errorf("failed scanning chat history from db : %w", err)
 		}
 

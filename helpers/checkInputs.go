@@ -12,13 +12,41 @@ import (
 )
 
 func IsValidInput(user db.User) string {
-	/*********** Name *************/
+	/*********** User Name *************/
 	nameRegex := `^[A-Za-z0-9._-]{2,15}$`
 	NameR := regexp.MustCompile(nameRegex)
 	if !NameR.MatchString(user.UserName) {
 		return "invalid name !"
 	} else if len(user.UserName) > 15 {
 		return "too long name 🥲"
+	}
+
+	/*********** Age *************/
+	if (user.Age < 16 || user.Age > 120) {
+		return "Invalid Age !"
+	} 
+
+	/*********** Gender *************/
+	if (user.Gender != "male" && user.Gender != "female") {
+		return "Invalid Gender !"
+	}
+
+	/*********** First Name *************/
+	firstNameRegex := `^[A-Za-z-\s]{6,30}$`
+	firstNameR := regexp.MustCompile(firstNameRegex)
+	if !firstNameR.MatchString(user.FirstName) {
+		return "Invalid First Name !"
+	} else if len(user.UserName) > 30 {
+		return "too long first name 🥲"
+	}
+
+	/*********** Last Name *************/
+	lastNameRegex := `^[A-Za-z-\s]{6,30}$`
+	lastNameR := regexp.MustCompile(lastNameRegex)
+	if !lastNameR.MatchString(user.LastName) {
+		return "Invalid Last Name !"
+	} else if len(user.UserName) > 30 {
+		return "too long Last name 🥲"
 	}
 
 	/*********** Email *************/

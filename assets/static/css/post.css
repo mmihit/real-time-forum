@@ -23,12 +23,12 @@
 .back-link {
   text-decoration: none;
   font-size: 0.9rem;
-  color: #007bff;
+  color: #6C63FF;
   transition: color 0.2s ease-in-out;
 }
 
 .back-link:hover {
-  color: #0056b3;
+  color: #1d13d4;
 }
 
 .post-header {
@@ -66,11 +66,11 @@
 
 .category-label a {
   /*text-decoration: none; /* Remove underline */
-  color: #007bff; /* Professional link color */
+  color: #6C63FF; /* Professional link color */
 }
 
 .category-label a:hover {
-  color: #0056b3; /* Darker shade for hover */
+  color:#1a10d3; /* Darker shade for hover */
 }
 
 /* Post Content */

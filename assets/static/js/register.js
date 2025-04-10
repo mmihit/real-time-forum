@@ -24,7 +24,29 @@ document.addEventListener('submit', async (event) => {
 
         const nameRegex = /^[A-Za-z0-9._-]{2,15}$/;
         if (!nameRegex.test(nickname)) {
-            document.getElementById('nickname').innerText = 'Invalid nickname';
+            document.getElementById('nicknameError').innerText = 'Invalid nickname';
+            isValid = false;
+        }
+
+        const firstNameRegex = /^[A-Za-z-\s]{6,30}$/;
+        if (!firstNameRegex.test(firstName)) {
+            document.getElementById('firstNameError').innerText = 'Invalid First Name';
+            isValid = false;
+        }
+
+        const lastNameRegex = /^[A-Za-z-\s]{6,30}$/;
+        if (!lastNameRegex.test(lastName)) {
+            document.getElementById('lastNameError').innerText = 'Invalid Last Name';
+            isValid = false;
+        }
+        
+        if (gender != "male" && gender != "female") {
+            document.getElementById('genderError').innerText = 'Invalid Gender';
+            isValid = false;
+        }
+
+        if (age < 16 || age > 120) {
+            document.getElementById('ageError').innerText = 'Invalid Age';
             isValid = false;
         }
 

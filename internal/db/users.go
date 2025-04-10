@@ -1,6 +1,9 @@
 package db
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"golang.org/x/crypto/bcrypt"
+	"strings"
+)
 
 
 type User struct {
@@ -56,9 +59,9 @@ func (d *Database) Authenticate(email, Password string) (int, string, error) {
 	var id int
 	var passwordHash []byte
 	var userName string
-
+	
 	expression := `SELECT username, id, password From users WHERE email = ? OR username = ?`
-	row := d.Db.QueryRow(expression, email, email)
+	row := d.Db.QueryRow(expression, email, strings.ToLower(email))
 	err := row.Scan(&userName, &id, &passwordHash)
 	if err != nil {
 		return 0, "", err

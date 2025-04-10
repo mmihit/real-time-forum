@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"forum/helpers"
 	"net/http"
 )
@@ -26,7 +25,6 @@ func (h *Handler) LoadMessages(w http.ResponseWriter, r *http.Request) {
 			helpers.JsonResponse(w, http.StatusInternalServerError, "Error of loading chat")
 		}
 
-		fmt.Println("id:", LoadingChatRequest.Id)
 
 		sender, err := helpers.CheckCookie(r, h.DB)
 		if err != nil {
