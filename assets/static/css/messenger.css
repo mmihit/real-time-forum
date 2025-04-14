@@ -157,7 +157,7 @@ body {
 .main {
     display: flex;
     min-height: 500px;
-    max-height: 500px;
+    /* max-height: 500px; */
 }
 
 .users-box {
@@ -220,6 +220,7 @@ body {
     margin: 0;
     overflow-x: auto;
     background: #fff;
+    max-height: 450px;
 }
 
 .chat-list li {
@@ -254,6 +255,8 @@ body {
     overflow-y: scroll;
     display: flex;
     flex-direction: column;
+    min-height: 400px;
+    max-height: 400px;
 }
 
 /* General message styling */
@@ -305,6 +308,64 @@ body {
     max-width: 65%;
     word-wrap: break-word;
 }
+
+.profile-card {
+    display: flex;
+    margin-top: 20px;
+    align-items: center;
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    max-width: 300px;
+    font-family: sans-serif;
+    position: relative;
+  }
+  
+  .avatar-container {
+    position: relative;
+  }
+  
+  .avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #eee;
+  }
+  
+  .status-indicator {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+  }
+  
+  .status-indicator.Online {
+    background-color: #34c759;
+  }
+  
+  .status-indicator.Ofline {
+    background-color: #d1d1d6;
+  }
+  
+  .user-info {
+    margin-left: 1rem;
+  }
+  
+  .username {
+    font-size: 1.2rem;
+    margin: 0;
+  }
+  
+  .email {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0.2rem 0 0 0;
+  }
 
 /* Sent messages (user) */
 .sent .message-body {
@@ -380,9 +441,9 @@ button:hover {
         padding: 15px;
     }
 
-    .chat-container {
+    /* .chat-container {
         max-height: 399.22px;
-    }
+    } */
 
     .users-box {
         /* flex-direction: column; */

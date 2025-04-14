@@ -10,8 +10,6 @@
     const sendBtn = document.getElementById("send-button");
     let messageDisplay = document.getElementById("messages");
 
-
-
     const requestBody = {
         input: searchUser.value,
         index: 0
@@ -33,9 +31,31 @@
         newScrollHeight: 0
     }
 
+    const select = {
+        // messagesListElemes:null,
+        element: null,
+        goToChat(e) {
+            messageDisplay.innerHTML = "";
+            selectedUser.receiver = !e ? this.element.target.dataset.user : e.target.dataset.user
+            selectedUser.isSelected = true
+            selectedUser.index = 0
+            chatList.innerHTML = window.messagesListInnerHtml
+            searchUser.value = ""
+            loadingChat()
+            console.log("Selected user:", selectedUser);
+            attachUserListeners()
+        },
+        initializeElement(e) {
+            this.element = e
+        }
+    }
+
+    window.selectChatFromOnlineUsers = select
+
     function attachUserListeners() {
-        const usersInChatBox = document.querySelectorAll("#chat-list > li");
-        usersInChatBox.forEach(element => {
+        // const usersInChatBox = document.querySelectorAll(".profile-card");
+        // console.log(usersInChatBox)
+        document.querySelectorAll(".profile-card").forEach(element => {
             element.removeEventListener('click', window.selectChatFromOnlineUsers.goToChat);
             element.addEventListener('click', window.selectChatFromOnlineUsers.goToChat);
         });
@@ -76,7 +96,7 @@
         } else {
             requestBody.index = 0
             requestBody.input = searchUser.value
-            chatList.innerHTML = ""
+            chatList.innerHTML = window.messagesListInnerHtml
         }
 
         if (requestBody.input.length > 0 && requestBody.input.length < 40 && requestBody.index >= 0) {
@@ -94,28 +114,6 @@
             }
         }
     }
-
-
-
-    const select = {
-        element: null,
-        goToChat(e) {
-            messageDisplay.innerHTML = "";
-            selectedUser.receiver = !e ? this.element.target.dataset.user : e.target.dataset.user
-            selectedUser.isSelected = true
-            selectedUser.index = 0
-            chatList.innerHTML = ""
-            searchUser.value = ""
-            loadingChat()
-            console.log("Selected user:", selectedUser);
-
-        },
-        initializeElement(e) {
-            this.element = e
-        }
-    }
-
-    window.selectChatFromOnlineUsers = select
 
     function displaySearchBox() {
         searchBox.classList.add('visible');
@@ -196,9 +194,11 @@
         if ((chatData.sender === window.loggedUser && chatData.receiver === selectedUser.receiver) ||
             (chatData.receiver === window.loggedUser && chatData.sender === selectedUser.receiver)) {
             const action = chatData.sender === window.loggedUser ? "sent" : "received";
-            createMessage(chatData.message, window.loggedUser, action);
+            createMessage(chatData.message, chatData.sender, action);
         }
     }
+
+    // function handleMessagesList()
 
     function sendMessage() {
         let input = document.getElementById("message");
@@ -234,7 +234,7 @@
                 responseData.chats.reverse().forEach((chat) => {
                     const flag = chat.sender == window.loggedUser ? "sent" : "received";
                     createMessage(chat.message, chat.sender, flag, chat.create_date);
-                }); 
+                });
             }
 
             // scrollHelper.newScrollHeight = 
@@ -273,6 +273,7 @@
         }
     }
 
+
     function checkLoadMore() {
         if (scrollHelper.isLoading || !selectedUser.isSelected || !scrollHelper.hasMore) return;
         console.log("scrollTop:", messageDisplay.scrollTop)
@@ -295,10 +296,10 @@
     // Register message handler for this page
     if (window.WebSocketManager) {
         window.WebSocketManager.registerMessageHandler(handleMessengerMessage);
+        // window.WebSocketManager.initializeLastMessagesListHandler(lastMessagesListHnadler);
 
-        // Clean up when navigating away
         window.appRegistry.registerEventListener(window, 'beforeunload', function () {
-            window.WebSocketManager.removeMessageHandler(handleMessengerMessage);
+            window.WebSocketManager.removeMessageHandler();
         });
     }
 })();

@@ -412,8 +412,8 @@ function MessengerContent() {
                             <span class="remove-icon">❌</span>
                         </div>
                         
-                        <ul class="chat-list" id="chat-list">
-                        </ul>
+                        <div class="chat-list" id="chat-list">
+                        </div>
                     </div>
                     <div class="chat-container">
                         <div class="chat-header" id="chat-header">Select a chat</div>
@@ -445,6 +445,11 @@ function MessengerContent() {
     addStylesheet("/static/css/alert.css");
     addStylesheet("/static/css/messenger.css");
     addStylesheet("/static/css/online_users.css");
+
+    if (document.getElementById('chat-list')) {
+        console.log("aaaaaaaaahna")
+        lastMessagesListHnadler()
+    }
 }
 
 function PageNotFound() {
@@ -575,7 +580,8 @@ await insertUserInCach()
 LoadContent(window.location.pathname);
 // Initialize WebSocket connection if user is logged in
 if (window.loggedUser && window.WebSocketManager) {
-    window.WebSocketManager.initializeOnlineUsersHandler(createOnlineUsers)
+    window.WebSocketManager.initializeOnlineUsersHandler(createOnlineUsers);
+    window.WebSocketManager.initializeLastMessagesListHandler(lastMessagesListHnadler);
     window.WebSocketManager.connect();
 }
 
@@ -628,6 +634,62 @@ function createUserProfile(user, onlineUsersElement) {
 //   createUserProfile("Alice Smith", true);
 //   createUserProfile("John Doe", false);
 
+function lastMessagesListHnadler(onlineUsers) {
+    const chatListElement = document.getElementById('chat-list') ? document.getElementById('chat-list') : false;
+    if (chatListElement) {
+        const users = !onlineUsers || onlineUsers === undefined ? window.WebSocketManager.Users : onlineUsers;
+        chatListElement.innerHTML = ''
+        console.log(users)
+        users.forEach(user => {
+            if (user.lastMessage) {
+                const card = document.createElement('div');
+                card.className = 'profile-card';
+                card.setAttribute('data-user', user.userName);
+
+                const avatarContainer = document.createElement('div');
+                avatarContainer.className = 'avatar-container';
+
+                const img = document.createElement('img');
+                img.src = 'https://i.pravatar.cc/150?img=3';
+                img.alt = 'User Avatar';
+                img.className = 'avatar';
+                img.setAttribute('data-user', user.userName);
+
+                const status = document.createElement('span');
+                status.className = `status-indicator ${user.status}`;
+                status.setAttribute('data-user', user.userName);
+
+                avatarContainer.appendChild(img);
+                avatarContainer.appendChild(status);
+
+                const userInfo = document.createElement('div');
+                userInfo.className = 'user-info';
+
+                const username = document.createElement('h2');
+                username.className = 'username';
+                username.textContent = user.userName;
+                username.setAttribute('data-user', user.userName);
+
+                const message = document.createElement('p');
+                message.className = 'message';
+                message.textContent = user.lastMessage;
+                message.setAttribute('data-user', user.userName);
+
+                userInfo.appendChild(username);
+                userInfo.appendChild(message);
+
+                card.appendChild(avatarContainer);
+                card.appendChild(userInfo);
+
+                chatListElement.appendChild(card)
+                // console.log(card)
+            }
+            window.messagesListInnerHtml = document.getElementById('chat-list').innerHTML;
+            console.log(window.messagesListInnerHtml)
+        })
+    }
+}
+
 
 function createOnlineUsers(users) {
 
@@ -635,7 +697,8 @@ function createOnlineUsers(users) {
     const onlineUsersElement = document.getElementById('online-users-list');
     if (onlineUsersElement) {
         onlineUsersElement.innerHTML = '';
-        const onlineUsers = (users === undefined) ? window.WebSocketManager.Users : users
+
+        const onlineUsers = users === undefined ? window.WebSocketManager.Users : users
         // console.log((!undefined), window.WebSocketManager.Users)
         // console.log((!!undefined), users)
         if (onlineUsers) {
@@ -646,8 +709,10 @@ function createOnlineUsers(users) {
                 // userElement.dataset.user = user.userName
                 // onlineUsersElement.appendChild(userElement);
                 createUserProfile(user, onlineUsersElement);
+                // window.messagesListInnerHtml = messagesListElement.innerHTML
             });
-            console.log(document.querySelectorAll('.simple-profile'))
+            // console.log(messagesListElement)
+            // console.log(document.querySelectorAll('.simple-profile'))
             document.querySelectorAll('.simple-profile').forEach(element => element.addEventListener('click', goToChat))
         } else {
             onlineUsersElement.innerHTML = ''

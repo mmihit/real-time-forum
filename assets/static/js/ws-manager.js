@@ -7,6 +7,7 @@ const WebSocketManager = {
     reconnectDelay: 1000,
     messageHandlers: [],
     onlineUsersHandler: null,
+    MessageListHandler: null,
     Users: [],
 
     connect() {
@@ -22,14 +23,16 @@ const WebSocketManager = {
             console.log("Connected to WebSocket server");
             this.isConnected = true;
             this.reconnectAttempts = 0;
+            // this.Users = chatData.users;
         };
 
         this.connection.onmessage = (event) => {
             const chatData = JSON.parse(event.data);
 
             if (chatData.type === "online_users") {
-                this.onlineUsersHandler(chatData.users)
-                this.Users = chatData.users
+                this.Users = chatData.users;
+                this.onlineUsersHandler(chatData.users);
+                if (this.MessageListHandler) this.MessageListHandler(chatData.users);
             } else {
                 // Notify all registered handlers
                 this.messageHandlers.forEach(handler => handler(chatData));
@@ -38,8 +41,6 @@ const WebSocketManager = {
                     window.showAlert(`${chatData.sender} sent you a  message`);
                 }
             }
-
-
         };
 
         this.connection.onclose = (event) => {
@@ -78,12 +79,15 @@ const WebSocketManager = {
         }
     },
 
+    initializeLastMessagesListHandler(handler) {
+        this.MessageListHandler = handler
+    },
+
     // Remove a message handler when leaving a page
-    removeMessageHandler(handler) {
-        const index = this.messageHandlers.indexOf(handler);
-        if (index !== -1) {
-            this.messageHandlers.splice(index, 1);
-        }
+    removeMessageHandler() {
+
+        this.messageHandlers = []
+
     },
 
     initializeOnlineUsersHandler(handler) {
