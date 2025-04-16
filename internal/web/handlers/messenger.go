@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"forum/helpers"
 	"net/http"
 )
@@ -18,6 +19,7 @@ type SearchingInputResponse struct {
 
 func (h *Handler) Messenger(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
+		// fmt.Println(r.URL.Path)
 		helpers.ExecuteTmpl(w, "index.html", 200, "", nil)
 		return
 	} else if r.Method == http.MethodPost {
@@ -48,5 +50,7 @@ func (h *Handler) Messenger(w http.ResponseWriter, r *http.Request) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(SearchingInputResponse)
+	} else {
+		fmt.Println(r.URL.Path)
 	}
 }

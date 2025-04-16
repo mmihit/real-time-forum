@@ -94,6 +94,10 @@ function addStylesheet(href, type = "text/css") {
 }
 
 async function LoginContent() {
+    removeAllStylesheets();
+    addStylesheet("/static/css/styles.css");
+    addStylesheet("/static/css/alert.css");
+
     const html = document.getElementById("dynamicHtml");
 
     const htmlTemp = `
@@ -129,12 +133,14 @@ async function LoginContent() {
     scriptModule.src = "/static/js/login.js";
     container.appendChild(scriptModule);
 
-    removeAllStylesheets();
-    addStylesheet("/static/css/styles.css");
-    addStylesheet("/static/css/alert.css");
+
 }
 
 async function RegisterContent() {
+    removeAllStylesheets();
+    addStylesheet("/static/css/styles.css");
+    addStylesheet("/static/css/alert.css");
+
     const html = document.getElementById("dynamicHtml");
 
     const htmlTemp = `
@@ -200,12 +206,15 @@ async function RegisterContent() {
     scriptModule.src = "/static/js/register.js";
     container.appendChild(scriptModule);
 
-    removeAllStylesheets();
-    addStylesheet("/static/css/styles.css");
-    addStylesheet("/static/css/alert.css");
+
 }
 
 async function HomeContent() {
+    removeAllStylesheets();
+    addStylesheet("/static/css/home.css");
+    addStylesheet("/static/css/alert.css");
+    addStylesheet("/static/css/online_users.css")
+
     const homeData = await fetchApi(`/api/params/Home?_=${new Date().getTime()}`);
     const username = homeData.username;
     const html = document.getElementById("dynamicHtml");
@@ -284,10 +293,7 @@ async function HomeContent() {
     `;
     container.appendChild(scriptModule);
 
-    removeAllStylesheets();
-    addStylesheet("/static/css/home.css");
-    addStylesheet("/static/css/alert.css");
-    addStylesheet("/static/css/online_users.css")
+
 
     html.innerHTML = htmlTemp;
 
@@ -297,6 +303,13 @@ async function HomeContent() {
 }
 
 async function PostContent() {
+    removeAllStylesheets();
+    addStylesheet("/static/css/post.css");
+    addStylesheet("/static/css/alert.css");
+    addStylesheet("/static/css/comments.css");
+    addStylesheet("/static/css/home.css");
+    addStylesheet("/static/css/online_users.css");
+
     const apiData = await fetchApi("/api/params/Post");
     const post = apiData.post;
     const username = apiData.username;
@@ -380,12 +393,7 @@ async function PostContent() {
     `;
     container.appendChild(scriptModule);
 
-    removeAllStylesheets();
-    addStylesheet("/static/css/post.css");
-    addStylesheet("/static/css/alert.css");
-    addStylesheet("/static/css/comments.css");
-    addStylesheet("/static/css/home.css");
-    addStylesheet("/static/css/online_users.css");
+
 
     if (!username) {
         return true
@@ -394,6 +402,11 @@ async function PostContent() {
 }
 
 function MessengerContent() {
+    removeAllStylesheets();
+    addStylesheet("/static/css/alert.css");
+    addStylesheet("/static/css/messenger.css");
+    addStylesheet("/static/css/online_users.css");
+
     const html = document.getElementById("dynamicHtml");
     let htmlTemp = `
         <div id="body">
@@ -441,11 +454,6 @@ function MessengerContent() {
 
 
 
-    removeAllStylesheets();
-    addStylesheet("/static/css/alert.css");
-    addStylesheet("/static/css/messenger.css");
-    addStylesheet("/static/css/online_users.css");
-
     if (document.getElementById('chat-list')) {
         console.log("aaaaaaaaahna")
         lastMessagesListHnadler()
@@ -453,6 +461,8 @@ function MessengerContent() {
 }
 
 function PageNotFound() {
+    removeAllStylesheets();
+    addStylesheet("/static/css/error.css");
     let tempHtml = `
         <div class="container">
             <div class="error-code">400</div>
@@ -474,10 +484,10 @@ function PageNotFound() {
     console.log(ErrorSection)
 
     document.getElementById('fixedHtml').style.display = "none";
+    document.getElementById('dynamicHtml').style.display = "none";
     ErrorSection.innerHTML = tempHtml;
 
-    removeAllStylesheets();
-    addStylesheet("/static/css/error.css");
+
 }
 
 export function navigateTo(endpoint) {
@@ -507,15 +517,19 @@ async function LoadContent(endpoint) {
         document.getElementById('fixedHtml').style.display = "block";
         // if (document.getElementById('Name'))
     };
+    if (document.getElementById('dynamicHtml')) {
+        document.getElementById('dynamicHtml').style.display = "block";
+    }
 
 
     if (endpoint === "/" || !endpoint) {
         if (await HomeContent())
             setTimeout(applyPermissionDenied, 100);
-    } else if (endpoint.includes("/post")) {
+    } else if (endpoint == '/post') {
         if (await PostContent())
             setTimeout(applyPermissionDenied, 100);
     } else if (endpoint === "/login" || endpoint === "/logout") {
+        console.log("tttttttttttttttttt", endpoint)
         await LoginContent();
         if (document.getElementById('fixedHtml')) document.getElementById('fixedHtml').style.display = "none";
         await insertUserInCach();
@@ -532,6 +546,7 @@ async function LoadContent(endpoint) {
     } else if (endpoint === "/messenger") {
         MessengerContent();
     } else {
+        // alert("teeeeeest")
         PageNotFound();
     }
 
@@ -649,8 +664,11 @@ function lastMessagesListHnadler(onlineUsers) {
                 const avatarContainer = document.createElement('div');
                 avatarContainer.className = 'avatar-container';
 
+                const avatarName = encodeURIComponent(user.userName);
+                const avatarURL = `https://ui-avatars.com/api/?name=${avatarName}&background=6c63ff&color=fff&size=150`;
+
                 const img = document.createElement('img');
-                img.src = 'https://i.pravatar.cc/150?img=3';
+                img.src = avatarURL;
                 img.alt = 'User Avatar';
                 img.className = 'avatar';
                 img.setAttribute('data-user', user.userName);
