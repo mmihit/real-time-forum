@@ -161,6 +161,7 @@ body {
 }
 
 .users-box {
+    margin-top: 13px;
     width: 30%;
     display: flex;
     flex-direction: column;
@@ -237,8 +238,6 @@ body {
     display: flex;
     flex-direction: column;
     background: #fff;
-    /* max-width: 530px; */
-    min-width: 350px;
 }
 
 .chat-header {

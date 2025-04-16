@@ -4,16 +4,16 @@
     const searchIcon = document.querySelector('.search-icon');
     const removeIcon = document.querySelector('.remove-icon');
     const searchBox = document.querySelector(".search-box");
-    const searchUser = document.getElementById("search-user");
+   // const searchUser = document.getElementById("search-user");
     let chatList = document.getElementById("chat-list");
     let chatHeader = document.getElementById("chat-header")
     const sendBtn = document.getElementById("send-button");
     let messageDisplay = document.getElementById("messages");
 
-    const requestBody = {
-        input: searchUser.value,
-        index: 0
-    }
+    // const requestBody = {
+    //     //input: searchUser.value,
+    //     index: 0
+    // }
 
     const selectedUser = {
         receiver: null,
@@ -40,7 +40,7 @@
             selectedUser.isSelected = true
             selectedUser.index = 0
             chatList.innerHTML = window.messagesListInnerHtml
-            searchUser.value = ""
+            //searchUser.value = ""
             loadingChat()
             console.log("Selected user:", selectedUser);
             attachUserListeners()
@@ -284,13 +284,13 @@
         }
     }
 
-    const debouncedPrint = debounce(userSearch, 500);
+    // const debouncedPrint = debounce(userSearch, 500);
     const debounceLoadMore = debounce(checkLoadMore, 500);
 
     window.appRegistry.registerEventListener(messageDisplay, 'scroll', debounceLoadMore);
     window.appRegistry.registerEventListener(searchIcon, 'click', displaySearchBox);
     window.appRegistry.registerEventListener(removeIcon, 'click', hideSearchBox);
-    window.appRegistry.registerEventListener(searchUser, 'input', debouncedPrint);
+    //window.appRegistry.registerEventListener(searchUser, 'input', debouncedPrint);
     window.appRegistry.registerEventListener(sendBtn, 'click', sendMessage);
 
     // Register message handler for this page

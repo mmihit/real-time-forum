@@ -105,6 +105,7 @@ const GetPostFromIds = async (postsId) => {
   const posts = await Promise.all(
     postsId.map(async (id) => {
       const apiData = await fetchApi(`/api/posts/${id}`)
+      console.log("ghjnkml", apiData)
       return apiData
     })
   )

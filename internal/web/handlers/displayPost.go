@@ -16,7 +16,6 @@ import (
 // }
 
 func (h *Handler) DisplayPostWithComments(w http.ResponseWriter, r *http.Request) {
-
 	isLogged := true
 	loggedUser, err := helpers.CheckCookie(r, h.DB)
 	if err == http.ErrNoCookie {
@@ -29,6 +28,7 @@ func (h *Handler) DisplayPostWithComments(w http.ResponseWriter, r *http.Request
 	idTarget, err := strconv.Atoi(r.URL.Query().Get("id"))
 	fmt.Println(idTarget)
 	if err != nil {
+		fmt.Println("teeeeeeeeeest5555")
 		helpers.ExecuteTmpl(w, "error.html", http.StatusBadRequest, "Oops! Bad Request error !", nil)
 		return
 	}
@@ -45,5 +45,6 @@ func (h *Handler) DisplayPostWithComments(w http.ResponseWriter, r *http.Request
 			}
 		}
 	}
+	fmt.Println("teeeeeeeeeestaaaaaaaaaaaa")
 	helpers.ExecuteTmpl(w, "error.html", http.StatusBadRequest, "Oops! Bad Request error !", nil)
 }

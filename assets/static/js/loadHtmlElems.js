@@ -65,7 +65,12 @@ async function fetchApi(url) {
                 'Content-Type': 'application/json'
             },
         });
-        return await response.json();
+        if (response.ok){
+            return await response.json();
+        } else {
+            return false
+        }
+
     } catch (error) {
         console.error("Error fetching data:", error);
         return null;
@@ -303,6 +308,11 @@ async function HomeContent() {
 }
 
 async function PostContent() {
+    const apiData = await fetchApi("/api/params/Post");
+    if (!apiData) {
+        console.log("hadkfjaslkdfjalksdfjlka")
+        return
+    }
     removeAllStylesheets();
     addStylesheet("/static/css/post.css");
     addStylesheet("/static/css/alert.css");
@@ -310,7 +320,7 @@ async function PostContent() {
     addStylesheet("/static/css/home.css");
     addStylesheet("/static/css/online_users.css");
 
-    const apiData = await fetchApi("/api/params/Post");
+    console.log("tttttttttttttt",apiData)
     const post = apiData.post;
     const username = apiData.username;
     const html = document.getElementById("dynamicHtml");
@@ -416,15 +426,6 @@ function MessengerContent() {
                 </div>
                 <div class="main">
                     <div class="users-box">
-                        <div class="top-bar">
-                            <h2>Chats</h2>
-                            <span class="search-icon">🔍</span>
-                        </div>
-                        <div class="search-box">
-                            <input type="text" id="search-user" placeholder="Search user...">
-                            <span class="remove-icon">❌</span>
-                        </div>
-                        
                         <div class="chat-list" id="chat-list">
                         </div>
                     </div>
@@ -525,7 +526,7 @@ async function LoadContent(endpoint) {
     if (endpoint === "/" || !endpoint) {
         if (await HomeContent())
             setTimeout(applyPermissionDenied, 100);
-    } else if (endpoint == '/post') {
+    } else if (endpoint.includes('/post')) {
         if (await PostContent())
             setTimeout(applyPermissionDenied, 100);
     } else if (endpoint === "/login" || endpoint === "/logout") {
