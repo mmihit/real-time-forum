@@ -311,15 +311,16 @@ body {
 
 .profile-card {
     display: flex;
-    margin-top: 20px;
+    margin-top: 6px;
     align-items: center;
     background: #fff;
     border-radius: 1rem;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    padding: 1rem;
-    max-width: 300px;
+    padding: 0.5rem;
+    max-width: 400px;
     font-family: sans-serif;
     position: relative;
+    cursor: pointer;
   }
   
   .avatar-container {
@@ -453,7 +454,8 @@ button:hover {
     .chat-list {
         flex-wrap: nowrap;
         overflow-x: auto;
-        flex-direction: row;
+        flex-direction: column;
+        max-width: 102%;
     }
 
     .search-box {

@@ -25,8 +25,8 @@
 }
 
 .avatar {
-  width: 85px;
-  height: 85px;
+  width: 71px;
+  height: 71px;
   border-radius: 50%;
   object-fit: cover;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -56,4 +56,5 @@
   margin-top: 0.5rem;
   font-size: 1rem;
   font-weight: bold;
+  padding-bottom: 7px;
 }
