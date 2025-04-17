@@ -120,3 +120,13 @@ func (d *Database) TokenVerification(token string) (string, error) {
 
 	return user.UserName, nil
 }
+
+func (d *Database) DeleteTokenFromDataBase(username string) error {
+	query := `UPDATE users SET token = NULL WHERE username = ?`
+
+	_, err := d.Db.Exec(query, username)
+	if err != nil {
+		return err
+	}
+	return nil
+}

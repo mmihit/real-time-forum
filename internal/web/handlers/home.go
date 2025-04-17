@@ -28,7 +28,7 @@ func (h *Handler) HomePage(w http.ResponseWriter, r *http.Request) {
 		if err == nil {
 			h.Api.Params.Home.UserName = userName
 		} else {
-			helpers.DeleteCookie(w)
+			helpers.DeleteCookie(w, h.Api.Params.Home.UserName, h.DB)
 		}
 	}
 

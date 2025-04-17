@@ -1,12 +1,13 @@
 package helpers
 
 import (
-	"forum/internal/db"
 	"net/http"
 	"time"
+
+	"forum/internal/db"
 )
 
-func DeleteCookie(w http.ResponseWriter) {
+func DeleteCookie(w http.ResponseWriter, user string, d *db.Database) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session",
 		Value:    "",
@@ -16,6 +17,7 @@ func DeleteCookie(w http.ResponseWriter) {
 		Secure:   true,
 		SameSite: http.SameSiteLaxMode,
 	})
+	d.DeleteTokenFromDataBase(user)
 }
 
 func AddCookie(w http.ResponseWriter, token string) {

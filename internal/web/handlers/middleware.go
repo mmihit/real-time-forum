@@ -15,7 +15,7 @@ func (h *Handler) AccessMiddleware(next http.HandlerFunc) http.Handler {
 		}
 
 		if _, err := h.DB.TokenVerification(cookie.Value); err != nil {
-			helpers.DeleteCookie(w)
+			helpers.DeleteCookie(w, h.Api.Params.Home.UserName, h.DB)
 			http.Redirect(w, r, "/login", http.StatusFound)
 			return
 		}

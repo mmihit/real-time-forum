@@ -78,11 +78,15 @@ func (h *Handler) WsHandler(w http.ResponseWriter, r *http.Request) {
 	// Cleanup when connection is closed
 	defer func() {
 		conn.Close()
-
 		mutex.Lock()
-		clients[username] = removeClient(clients[username], client)
-		if len(clients[username]) == 0 {
+		_, err := helpers.CheckCookie(r, h.DB)
+		if err != nil {
 			delete(clients, username)
+		} else {
+			clients[username] = removeClient(clients[username], client)
+			if len(clients[username]) == 0 {
+				delete(clients, username)
+			}
 		}
 		mutex.Unlock()
 

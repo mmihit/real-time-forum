@@ -531,7 +531,7 @@ async function LoadContent(endpoint) {
         await LoginContent();
         if (document.getElementById('fixedHtml')) document.getElementById('fixedHtml').style.display = "none";
         await insertUserInCach();
-        if (window.WebSocketManager.connecttion) {
+        if (window.WebSocketManager.connection) {
             window.WebSocketManager.connection.close()
         }
     } else if (endpoint === "/register") {

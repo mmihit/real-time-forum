@@ -1,9 +1,12 @@
 package handlers
 
 import (
-	"forum/helpers"
 	"net/http"
+
+	"forum/helpers"
 )
+
+
 
 /********************** Logout ********************/
 func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
@@ -12,7 +15,8 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	helpers.DeleteCookie(w)
+	helpers.DeleteCookie(w, h.Api.Params.Home.UserName, h.DB)
+	
 
 	h.Api.Params.Home.UserName = ""
 
