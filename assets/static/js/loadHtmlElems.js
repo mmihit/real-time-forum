@@ -65,7 +65,7 @@ async function fetchApi(url) {
                 'Content-Type': 'application/json'
             },
         });
-        if (response.ok){
+        if (response.ok) {
             return await response.json();
         } else {
             return false
@@ -137,8 +137,6 @@ async function LoginContent() {
     scriptModule.type = 'module';
     scriptModule.src = "/static/js/login.js";
     container.appendChild(scriptModule);
-
-
 }
 
 async function RegisterContent() {
@@ -320,7 +318,7 @@ async function PostContent() {
     addStylesheet("/static/css/home.css");
     addStylesheet("/static/css/online_users.css");
 
-    console.log("tttttttttttttt",apiData)
+    console.log("tttttttttttttt", apiData)
     const post = apiData.post;
     const username = apiData.username;
     const html = document.getElementById("dynamicHtml");
@@ -499,7 +497,6 @@ export function navigateTo(endpoint) {
 async function LoadContent(endpoint) {
     // console.log(end)
     const uniqueUrl = endpoint + (endpoint.includes('?') ? '&' : '?') + '_=' + new Date().getTime();
-    console.log("url", uniqueUrl);
 
     try {
         await fetch(uniqueUrl, {
@@ -534,16 +531,17 @@ async function LoadContent(endpoint) {
         await LoginContent();
         if (document.getElementById('fixedHtml')) document.getElementById('fixedHtml').style.display = "none";
         await insertUserInCach();
-        if (window.WebSocketManager.connection.readyState === WebSocket.OPEN) {
+        if (window.WebSocketManager.connecttion) {
             window.WebSocketManager.connection.close()
         }
     } else if (endpoint === "/register") {
         await RegisterContent();
         if (document.getElementById('fixedHtml')) document.getElementById('fixedHtml').style.display = "none";
         await insertUserInCach();
-        if (window.WebSocketManager.connection.readyState === WebSocket.OPEN) {
+        if (window.WebSocketManager.connecttion) {
             window.WebSocketManager.connection.close()
         }
+
     } else if (endpoint === "/messenger") {
         MessengerContent();
     } else {
@@ -593,11 +591,12 @@ function showAlert(msj) {
 window.showAlert = showAlert
 
 await insertUserInCach()
+
 LoadContent(window.location.pathname);
-// Initialize WebSocket connection if user is logged in
+window.WebSocketManager.initializeOnlineUsersHandler(createOnlineUsers);
+window.WebSocketManager.initializeLastMessagesListHandler(lastMessagesListHnadler);
+
 if (window.loggedUser && window.WebSocketManager) {
-    window.WebSocketManager.initializeOnlineUsersHandler(createOnlineUsers);
-    window.WebSocketManager.initializeLastMessagesListHandler(lastMessagesListHnadler);
     window.WebSocketManager.connect();
 }
 

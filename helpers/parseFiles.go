@@ -1,7 +1,6 @@
 package helpers
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 )
@@ -26,9 +25,8 @@ func ExecuteTmpl(w http.ResponseWriter, temp string, code int, errMsg string, da
 		data = WriteError(w, errMsg, code)
 	}
 	err := tmpl.ExecuteTemplate(w, temp, data)
-	fmt.Println(temp)
-	fmt.Print(err)
-
+	// fmt.Println(temp)
+	// fmt.Print(err)
 	if err != nil {
 		err2 := tmpl.ExecuteTemplate(w, "error.html", WriteError(w, "Internal Server Error!", http.StatusInternalServerError))
 		if err2 != nil {

@@ -3,7 +3,6 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -15,7 +14,6 @@ import (
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		helpers.ExecuteTmpl(w, "index.html", 200, "", nil)
-		fmt.Println("tryning....123")
 		return
 	} else if r.Method == http.MethodPost {
 		type Slogin struct {

@@ -14,6 +14,7 @@ type Handler struct {
 }
 
 func (h *Handler) HomePage(w http.ResponseWriter, r *http.Request) {
+	// fmt.Println("run")
 	if r.URL.Path != "/" {
 		helpers.ExecuteTmpl(w, "error.html", 404, "Page not Found", nil)
 		return

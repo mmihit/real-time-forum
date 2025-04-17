@@ -3,10 +3,11 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"forum/helpers"
-	"forum/internal/db"
 	"net/http"
 	"sync"
+
+	"forum/helpers"
+	"forum/internal/db"
 
 	"github.com/gorilla/websocket"
 )
@@ -15,7 +16,7 @@ type Chat struct {
 	Sender   string `json:"sender"`
 	Receiver string `json:"receiver"`
 	Message  string `json:"message"`
-	typing 	 bool
+	// typing   bool
 }
 
 type OnlineUser struct {
@@ -30,7 +31,7 @@ var upgrader = websocket.Upgrader{
 }
 
 type Client struct {
-	Conn     *websocket.Conn
+	Conn *websocket.Conn
 }
 
 var (
@@ -64,7 +65,7 @@ func (h *Handler) WsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Create new client
 	client := &Client{
-		Conn:     conn,
+		Conn: conn,
 	}
 
 	// Register client in the global clients map
@@ -84,8 +85,6 @@ func (h *Handler) WsHandler(w http.ResponseWriter, r *http.Request) {
 			delete(clients, username)
 		}
 		mutex.Unlock()
-
-
 
 		fmt.Printf("Client disconnected: %s\n", username)
 		go h.broadcastOnlineUsers()
@@ -134,7 +133,6 @@ func (h *Handler) handleMessage(chat Chat) {
 	} else {
 		fmt.Printf("Recipient %s not connected\n", chat.Receiver)
 	}
-	
 
 	// Send confirmation to sender
 	if senderClientsList, exists := clients[chat.Sender]; exists {
@@ -151,7 +149,6 @@ func (h *Handler) handleMessage(chat Chat) {
 }
 
 func (h *Handler) broadcastOnlineUsers() {
-
 	// Get list of online users
 	mutex.Lock()
 	userList := make([]string, 0, len(clients))
@@ -188,7 +185,7 @@ func (h *Handler) broadcastOnlineUsers() {
 			fmt.Printf("Error marshaling online users: %v\n", err)
 			return
 		}
-	
+
 		for _, client := range clientList {
 			err = client.Conn.WriteMessage(websocket.TextMessage, jsonMessage)
 			if err != nil {
