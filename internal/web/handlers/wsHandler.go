@@ -15,6 +15,7 @@ type Chat struct {
 	Sender   string `json:"sender"`
 	Receiver string `json:"receiver"`
 	Message  string `json:"message"`
+	typing 	 bool
 }
 
 type OnlineUser struct {
@@ -30,13 +31,21 @@ var upgrader = websocket.Upgrader{
 
 type Client struct {
 	Conn     *websocket.Conn
-	Username string
 }
 
 var (
-	clients = make(map[string]*Client)
+	clients = make(map[string][]*Client)
 	mutex   = &sync.Mutex{} // Global mutex for access to the clients map
 )
+
+func removeClient(clientsList []*Client, targetClient *Client) []*Client {
+	for i, client := range clientsList {
+		if client == targetClient {
+			return append(clientsList[:i], clientsList[i+1:]...)
+		}
+	}
+	return clientsList
+}
 
 func (h *Handler) WsHandler(w http.ResponseWriter, r *http.Request) {
 	// Authenticate user first
@@ -56,19 +65,11 @@ func (h *Handler) WsHandler(w http.ResponseWriter, r *http.Request) {
 	// Create new client
 	client := &Client{
 		Conn:     conn,
-		Username: username,
 	}
 
 	// Register client in the global clients map
 	mutex.Lock()
-	// If user already has a connection, close the old one
-	if existingClient, exists := clients[username]; exists {
-		existingClient.Conn.WriteMessage(websocket.CloseMessage,
-			websocket.FormatCloseMessage(websocket.CloseNormalClosure, "New session started"))
-		existingClient.Conn.Close()
-	}
-
-	clients[username] = client
+	clients[username] = append(clients[username], client)
 	mutex.Unlock()
 
 	go h.broadcastOnlineUsers()
@@ -78,8 +79,13 @@ func (h *Handler) WsHandler(w http.ResponseWriter, r *http.Request) {
 		conn.Close()
 
 		mutex.Lock()
-		delete(clients, username)
+		clients[username] = removeClient(clients[username], client)
+		if len(clients[username]) == 0 {
+			delete(clients, username)
+		}
 		mutex.Unlock()
+
+
 
 		fmt.Printf("Client disconnected: %s\n", username)
 		go h.broadcastOnlineUsers()
@@ -118,21 +124,25 @@ func (h *Handler) handleMessage(chat Chat) {
 	mutex.Lock()
 	defer mutex.Unlock()
 
-	if recipientClient, exists := clients[chat.Receiver]; exists {
-		err = recipientClient.Conn.WriteMessage(websocket.TextMessage, jsonMessage)
-		if err != nil {
-			fmt.Printf("Error sending to recipient %s: %v\n", chat.Receiver, err)
+	if recipientClientsList, exists := clients[chat.Receiver]; exists {
+		for _, rclient := range recipientClientsList {
+			err = rclient.Conn.WriteMessage(websocket.TextMessage, jsonMessage)
+			if err != nil {
+				fmt.Printf("Error sending to %s: %v\n", chat.Receiver, err)
+			}
 		}
 	} else {
 		fmt.Printf("Recipient %s not connected\n", chat.Receiver)
-		// Consider storing messages for offline users in a database
 	}
+	
 
 	// Send confirmation to sender
-	if senderClient, exists := clients[chat.Sender]; exists {
-		err = senderClient.Conn.WriteMessage(websocket.TextMessage, jsonMessage)
-		if err != nil {
-			fmt.Printf("Error sending confirmation to %s: %v\n", chat.Sender, err)
+	if senderClientsList, exists := clients[chat.Sender]; exists {
+		for _, sclient := range senderClientsList {
+			err = sclient.Conn.WriteMessage(websocket.TextMessage, jsonMessage)
+			if err != nil {
+				fmt.Printf("Error sending confirmation to %s: %v\n", chat.Sender, err)
+			}
 		}
 	}
 
@@ -155,7 +165,7 @@ func (h *Handler) broadcastOnlineUsers() {
 	// Broadcast to all connected clients
 	mutex.Lock()
 	var OnlineChatUsers []db.OnlineUsers
-	for username, client := range clients {
+	for username, clientList := range clients {
 		var onlineUsers []string
 		for _, user := range userList {
 			if username != user {
@@ -178,9 +188,12 @@ func (h *Handler) broadcastOnlineUsers() {
 			fmt.Printf("Error marshaling online users: %v\n", err)
 			return
 		}
-		err = client.Conn.WriteMessage(websocket.TextMessage, jsonMessage)
-		if err != nil {
-			fmt.Printf("Error sending online users to %s: %v\n", client.Username, err)
+	
+		for _, client := range clientList {
+			err = client.Conn.WriteMessage(websocket.TextMessage, jsonMessage)
+			if err != nil {
+				fmt.Printf("Error sending online users to %s: %v\n", username, err)
+			}
 		}
 	}
 
