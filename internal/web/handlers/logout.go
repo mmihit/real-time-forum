@@ -6,8 +6,6 @@ import (
 	"forum/helpers"
 )
 
-
-
 /********************** Logout ********************/
 func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
@@ -15,8 +13,9 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	helpers.DeleteCookie(w, h.Api.Params.Home.UserName, h.DB)
-	
+	userName, _ := helpers.CheckCookie(r, h.DB)
+
+	helpers.DeleteCookie(w, userName, h.DB)
 
 	h.Api.Params.Home.UserName = ""
 

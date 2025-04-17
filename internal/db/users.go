@@ -1,10 +1,10 @@
 package db
 
 import (
-	"golang.org/x/crypto/bcrypt"
 	"strings"
-)
 
+	"golang.org/x/crypto/bcrypt"
+)
 
 type User struct {
 	Id        int64             `json:"id"`
@@ -59,7 +59,7 @@ func (d *Database) Authenticate(email, Password string) (int, string, error) {
 	var id int
 	var passwordHash []byte
 	var userName string
-	
+
 	expression := `SELECT username, id, password From users WHERE email = ? OR username = ?`
 	row := d.Db.QueryRow(expression, email, strings.ToLower(email))
 	err := row.Scan(&userName, &id, &passwordHash)
@@ -75,7 +75,6 @@ func (d *Database) Authenticate(email, Password string) (int, string, error) {
 }
 
 func (d *Database) InsertToken(id int, token string) error {
-
 	expression := `UPDATE users SET Token = ? WHERE id = ?;`
 	_, err := d.Db.Exec(expression, token, id)
 	if err != nil {
@@ -86,7 +85,6 @@ func (d *Database) InsertToken(id int, token string) error {
 }
 
 func (d *Database) DatabaseVerification(name, email string) (bool, bool, error) {
-
 	// Username Verification
 	usernameExists := false
 	usernameExpression := `SELECT EXISTS (SELECT * FROM users WHERE username LIKE ?);`
@@ -122,6 +120,10 @@ func (d *Database) TokenVerification(token string) (string, error) {
 }
 
 func (d *Database) DeleteTokenFromDataBase(username string) error {
+	if len(username) == 0 {
+		return nil
+	}
+
 	query := `UPDATE users SET token = NULL WHERE username = ?`
 
 	_, err := d.Db.Exec(query, username)
