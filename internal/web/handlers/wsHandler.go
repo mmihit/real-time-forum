@@ -24,6 +24,13 @@ type OnlineUser struct {
 	Users []db.OnlineUsers `json:"users"`
 }
 
+type Typing struct {
+	Sender   string `json:"sender"`
+	Receiver string `json:"receiver"`
+	IsTyping bool   `json:"isTyping"`
+	Type     string `json:"type"`
+}
+
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		return true
@@ -38,15 +45,6 @@ var (
 	clients = make(map[string][]*Client)
 	mutex   = &sync.Mutex{} // Global mutex for access to the clients map
 )
-
-func removeClient(clientsList []*Client, targetClient *Client) []*Client {
-	for i, client := range clientsList {
-		if client == targetClient {
-			return append(clientsList[:i], clientsList[i+1:]...)
-		}
-	}
-	return clientsList
-}
 
 func (h *Handler) WsHandler(w http.ResponseWriter, r *http.Request) {
 	// Authenticate user first
@@ -88,6 +86,7 @@ func (h *Handler) WsHandler(w http.ResponseWriter, r *http.Request) {
 				delete(clients, username)
 			}
 		}
+
 		mutex.Unlock()
 
 		fmt.Printf("Client disconnected: %s\n", username)
@@ -98,26 +97,76 @@ func (h *Handler) WsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Message handling loop
 	for {
-		var chat Chat
-		err := conn.ReadJSON(&chat)
+
+		messageType, messageBytes, err := conn.ReadMessage()
 		if err != nil {
-			fmt.Printf("Error reading JSON from %s: %v\n", username, err)
+			fmt.Printf("Error reading message from %s: %v\n", username, err)
 			break
 		}
 
-		// Security check: ensure the message sender matches the authenticated user
-		if chat.Sender != username {
-			fmt.Printf("Security warning: %s tried to send message as %s\n", username, chat.Sender)
-			chat.Sender = username // Force correct sender
+		if messageType != websocket.TextMessage {
+			fmt.Printf("Ignoring non-text message from %s\n", username)
+			continue
 		}
 
-		// Process message
-		go h.handleMessage(chat)
+		// Try to parse as typing event.
+		var typing Typing
+		if err := json.Unmarshal(messageBytes, &typing); err == nil && typing.Type == "IsTyping" {
+			fmt.Println("Typing : ", typing)
+			go h.handleTyping(typing)
+			continue
+		}
+
+		// Otherwise, try to parse as a chat message.
+		var chat Chat
+		if err := json.Unmarshal(messageBytes, &chat); err == nil && chat.Message != "" {
+			fmt.Println("Chat : ", chat)
+			// Security check: ensure the message sender matches the authenticated user
+			if chat.Sender != username {
+				fmt.Printf("Security warning: %s tried to send message as %s\n", username, chat.Sender)
+				chat.Sender = username
+			}
+
+			// Process message
+			go h.handleMessage(chat)
+			continue
+		}
+
+	}
+}
+
+func removeClient(clientsList []*Client, targetClient *Client) []*Client {
+	for i, client := range clientsList {
+		if client == targetClient {
+			return append(clientsList[:i], clientsList[i+1:]...)
+		}
+	}
+	return clientsList
+}
+
+func (h *Handler) handleTyping(typing Typing) {
+	msg, err := json.Marshal(typing)
+	if err != nil {
+		fmt.Printf("Error marshaling JSON: %v\n", err)
+		return
+	}
+
+	mutex.Lock()
+	defer mutex.Unlock()
+
+	if recipientClientsList, ok := clients[typing.Receiver]; ok {
+		for _, rclient := range recipientClientsList {
+			err = rclient.Conn.WriteMessage(websocket.TextMessage, msg)
+			if err != nil {
+				fmt.Printf("Error sending to %s: %v\n", typing.Receiver, err)
+			}
+		}
+	} else {
+		fmt.Printf("Recipient %s not connected\n", typing.Receiver)
 	}
 }
 
 func (h *Handler) handleMessage(chat Chat) {
-	// var h *Handler
 	jsonMessage, err := json.Marshal(&chat)
 	if err != nil {
 		fmt.Printf("Error marshaling JSON: %v\n", err)
@@ -138,7 +187,6 @@ func (h *Handler) handleMessage(chat Chat) {
 		fmt.Printf("Recipient %s not connected\n", chat.Receiver)
 	}
 
-	// Send confirmation to sender
 	if senderClientsList, exists := clients[chat.Sender]; exists {
 		for _, sclient := range senderClientsList {
 			err = sclient.Conn.WriteMessage(websocket.TextMessage, jsonMessage)
@@ -161,12 +209,13 @@ func (h *Handler) broadcastOnlineUsers() {
 	}
 	mutex.Unlock()
 
-	// Create message
-
 	// Broadcast to all connected clients
 	mutex.Lock()
 	var OnlineChatUsers []db.OnlineUsers
 	for username, clientList := range clients {
+
+		fmt.Println("user", username, clientList)
+
 		var onlineUsers []string
 		for _, user := range userList {
 			if username != user {
@@ -197,6 +246,6 @@ func (h *Handler) broadcastOnlineUsers() {
 			}
 		}
 	}
-
+	fmt.Println("******************")
 	mutex.Unlock()
 }

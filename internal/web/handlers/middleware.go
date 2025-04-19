@@ -12,7 +12,7 @@ func (h *Handler) AccessMiddleware(next http.HandlerFunc) http.Handler {
 		cookie, err := r.Cookie("session")
 		fmt.Println(cookie, err)
 		if err != nil {
-			helpers.DeleteCookie(w, h.Api.Params.Home.UserName, h.DB)
+			// helpers.DeleteCookie(w, h.Api.Params.Home.UserName, h.DB)
 			http.Redirect(w, r, "/login", http.StatusFound)
 			// h.Login(w, r)
 			return

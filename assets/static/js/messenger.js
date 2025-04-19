@@ -198,6 +198,50 @@
         }
     }
 
+
+    // handle concept of real  typing progress .
+
+    function setupTypingListener() {
+        
+        let input = document.getElementById("message");
+        
+        let typingTimeout;
+        let isTyping = false;
+        
+        input.addEventListener("input", () => {
+            console.log("i typing on message :", selectedUser.receiver)
+            
+            const data = {
+                sender: window.loggedUser,
+                receiver: selectedUser.receiver,
+                isTyping: null,
+                type: "IsTyping"
+    
+            } 
+
+            console.log("typing ... ")
+            if (!isTyping) {
+
+                isTyping = true;
+                data.isTyping = true;
+                window.WebSocketManager.sendMessage(data)
+                console.log(data)
+                console.log("send 1 :")
+            }
+
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                isTyping = false;
+                data.isTyping = false;
+                window.WebSocketManager.sendMessage(data)
+                console.log("send 2 :")
+            }, 1000)
+        })
+    }
+
+    setupTypingListener();
+
+    
     // function handleMessagesList()
 
     function sendMessage() {
@@ -213,6 +257,8 @@
             receiver: selectedUser.receiver,
             message: messageInput
         };
+
+        console.log("i send message :", selectedUser.receiver)
 
         // Use the WebSocket manager to send the message
         if (window.WebSocketManager && window.WebSocketManager.sendMessage(message)) {
@@ -296,6 +342,7 @@
     // Register message handler for this page
     if (window.WebSocketManager) {
         window.WebSocketManager.registerMessageHandler(handleMessengerMessage);
+        // window.WebSocketManager.registerMessageHandler(setupTypingListener);
         // window.WebSocketManager.initializeLastMessagesListHandler(lastMessagesListHnadler);
 
         window.appRegistry.registerEventListener(window, 'beforeunload', function () {

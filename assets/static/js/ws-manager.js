@@ -64,6 +64,7 @@ const WebSocketManager = {
     sendMessage(message) {
         if (this.connection && this.connection.readyState === WebSocket.OPEN) {
             this.connection.send(JSON.stringify(message));
+            console.log("is send : ")
             return true;
         } else {
             console.error("WebSocket not connected, reconnecting...");

@@ -17,8 +17,7 @@ func DeleteCookie(w http.ResponseWriter, user string, d *db.Database) {
 		Secure:   true,
 		SameSite: http.SameSiteLaxMode,
 	})
-	d.DeleteTokenFromDataBase(user)
-
+	// d.DeleteTokenFromDataBase(user)
 }
 
 func AddCookie(w http.ResponseWriter, token string) {

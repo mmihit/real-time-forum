@@ -529,7 +529,7 @@ async function LoadContent(endpoint) {
         if (await PostContent())
             setTimeout(applyPermissionDenied, 100);
     } else if (endpoint === "/login" || endpoint === "/logout") {
-        
+
         console.log("tttttttttttttttttt", endpoint)
         await LoginContent();
         if (document.getElementById('fixedHtml')) document.getElementById('fixedHtml').style.display = "none";
@@ -575,6 +575,7 @@ window.addEventListener('storage', (e) => {
         navigateTo('/logout')
     } if (e.key && !e.oldValue && e.newValue) {
         console.log("to home")
+        window.WebSocketManager.connect()
         navigateTo('/')
     }
 })
