@@ -25,6 +25,7 @@ document.addEventListener('submit', async (event) => {
                     })
 
                     window.WebSocketManager.connect()
+                    window.localStorage.setItem("session",Date.now())
                     navigateTo('/')
                 } else if (response.status === 409) {
                     return response.json().then(data => {

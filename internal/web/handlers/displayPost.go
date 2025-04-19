@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"forum/helpers"
+	"forum/internal/db"
 	// "forum/internal/db"
 )
 
@@ -17,6 +18,9 @@ import (
 func (h *Handler) DisplayPostWithComments(w http.ResponseWriter, r *http.Request) {
 	isLogged := true
 	loggedUser, err := helpers.CheckCookie(r, h.DB)
+
+	h.Api.Params.Post.UserName = ""
+	
 	if err == http.ErrNoCookie {
 		isLogged = false
 	} else if err != nil {
@@ -34,6 +38,7 @@ func (h *Handler) DisplayPostWithComments(w http.ResponseWriter, r *http.Request
 	for _, user := range h.Api.Users {
 		for _, p := range user.Posts {
 			if p.Id == idTarget {
+				// fmt.Println(p, p.Id, idTarget)
 				h.Api.Params.Post.UserName = ""
 				if isLogged {
 					h.Api.Params.Post.UserName = loggedUser
@@ -44,6 +49,6 @@ func (h *Handler) DisplayPostWithComments(w http.ResponseWriter, r *http.Request
 			}
 		}
 	}
-	// fmt.Println("teeeeeeeeeestaaaaaaaaaaaa")
+	h.Api.Params.Post.Post = &db.Post{}
 	helpers.ExecuteTmpl(w, "error.html", http.StatusBadRequest, "Oops! Bad Request error !", nil)
 }

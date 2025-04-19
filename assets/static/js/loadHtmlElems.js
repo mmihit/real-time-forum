@@ -495,8 +495,10 @@ export function navigateTo(endpoint) {
 }
 
 async function LoadContent(endpoint) {
-    // console.log(end)
+    endpoint = window.location.href.replace(window.location.origin, "")
+
     const uniqueUrl = endpoint + (endpoint.includes('?') ? '&' : '?') + '_=' + new Date().getTime();
+    console.log("url dzb", uniqueUrl)
 
     try {
         await fetch(uniqueUrl, {
@@ -527,12 +529,16 @@ async function LoadContent(endpoint) {
         if (await PostContent())
             setTimeout(applyPermissionDenied, 100);
     } else if (endpoint === "/login" || endpoint === "/logout") {
+        
         console.log("tttttttttttttttttt", endpoint)
         await LoginContent();
         if (document.getElementById('fixedHtml')) document.getElementById('fixedHtml').style.display = "none";
         await insertUserInCach();
         if (window.WebSocketManager.connection) {
             window.WebSocketManager.connection.close()
+        }
+        if (window.localStorage.getItem("session")) {
+            window.localStorage.removeItem("session")
         }
     } else if (endpoint === "/register") {
         await RegisterContent();
@@ -557,9 +563,23 @@ document.addEventListener('click', (e) => {
     const link = e.target.closest('a');
     if (link && link.getAttribute('href').startsWith('/') && !link.getAttribute('target')) {
         e.preventDefault();
+        // console.log("ttttttttttttttttttttttfffffffffffffff", link.getAttribute('href'))
         navigateTo(link.getAttribute('href'));
     }
 });
+
+window.addEventListener('storage', (e) => {
+    console.log("edit")
+    if (e.key && e.oldValue && !e.newValue) {
+        console.log("to logout")
+        navigateTo('/logout')
+    } if (e.key && !e.oldValue && e.newValue) {
+        console.log("to home")
+        navigateTo('/')
+    }
+})
+
+// document.addEventListener('')
 
 // function connect() {
 //     const wsUrl = `ws://${window.location.host}/ws`;
