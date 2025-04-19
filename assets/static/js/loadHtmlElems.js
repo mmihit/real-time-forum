@@ -307,7 +307,7 @@ async function HomeContent() {
 
 async function PostContent() {
     const apiData = await fetchApi("/api/params/Post");
-    if (!apiData) {
+    if (!apiData || !apiData.post) {
         console.log("hadkfjaslkdfjalksdfjlka")
         return
     }

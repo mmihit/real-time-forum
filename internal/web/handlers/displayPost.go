@@ -45,5 +45,5 @@ func (h *Handler) DisplayPostWithComments(w http.ResponseWriter, r *http.Request
 		}
 	}
 	// fmt.Println("teeeeeeeeeestaaaaaaaaaaaa")
-	// helpers.ExecuteTmpl(w, "error.html", http.StatusBadRequest, "Oops! Bad Request error !", nil)
+	helpers.ExecuteTmpl(w, "error.html", http.StatusBadRequest, "Oops! Bad Request error !", nil)
 }
