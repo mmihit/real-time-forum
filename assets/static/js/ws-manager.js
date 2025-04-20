@@ -13,6 +13,7 @@ const WebSocketManager = {
     messageHandlers: [],
     onlineUsersHandler: null,
     MessageListHandler: null,
+    typingHandler: null,
     Users: [],
 
     connect() {
@@ -42,6 +43,9 @@ const WebSocketManager = {
                 window.location.href = "/logout"
                 // console.log("login asahbi")
                 // navigateTo("/logout")
+            } else if (chatData.type === "IsTyping") {
+                if (this.typingHandler) this.typingHandler(chatData)
+                    console.log(`typing now from ${chatData.sender}`)
             } else {
                 // Notify all registered handlers
                 this.messageHandlers.forEach(handler => handler(chatData));
@@ -87,6 +91,10 @@ const WebSocketManager = {
         if (!this.messageHandlers.includes(handler)) {
             this.messageHandlers.push(handler);
         }
+    },
+
+    registerTypingHandler(handler) {
+        this.typingHandler=handler
     },
 
     initializeLastMessagesListHandler(handler) {

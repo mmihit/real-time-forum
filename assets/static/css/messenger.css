@@ -241,11 +241,18 @@ body {
 }
 
 .chat-header {
+    border-radius: 7px 7px 0 0;
     padding: 21px;
     border-bottom: 1px solid #ccc;
     font-weight: bold;
-    background: #f0f2f5;
+    background: #6C63FF;
     margin-top: 30px;
+}
+
+.chat-header p {
+    color: white;
+    text-transform: capitalize;
+    font-size: 22px;
 }
 
 .messages {
@@ -320,21 +327,21 @@ body {
     font-family: sans-serif;
     position: relative;
     cursor: pointer;
-  }
-  
-  .avatar-container {
+}
+
+.avatar-container {
     position: relative;
-  }
-  
-  .avatar {
+}
+
+.avatar {
     width: 64px;
     height: 64px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid #eee;
-  }
-  
-  .status-indicator {
+}
+
+.status-indicator {
     position: absolute;
     bottom: 0;
     right: 0;
@@ -342,30 +349,30 @@ body {
     height: 16px;
     border: 2px solid #fff;
     border-radius: 50%;
-  }
-  
-  .status-indicator.Online {
+}
+
+.status-indicator.Online {
     background-color: #34c759;
-  }
-  
-  .status-indicator.Ofline {
+}
+
+.status-indicator.Ofline {
     background-color: #d1d1d6;
-  }
-  
-  .user-info {
+}
+
+.user-info {
     margin-left: 1rem;
-  }
-  
-  .username {
+}
+
+.username {
     font-size: 1.2rem;
     margin: 0;
-  }
-  
-  .email {
+}
+
+.email {
     color: #666;
     font-size: 0.9rem;
     margin: 0.2rem 0 0 0;
-  }
+}
 
 /* Sent messages (user) */
 .sent .message-body {
@@ -429,6 +436,72 @@ button {
 
 button:hover {
     background: rgb(7, 37, 206);
+}
+
+.typing-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: sans-serif;
+    font-size: 14px;
+}
+
+.typing-wrapper.selected {
+    color: white;
+}
+
+.typing-wrapper.selected .typing-indicator span {
+    background-color    : white;
+}
+
+.typing-wrapper.not-selected {
+    color: #333;
+}
+
+.typing-wrapper.not-selected .typing-indicator span {
+    background-color: #333;
+}
+
+.typing-text {
+    font-style: italic;
+    font-weight: 700;
+}
+
+.typing-indicator {
+    display: flex;
+    gap: 4px;
+}
+
+.typing-indicator span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.typing-indicator span:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0s;
+}
+
+@keyframes bounce {
+
+    0%,
+    80%,
+    100% {
+        transform: scale(0);
+    }
+
+    40% {
+        transform: scale(1);
+    }
 }
 
 @media (max-width: 768px) {

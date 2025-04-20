@@ -1,14 +1,24 @@
 // import { showAlert } from "/static/js/alert.js";
 
 (function () {
-    const searchIcon = document.querySelector('.search-icon');
-    const removeIcon = document.querySelector('.remove-icon');
-    const searchBox = document.querySelector(".search-box");
-   // const searchUser = document.getElementById("search-user");
+    // const searchIcon = document.querySelector('.search-icon');
+    // const removeIcon = document.querySelector('.remove-icon');
+    // const searchBox = document.querySelector(".search-box");
+    // const searchUser = document.getElementById("search-user");
     let chatList = document.getElementById("chat-list");
     let chatHeader = document.getElementById("chat-header")
     const sendBtn = document.getElementById("send-button");
     let messageDisplay = document.getElementById("messages");
+
+    const isTypingHtmlEffect = `
+    <div class="typing-wrapper" id="typing-wrapper">
+        <span class="typing-text">typing</span>
+        <div class="typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>`
 
     // const requestBody = {
     //     //input: searchUser.value,
@@ -35,6 +45,7 @@
         // messagesListElemes:null,
         element: null,
         goToChat(e) {
+            console.log("this is the element: ", e)
             messageDisplay.innerHTML = "";
             selectedUser.receiver = !e ? this.element.target.dataset.user : e.target.dataset.user
             selectedUser.isSelected = true
@@ -58,6 +69,7 @@
         document.querySelectorAll(".profile-card").forEach(element => {
             element.removeEventListener('click', window.selectChatFromOnlineUsers.goToChat);
             element.addEventListener('click', window.selectChatFromOnlineUsers.goToChat);
+            // console.log(element)
         });
     }
 
@@ -71,59 +83,59 @@
         }
     }
 
-    async function fetchUsersApi(url, requestBody) {
-        try {
-            const response = await fetch(url, {
-                method: 'Post',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestBody)
-            })
-            return response.json()
-        } catch (error) {
-            console.error("Fetch error:", error);
-            return { users: [] };
-        }
-    }
+    // async function fetchUsersApi(url, requestBody) {
+    //     try {
+    //         const response = await fetch(url, {
+    //             method: 'Post',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify(requestBody)
+    //         })
+    //         return response.json()
+    //     } catch (error) {
+    //         console.error("Fetch error:", error);
+    //         return { users: [] };
+    //     }
+    // }
 
-    async function userSearch() {
-        const url = "/messenger"
-        let responseData;
+    // async function userSearch() {
+    //     const url = "/messenger"
+    //     let responseData;
 
-        if (requestBody.input === searchUser.value) {
-            ++requestBody.index
-        } else {
-            requestBody.index = 0
-            requestBody.input = searchUser.value
-            chatList.innerHTML = window.messagesListInnerHtml
-        }
+    //     if (requestBody.input === searchUser.value) {
+    //         ++requestBody.index
+    //     } else {
+    //         requestBody.index = 0
+    //         requestBody.input = searchUser.value
+    //         chatList.innerHTML = window.messagesListInnerHtml
+    //     }
 
-        if (requestBody.input.length > 0 && requestBody.input.length < 40 && requestBody.index >= 0) {
-            responseData = await fetchUsersApi(url, requestBody)
+    //     if (requestBody.input.length > 0 && requestBody.input.length < 40 && requestBody.index >= 0) {
+    //         responseData = await fetchUsersApi(url, requestBody)
 
-            if (responseData && responseData.users) {
-                responseData.users.forEach(user => {
-                    const listItem = document.createElement('li');
-                    listItem.setAttribute('data-user', user);
-                    listItem.textContent = user;
-                    chatList.appendChild(listItem);
-                });
+    //         if (responseData && responseData.users) {
+    //             responseData.users.forEach(user => {
+    //                 const listItem = document.createElement('li');
+    //                 listItem.setAttribute('data-user', user);
+    //                 listItem.textContent = user;
+    //                 chatList.appendChild(listItem);
+    //             });
 
-                attachUserListeners();
-            }
-        }
-    }
+    //             attachUserListeners();
+    //         }
+    //     }
+    // }
 
-    function displaySearchBox() {
-        searchBox.classList.add('visible');
-    }
+    // function displaySearchBox() {
+    //     searchBox.classList.add('visible');
+    // }
 
-    function hideSearchBox() {
-        searchBox.classList.remove('visible');
-        chatList.innerHTML = "";
-        attachUserListeners();
-    }
+    // function hideSearchBox() {
+    //     searchBox.classList.remove('visible');
+    //     chatList.innerHTML = "";
+    //     attachUserListeners();
+    // }
 
     function formatMessageDate(dateString) {
         // Parse the input date string or use current date
@@ -198,26 +210,52 @@
         }
     }
 
+    function handleTyping(data) {
+        if (data.receiver === window.loggedUser) {
+            if (data.isTyping != undefined && data.isTyping === true) {
+                if (data.sender === selectedUser.receiver) {
+                    chatHeader.innerHTML += isTypingHtmlEffect
+                    document.querySelector('.chat-header .typing-wrapper').classList.add('selected')
+                } else {
+                    const lastMessageElement = document.querySelector(`#last-message[data-user="${data.sender}"]`);
+                    lastMessageElement.parentElement.innerHTML += isTypingHtmlEffect
+                    // document.querySelector('.chat-header .typing-wrapper').classList.add('.not-selected')
+                    console.log("the last element",lastMessageElement)
+                    document.querySelector(`#last-message[data-user="${data.sender}"]`).nextElementSibling.classList.add("not-selected")
+                    document.querySelector(`#last-message[data-user="${data.sender}"]`).style.display = "none"
+                }
+            } else if (data.isTyping != undefined && data.isTyping === false) {
+                document.querySelectorAll(".typing-wrapper").forEach(element => {
+                    element.remove()
+                });
+                if (data.sender !== selectedUser.receiver) {
+                    const lastMessageElement = document.querySelector(`#last-message[data-user="${data.sender}"]`);
+                    lastMessageElement.style.display = "block"
+                }
+            }
+        }
+    }
+
 
     // handle concept of real  typing progress .
 
     function setupTypingListener() {
-        
+
         let input = document.getElementById("message");
-        
+
         let typingTimeout;
         let isTyping = false;
-        
+
         input.addEventListener("input", () => {
             console.log("i typing on message :", selectedUser.receiver)
-            
+
             const data = {
                 sender: window.loggedUser,
                 receiver: selectedUser.receiver,
                 isTyping: null,
                 type: "IsTyping"
-    
-            } 
+
+            }
 
             console.log("typing ... ")
             if (!isTyping) {
@@ -241,7 +279,7 @@
 
     setupTypingListener();
 
-    
+
     // function handleMessagesList()
 
     function sendMessage() {
@@ -272,7 +310,7 @@
         console.log(responseData);
 
         if (responseData) {
-            chatHeader.innerHTML = selectedUser.receiver
+            chatHeader.innerHTML = `<p>${selectedUser.receiver}</p>`
             document.getElementById('message').removeAttribute('readonly');
             scrollHelper.hasMore = responseData.hasMore
             const scrollHeight = messageDisplay.scrollHeight;
@@ -334,14 +372,15 @@
     const debounceLoadMore = debounce(checkLoadMore, 500);
 
     window.appRegistry.registerEventListener(messageDisplay, 'scroll', debounceLoadMore);
-    window.appRegistry.registerEventListener(searchIcon, 'click', displaySearchBox);
-    window.appRegistry.registerEventListener(removeIcon, 'click', hideSearchBox);
+    // window.appRegistry.registerEventListener(searchIcon, 'click', displaySearchBox);
+    // window.appRegistry.registerEventListener(removeIcon, 'click', hideSearchBox);
     //window.appRegistry.registerEventListener(searchUser, 'input', debouncedPrint);
     window.appRegistry.registerEventListener(sendBtn, 'click', sendMessage);
 
     // Register message handler for this page
     if (window.WebSocketManager) {
         window.WebSocketManager.registerMessageHandler(handleMessengerMessage);
+        window.WebSocketManager.registerTypingHandler(handleTyping)
         // window.WebSocketManager.registerMessageHandler(setupTypingListener);
         // window.WebSocketManager.initializeLastMessagesListHandler(lastMessagesListHnadler);
 

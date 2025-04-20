@@ -428,7 +428,7 @@ function MessengerContent() {
                         </div>
                     </div>
                     <div class="chat-container">
-                        <div class="chat-header" id="chat-header">Select a chat</div>
+                        <div class="chat-header" id="chat-header"><p>Select a chat</p></div>
                         <div class="messages" id="messages">
                             
                         </div>
@@ -711,6 +711,7 @@ function lastMessagesListHnadler(onlineUsers) {
 
                 const message = document.createElement('p');
                 message.className = 'message';
+                message.id='last-message';
                 message.textContent = user.lastMessage;
                 message.setAttribute('data-user', user.userName);
 
