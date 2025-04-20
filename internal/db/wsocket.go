@@ -20,9 +20,9 @@ type LoadingChatResponse struct {
 }
 
 type OnlineUsers struct {
-	UserName string `json:"userName"`
-	Status   string `json:"status"`
-	LastMessage any `json:"lastMessage"`
+	UserName    string `json:"userName"`
+	Status      string `json:"status"`
+	LastMessage any    `json:"lastMessage"`
 }
 
 func (d *Database) GetIdOfSenderOrReciever(user string) (int, error) {
@@ -216,7 +216,6 @@ ORDER BY
 
 	for rows.Next() {
 
-	
 		if err := rows.Scan(&user.UserName, &user.LastMessage); err != nil {
 			return nil, fmt.Errorf("failed scanning chat history from db : %w", err)
 		}

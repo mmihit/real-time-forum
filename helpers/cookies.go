@@ -44,3 +44,11 @@ func CheckCookie(r *http.Request, d *db.Database) (string, error) {
 	}
 	return userName, nil
 }
+
+func GetSessionId(r *http.Request) (string, error) {
+	session, err := r.Cookie("session")
+	if err != nil {
+		return "", err
+	}
+	return session.Value, nil
+}

@@ -1,4 +1,9 @@
+// import { navigateTo } from "/static/js/loadHtmlElems.js";
 // Global WebSocket management
+
+// import { navigateTo } from "./loadHtmlElems";
+
+
 const WebSocketManager = {
     connection: null,
     isConnected: false,
@@ -33,6 +38,10 @@ const WebSocketManager = {
                 this.Users = chatData.users;
                 this.onlineUsersHandler(chatData.users);
                 if (this.MessageListHandler) this.MessageListHandler(chatData.users);
+            } else if (chatData.logout) {
+                window.location.href = "/logout"
+                // console.log("login asahbi")
+                // navigateTo("/logout")
             } else {
                 // Notify all registered handlers
                 this.messageHandlers.forEach(handler => handler(chatData));

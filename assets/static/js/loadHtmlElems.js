@@ -738,6 +738,8 @@ function createOnlineUsers(users) {
         onlineUsersElement.innerHTML = '';
 
         const onlineUsers = users === undefined ? window.WebSocketManager.Users : users
+
+        console.log("websocket data",users)
         // console.log((!undefined), window.WebSocketManager.Users)
         // console.log((!!undefined), users)
         if (onlineUsers) {

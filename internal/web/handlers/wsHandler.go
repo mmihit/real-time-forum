@@ -38,7 +38,12 @@ var upgrader = websocket.Upgrader{
 }
 
 type Client struct {
-	Conn *websocket.Conn
+	SessionId string
+	Conn      *websocket.Conn
+}
+
+type Logout struct {
+	Message string `json:"logout"`
 }
 
 var (
@@ -53,6 +58,7 @@ func (h *Handler) WsHandler(w http.ResponseWriter, r *http.Request) {
 		helpers.JsonResponse(w, http.StatusUnauthorized, "Unauthorized: Please log in to continue.")
 		return
 	}
+	sessionId, _ := helpers.GetSessionId(r)
 
 	// Upgrade the HTTP connection to WebSocket
 	conn, err := upgrader.Upgrade(w, r, nil)
@@ -63,13 +69,16 @@ func (h *Handler) WsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Create new client
 	client := &Client{
-		Conn: conn,
+		SessionId: sessionId,
+		Conn:      conn,
 	}
 
-	// Register client in the global clients map
-	mutex.Lock()
-	clients[username] = append(clients[username], client)
-	mutex.Unlock()
+	// // Register client in the global clients map
+	// mutex.Lock()
+	// clients[username] = append(clients[username], client)
+	// mutex.Unlock()
+
+	go h.handleSessions(username, client)
 
 	go h.broadcastOnlineUsers()
 
@@ -77,14 +86,10 @@ func (h *Handler) WsHandler(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		conn.Close()
 		mutex.Lock()
-		_, err := helpers.CheckCookie(r, h.DB)
-		if err != nil {
+
+		clients[username] = removeClient(clients[username], client)
+		if len(clients[username]) == 0 {
 			delete(clients, username)
-		} else {
-			clients[username] = removeClient(clients[username], client)
-			if len(clients[username]) == 0 {
-				delete(clients, username)
-			}
 		}
 
 		mutex.Unlock()
@@ -207,6 +212,7 @@ func (h *Handler) broadcastOnlineUsers() {
 	for username := range clients {
 		userList = append(userList, username)
 	}
+	fmt.Println("online users is: ", userList)
 	mutex.Unlock()
 
 	// Broadcast to all connected clients
@@ -248,4 +254,28 @@ func (h *Handler) broadcastOnlineUsers() {
 	}
 	fmt.Println("******************")
 	mutex.Unlock()
+}
+
+func (h *Handler) handleSessions(loggedUser string, loggedClient *Client) {
+	mutex.Lock()
+	defer mutex.Unlock()
+	var Logout Logout
+	Logout.Message = "logout"
+	Message, _ := json.Marshal(&Logout)
+	_, exist := clients[loggedUser]
+	if !exist {
+		clients[loggedUser] = append(clients[loggedUser], loggedClient)
+		fmt.Println("new in map: ", loggedUser)
+	} else {
+		for _, client := range clients[loggedUser] {
+			if client.SessionId != loggedClient.SessionId {
+				client.Conn.WriteMessage(websocket.TextMessage, Message)
+				removeClient(clients[loggedUser], client)
+				client.Conn.Close()
+				fmt.Println("getOutPlease: ", loggedUser)
+			}
+		}
+		fmt.Println("the same session append: ", loggedUser)
+		clients[loggedUser] = append(clients[loggedUser], loggedClient)
+	}
 }
