@@ -316,6 +316,7 @@ body {
 }
 
 .profile-card {
+    min-height: 100px;
     display: flex;
     margin-top: 6px;
     align-items: center;
@@ -327,6 +328,7 @@ body {
     font-family: sans-serif;
     position: relative;
     cursor: pointer;
+    overflow: hidden;
 }
 
 .avatar-container {
@@ -451,7 +453,7 @@ button:hover {
 }
 
 .typing-wrapper.selected .typing-indicator span {
-    background-color    : white;
+    background-color: white;
 }
 
 .typing-wrapper.not-selected {
