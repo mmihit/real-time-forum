@@ -33,6 +33,7 @@ func (h *Handler) Static(w http.ResponseWriter, r *http.Request) {
 		"js/messenger.js":        true,
 		"js/ws-manager.js":       true,
 		"img/icon.png":           true,
+		"img/user.png":           true,
 	}
 	path := r.URL.Path[len("/static/"):]
 	if allowedFiles[path] {

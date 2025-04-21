@@ -536,6 +536,7 @@ async function LoadContent(endpoint) {
         await insertUserInCach();
         if (window.WebSocketManager.connection) {
             window.WebSocketManager.connection.close()
+            console.log(",kjnkjvnsdkjvnsdkvjnsdkjvds")
         }
         if (window.localStorage.getItem("session")) {
             window.localStorage.removeItem("session")
@@ -622,10 +623,7 @@ if (window.loggedUser && window.WebSocketManager) {
 }
 
 function createUserProfile(user, onlineUsersElement) {
-    // Convert name to URL-friendly format for the avatar
-    const avatarName = encodeURIComponent(user.userName);
-    const avatarURL = `https://ui-avatars.com/api/?name=${avatarName}&background=6c63ff&color=fff&size=150`;
-
+    
     // Create main container
     const profileDiv = document.createElement('div');
     profileDiv.className = 'simple-profile';
@@ -639,7 +637,7 @@ function createUserProfile(user, onlineUsersElement) {
 
     // Create image element
     const img = document.createElement('img');
-    img.src = avatarURL;
+    img.src = "../static/img/user.png";
     img.alt = user.userName;
     img.className = 'avatar';
     img.dataset.user = user.userName
@@ -685,11 +683,8 @@ function lastMessagesListHnadler(onlineUsers) {
                 const avatarContainer = document.createElement('div');
                 avatarContainer.className = 'avatar-container';
 
-                const avatarName = encodeURIComponent(user.userName);
-                const avatarURL = `https://ui-avatars.com/api/?name=${avatarName}&background=6c63ff&color=fff&size=150`;
-
                 const img = document.createElement('img');
-                img.src = avatarURL;
+                img.src = "../static/img/user.png";
                 img.alt = 'User Avatar';
                 img.className = 'avatar';
                 img.setAttribute('data-user', user.userName);
@@ -777,6 +772,19 @@ function insertUserValue() {
         createOnlineUsers()
     }
 }
+
+     function addevent() {
+        // conn.addEventListener('message', (e) => {
+            
+            // const data = JSON.parse(e.data);
+            // if  (data.logout) {
+                // console.log("aaaaaaaaaaaaaaaa");
+                navigateTo('/logout')
+            // }
+            
+        // })
+     }
+    window.WebSocketManager.initializeNavigateToHandler(addevent)
 
 if (document.readyState !== 'loading') insertUserValue();
 window.addEventListener('DOMContentLoaded', insertUserValue)

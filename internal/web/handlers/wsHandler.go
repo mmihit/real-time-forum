@@ -78,9 +78,11 @@ func (h *Handler) WsHandler(w http.ResponseWriter, r *http.Request) {
 	// clients[username] = append(clients[username], client)
 	// mutex.Unlock()
 
+	mutex.Lock()
 	go h.handleSessions(username, client)
+	mutex.Unlock()
 
-	go h.broadcastOnlineUsers()
+
 
 	// Cleanup when connection is closed
 	defer func() {
@@ -258,7 +260,7 @@ func (h *Handler) broadcastOnlineUsers() {
 
 func (h *Handler) handleSessions(loggedUser string, loggedClient *Client) {
 	mutex.Lock()
-	defer mutex.Unlock()
+	
 	var Logout Logout
 	Logout.Message = "logout"
 	Message, _ := json.Marshal(&Logout)
@@ -278,4 +280,7 @@ func (h *Handler) handleSessions(loggedUser string, loggedClient *Client) {
 		fmt.Println("the same session append: ", loggedUser)
 		clients[loggedUser] = append(clients[loggedUser], loggedClient)
 	}
+	mutex.Unlock()
+	
+	h.broadcastOnlineUsers()
 }
