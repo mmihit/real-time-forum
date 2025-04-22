@@ -1,9 +1,3 @@
-// import { navigateTo } from "/static/js/loadHtmlElems.js";
-// Global WebSocket management
-
-// console.log("stop")
-// import { navigateTo } from "./loadHtmlElems.js"; 
-
 const WebSocketManager = {
     connection: null,
     isConnected: false,
@@ -17,8 +11,6 @@ const WebSocketManager = {
     Users: [],
     navigateToHandle:null,
 
-
-    
     connect() {
         if (this.connection && (this.connection.readyState === WebSocket.OPEN)) {
             console.log("WebSocket already connected or connecting");
@@ -33,8 +25,6 @@ const WebSocketManager = {
             console.log("Connected to WebSocket server");
             this.isConnected = true;
             this.reconnectAttempts = 0;
-            // this.navigateToHandle(this.connection)
-            // this.Users = chatData.users;
         };
 
         this.connection.onmessage = (event) => {
@@ -43,17 +33,21 @@ const WebSocketManager = {
             if (chatData.type === "online_users") {
                 this.Users = chatData.users;
                 this.onlineUsersHandler(chatData.users);
+
                 if (this.MessageListHandler) this.MessageListHandler(chatData.users);
+
             } else if (chatData.type === "IsTyping") {
                 if (this.typingHandler) this.typingHandler(chatData)
                     console.log(`typing now from ${chatData.sender}`)
+
             } else if (chatData.message) {
-                // Notify all registered handlers
                 this.messageHandlers.forEach(handler => handler(chatData));
-                // Default notification if not on messenger page
                 if (!window.location.pathname.includes('/messenger')) {
-                    window.showAlert(`${chatData.sender} sent you a  message`);
+                    if (chatData.sender != localStorage.getItem('user')) {
+                        window.showAlert(`${chatData.sender} sent you a  message`);
+                    }
                 }
+
             } else {
                 this.navigateToHandle()
             }
@@ -80,7 +74,6 @@ const WebSocketManager = {
     sendMessage(message) {
         if (this.connection && this.connection.readyState === WebSocket.OPEN) {
             this.connection.send(JSON.stringify(message));
-            console.log("is send : ")
             return true;
         } else {connect
             console.error("WebSocket not connected, reconnecting...");
@@ -104,11 +97,8 @@ const WebSocketManager = {
         this.MessageListHandler = handler
     },
 
-    // Remove a message handler when leaving a page
     removeMessageHandler() {
-
         this.messageHandlers = []
-
     },
 
     initializeOnlineUsersHandler(handler) {
@@ -118,21 +108,11 @@ const WebSocketManager = {
     initializeNavigateToHandler(handler) {
         this.navigateToHandle=handler
     }
-
-    // Show a notification for new messages
-    // showNotification(chatData) {
-    //     // Use the existing alert function or custom notification
-    //     if (typeof alert === 'function') {
-    //         alert(`${chatData.sender} sent you a message`);
-    //     } else {
-    //         console.log("New message from:", chatData.sender);
-    //     }
-    // }
 };
 
 window.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
-        if (window.loggedUser) {
+        if (window.localStorage.getItem("user")) {
             WebSocketManager.connect();
         }
     }, 1000);

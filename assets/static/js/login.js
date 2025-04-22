@@ -18,15 +18,16 @@ document.addEventListener('submit', async (event) => {
             .then(async response => {
                 if (response.ok) {
                     response.json().then(data => {
-                        window.loggedUser = data.username; console.log("data", data.username)
-                        document.getElementById('Name').setAttribute('value', window.loggedUser);
-                        document.querySelector('.dropdown-button').innerHTML = `<i class="fa fa-caret-down" aria-hidden="true"></i> ${window.loggedUser}`;
-                        console.log(document.getElementById('Name'))
+                        var loggedUser = data.username; console.log("data", loggedUser)
+                        document.getElementById('Name').setAttribute('value', loggedUser);
+                        document.querySelector('.dropdown-button').innerHTML = `<i class="fa fa-caret-down" aria-hidden="true"></i> ${loggedUser}`;
+                        window.localStorage.setItem("session",Date.now())
+                        window.localStorage.setItem("user",loggedUser)
                     })
-
+                    
                     window.WebSocketManager.connect()
-                    window.localStorage.setItem("session",Date.now())
                     navigateTo('/')
+
                 } else if (response.status === 409) {
                     return response.json().then(data => {
                         throw new Error(data.message);

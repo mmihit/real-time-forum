@@ -2,8 +2,6 @@ window.appRegistry = {
 
     eventListeners: [],
 
-
-
     registerEventListener: function (element, event, callback) {
         if (element) {
             element.addEventListener(event, callback);
@@ -20,42 +18,9 @@ window.appRegistry = {
         });
         this.eventListeners = [];
 
-        // // Remove all stored variables
-        // Object.keys(this.variables).forEach(key => {
-        //     this.variables[key] = null; // Clear reference
-        // });
-
-        // this.variables = {}; // Reset object
-
         console.log('Registry cleaned up');
     }
 };
-
-
-async function insertUserInCach() {
-    var UserResponse = await fetchApi("/LoggedUser")
-    UserResponse ? window.loggedUser = UserResponse.message : window.loggedUser = ""
-}
-
-function applyPermissionDenied() {
-    const btns = [
-        document.getElementById('Post-Created'),
-        document.getElementById('Likes'),
-        document.getElementById('Create-Post'),
-        document.getElementById('commentSubmit'),
-        document.getElementById('commentContent')
-    ];
-
-    btns.forEach(btn => {
-        if (btn) {
-            btn.classList.add('Permission-Denied');
-            btn.setAttribute('readonly', true);
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-            });
-        }
-    });
-}
 
 async function fetchApi(url) {
     try {
@@ -77,13 +42,123 @@ async function fetchApi(url) {
     }
 };
 
+
+async function insertUserInCach() {
+    var UserResponse = await fetchApi("/LoggedUser")
+    if (UserResponse) {
+        window.localStorage.setItem("user", UserResponse.message)
+    }
+}
+
+// function applyPermissionDenied() {
+//     const btns = [
+//         document.getElementById('Post-Created'),
+//         document.getElementById('Likes'),
+//         document.getElementById('Create-Post'),
+//         document.getElementById('commentSubmit'),
+//         document.getElementById('commentContent')
+//     ];
+
+//     btns.forEach(btn => {
+//         if (btn) {
+//             btn.classList.add('Permission-Denied');
+//             btn.setAttribute('readonly', true);
+//             btn.addEventListener('click', (e) => {
+//                 e.preventDefault();
+//             });
+//         }
+//     });
+// }
+
+export function navigateTo(endpoint) {
+    history.pushState(null, null, endpoint);
+    LoadContent(endpoint).catch(error => console.error("Error loading content:", error));
+}
+
+async function LoadContent(endpoint) {
+    endpoint = window.location.href.replace(window.location.origin, "")
+
+    const uniqueUrl = endpoint + (endpoint.includes('?') ? '&' : '?') + '_=' + new Date().getTime();
+
+    try {
+        await fetch(uniqueUrl, {
+            method: "GET",
+            headers: { 'Content-Type': 'application/json' },
+            cache: "no-cache"
+        });
+    } catch (error) {
+        console.error("Error fetching endpoint:", error);
+    }
+
+    window.appRegistry.cleanup();
+
+    if (document.getElementById("Error-section")) document.getElementById('Error-section').remove();
+    if (document.getElementById('fixedHtml')) {
+        document.getElementById('fixedHtml').style.display = "block";
+    };
+    if (document.getElementById('dynamicHtml')) {
+        document.getElementById('dynamicHtml').style.display = "block";
+    }
+
+
+    if (endpoint === "/" || !endpoint) {
+        await HomeContent()    
+          
+    } else if (endpoint.includes('/post')) {
+        await PostContent()
+
+    } else if (endpoint === "/login" || endpoint === "/logout") {
+
+        if (document.getElementById('online-users-list')) document.getElementById('online-users-list').innerHTML='';
+        if (document.querySelector('.dropdown-button')) document.querySelector('.dropdown-button').textContent=""
+        if (document.getElementById('fixedHtml')) document.getElementById('fixedHtml').style.display = "none";
+
+        await LoginContent();     
+        await insertUserInCach();
+
+        if (window.WebSocketManager.connection) {
+            window.WebSocketManager.connection.close()
+        }
+
+        if (window.localStorage.getItem("session")) {
+            window.localStorage.removeItem("session")
+        } 
+
+        if (window.localStorage.getItem("user")) {
+            window.localStorage.removeItem("user")
+        }
+
+    } else if (endpoint === "/register") {
+
+        if (document.getElementById('online-users-list')) document.getElementById('online-users-list').innerHTML='';
+        if (document.querySelector('.dropdown-button')) document.querySelector('.dropdown-button').textContent="";
+        if (document.getElementById('fixedHtml')) document.getElementById('fixedHtml').style.display = "none";
+
+        await RegisterContent();
+        await insertUserInCach();
+
+        if (window.WebSocketManager.connecttion) {
+            window.WebSocketManager.connection.close()
+        }
+
+    } else if (endpoint === "/messenger") {
+        MessengerContent();
+    } else {
+        PageNotFound();
+    }
+
+}
+
+
 function removeAllStylesheets() {
     const head = document.head;
     const stylesheets = head.querySelectorAll('link[type="text/css"]');
+    const styleElements = head.querySelectorAll('style');
+
     stylesheets.forEach(stylesheet => {
         head.removeChild(stylesheet);
     });
-    const styleElements = head.querySelectorAll('style');
+
     styleElements.forEach(styleElement => {
         head.removeChild(styleElement);
     });
@@ -208,8 +283,6 @@ async function RegisterContent() {
     scriptModule.type = 'module';
     scriptModule.src = "/static/js/register.js";
     container.appendChild(scriptModule);
-
-
 }
 
 async function HomeContent() {
@@ -279,7 +352,6 @@ async function HomeContent() {
           </div>
       </div>;`
 
-
     const container = document.getElementById("dyanamicScript");
     if (container) container.innerHTML = '';
 
@@ -296,21 +368,15 @@ async function HomeContent() {
     `;
     container.appendChild(scriptModule);
 
-
-
     html.innerHTML = htmlTemp;
-
-    if (!username) {
-        return true
-    }
 }
 
 async function PostContent() {
     const apiData = await fetchApi("/api/params/Post");
     if (!apiData || !apiData.post) {
-        console.log("hadkfjaslkdfjalksdfjlka")
         return
     }
+
     removeAllStylesheets();
     addStylesheet("/static/css/post.css");
     addStylesheet("/static/css/alert.css");
@@ -318,7 +384,6 @@ async function PostContent() {
     addStylesheet("/static/css/home.css");
     addStylesheet("/static/css/online_users.css");
 
-    console.log("tttttttttttttt", apiData)
     const post = apiData.post;
     const username = apiData.username;
     const html = document.getElementById("dynamicHtml");
@@ -400,13 +465,6 @@ async function PostContent() {
         });
     `;
     container.appendChild(scriptModule);
-
-
-
-    if (!username) {
-        return true
-    }
-
 }
 
 function MessengerContent() {
@@ -443,7 +501,6 @@ function MessengerContent() {
 
     html.innerHTML = htmlTemp
 
-
     const container = document.getElementById("dyanamicScript");
     if (container) container.innerHTML = '';
 
@@ -451,10 +508,7 @@ function MessengerContent() {
     scriptModule.src = "/static/js/messenger.js";
     container.appendChild(scriptModule);
 
-
-
     if (document.getElementById('chat-list')) {
-        console.log("aaaaaaaaahna")
         lastMessagesListHnadler()
     }
 }
@@ -462,124 +516,58 @@ function MessengerContent() {
 function PageNotFound() {
     removeAllStylesheets();
     addStylesheet("/static/css/error.css");
+
     let tempHtml = `
         <div class="container">
             <div class="error-code">400</div>
             <div class="error-message">Page Not Found</div>
             <div class="error-actions">
-                <a href="/"><button>Go to Home</button></a>
             </div>
         </div>
     `
     let ErrorSection;
     if (!document.getElementById('Error-section')) {
-        console.log("not here")
         ErrorSection = document.createElement('div');
         ErrorSection.id = 'Error-section';
         document.body.appendChild(ErrorSection)
     } else {
         ErrorSection = getElementById('Error-section')
     }
-    console.log(ErrorSection)
 
     document.getElementById('fixedHtml').style.display = "none";
     document.getElementById('dynamicHtml').style.display = "none";
     ErrorSection.innerHTML = tempHtml;
-
-
 }
 
-export function navigateTo(endpoint) {
-    history.pushState(null, null, endpoint);
-    LoadContent(endpoint).catch(error => console.error("Error loading content:", error));
-}
 
-async function LoadContent(endpoint) {
-    endpoint = window.location.href.replace(window.location.origin, "")
-
-    const uniqueUrl = endpoint + (endpoint.includes('?') ? '&' : '?') + '_=' + new Date().getTime();
-    console.log("url dzb", uniqueUrl)
-
-    try {
-        await fetch(uniqueUrl, {
-            method: "GET",
-            headers: { 'Content-Type': 'application/json' },
-            cache: "no-cache"
-        });
-    } catch (error) {
-        console.error("Error fetching endpoint:", error);
-    }
-
-    window.appRegistry.cleanup();
-
-    if (document.getElementById("Error-section")) document.getElementById('Error-section').remove();
-    if (document.getElementById('fixedHtml')) {
-        document.getElementById('fixedHtml').style.display = "block";
-        // if (document.getElementById('Name'))
-    };
-    if (document.getElementById('dynamicHtml')) {
-        document.getElementById('dynamicHtml').style.display = "block";
-    }
-
-
-    if (endpoint === "/" || !endpoint) {
-        if (await HomeContent())
-            setTimeout(applyPermissionDenied, 100);
-    } else if (endpoint.includes('/post')) {
-        if (await PostContent())
-            setTimeout(applyPermissionDenied, 100);
-    } else if (endpoint === "/login" || endpoint === "/logout") {
-
-        console.log("tttttttttttttttttt", endpoint)
-        await LoginContent();
-        if (document.getElementById('fixedHtml')) document.getElementById('fixedHtml').style.display = "none";
-        await insertUserInCach();
-        if (window.WebSocketManager.connection) {
-            window.WebSocketManager.connection.close()
-            console.log(",kjnkjvnsdkjvnsdkvjnsdkjvds")
-        }
-        if (window.localStorage.getItem("session")) {
-            window.localStorage.removeItem("session")
-        }
-    } else if (endpoint === "/register") {
-        await RegisterContent();
-        if (document.getElementById('fixedHtml')) document.getElementById('fixedHtml').style.display = "none";
-        await insertUserInCach();
-        if (window.WebSocketManager.connecttion) {
-            window.WebSocketManager.connection.close()
-        }
-
-    } else if (endpoint === "/messenger") {
-        MessengerContent();
-    } else {
-        // alert("teeeeeest")
-        PageNotFound();
-    }
-
-    console.log(endpoint, window.loggedUser)
-
-}
 
 document.addEventListener('click', (e) => {
     const link = e.target.closest('a');
+
     if (link && link.getAttribute('href').startsWith('/') && !link.getAttribute('target')) {
         e.preventDefault();
-        // console.log("ttttttttttttttttttttttfffffffffffffff", link.getAttribute('href'))
         navigateTo(link.getAttribute('href'));
     }
 });
 
 window.addEventListener('storage', (e) => {
-    console.log("edit")
-    if (e.key && e.oldValue && !e.newValue) {
+    if (e.key==='session' && e.oldValue && !e.newValue) {
         console.log("to logout")
         navigateTo('/logout')
-    } if (e.key && !e.oldValue && e.newValue) {
-        console.log("to home")
+
+    } if (e.key==='session'&& !e.oldValue && e.newValue) {
         window.WebSocketManager.connect()
         navigateTo('/')
-    }
+
+    } if (e.key==='user' && !e.oldValue && e.newValue) {
+        document.getElementById('Name').setAttribute('value', e.newValue);
+        document.querySelector('.dropdown-button').innerHTML = `<i class="fa fa-caret-down" aria-hidden="true"></i> ${e.newValue}`;
+    } 
 })
+
+window.addEventListener('popstate', () => {
+    LoadContent(window.location.pathname);
+});
 
 // document.addEventListener('')
 
@@ -596,9 +584,7 @@ window.addEventListener('storage', (e) => {
 //     }
 // }
 
-window.addEventListener('popstate', () => {
-    LoadContent(window.location.pathname);
-});
+
 
 function showAlert(msj) {
     const alertBox = document.getElementById("customAlert");
@@ -610,15 +596,18 @@ function showAlert(msj) {
     }, 5000);
 }
 
-window.showAlert = showAlert
+
 
 await insertUserInCach()
 
+window.showAlert = showAlert;
 LoadContent(window.location.pathname);
 window.WebSocketManager.initializeOnlineUsersHandler(createOnlineUsers);
 window.WebSocketManager.initializeLastMessagesListHandler(lastMessagesListHnadler);
+window.WebSocketManager.initializeNavigateToHandler(navigateToLogout)
 
-if (window.loggedUser && window.WebSocketManager) {
+
+if (window.localStorage.getItem('user') && window.WebSocketManager) {
     window.WebSocketManager.connect();
 }
 
@@ -664,16 +653,11 @@ function createUserProfile(user, onlineUsersElement) {
     onlineUsersElement.appendChild(profileDiv);
 }
 
-// Example usage
-//   createUserProfile("Alice Smith", true);
-//   createUserProfile("John Doe", false);
-
 function lastMessagesListHnadler(onlineUsers) {
     const chatListElement = document.getElementById('chat-list') ? document.getElementById('chat-list') : false;
     if (chatListElement) {
         const users = !onlineUsers || onlineUsers === undefined ? window.WebSocketManager.Users : onlineUsers;
         chatListElement.innerHTML = ''
-        console.log(users)
         users.forEach(user => {
             if (user.lastMessage) {
                 const card = document.createElement('div');
@@ -720,7 +704,6 @@ function lastMessagesListHnadler(onlineUsers) {
                 // console.log(card)
             }
             window.messagesListInnerHtml = document.getElementById('chat-list').innerHTML;
-            console.log(window.messagesListInnerHtml)
         })
     }
 }
@@ -730,26 +713,16 @@ function createOnlineUsers(users) {
 
     // Example: Update a sidebar with online users
     const onlineUsersElement = document.getElementById('online-users-list');
+    
     if (onlineUsersElement) {
         onlineUsersElement.innerHTML = '';
 
         const onlineUsers = users === undefined ? window.WebSocketManager.Users : users
 
-        console.log("websocket data",users)
-        // console.log((!undefined), window.WebSocketManager.Users)
-        // console.log((!!undefined), users)
         if (onlineUsers) {
             onlineUsers.forEach(user => {
-                // const userElement = document.createElement('button');
-                // userElement.className = `online-user ${user.status}`;
-                // userElement.textContent = user.userName;
-                // userElement.dataset.user = user.userName
-                // onlineUsersElement.appendChild(userElement);
                 createUserProfile(user, onlineUsersElement);
-                // window.messagesListInnerHtml = messagesListElement.innerHTML
             });
-            // console.log(messagesListElement)
-            // console.log(document.querySelectorAll('.simple-profile'))
             document.querySelectorAll('.simple-profile').forEach(element => element.addEventListener('click', goToChat))
         } else {
             onlineUsersElement.innerHTML = ''
@@ -766,25 +739,16 @@ function goToChat(e) {
 }
 
 function insertUserValue() {
-    document.getElementById('Name').setAttribute('value', window.loggedUser)
-    document.querySelector('.dropdown-button').innerHTML += " " + window.loggedUser
+    document.getElementById('Name').setAttribute('value', window.localStorage.getItem("user"))
+    document.querySelector('.dropdown-button').innerHTML += " " + window.localStorage.getItem("user")
     if (window.WebSocketManager) {
         createOnlineUsers()
     }
 }
 
-     function addevent() {
-        // conn.addEventListener('message', (e) => {
-            
-            // const data = JSON.parse(e.data);
-            // if  (data.logout) {
-                // console.log("aaaaaaaaaaaaaaaa");
-                navigateTo('/logout')
-            // }
-            
-        // })
-     }
-    window.WebSocketManager.initializeNavigateToHandler(addevent)
+function navigateToLogout() {
+    navigateTo('/logout')
+}
 
 if (document.readyState !== 'loading') insertUserValue();
 window.addEventListener('DOMContentLoaded', insertUserValue)
