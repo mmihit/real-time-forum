@@ -81,7 +81,24 @@ func (d *Database) InsertMessageInDatabase(sender, receiver, message string) err
 	return nil
 }
 
+func (d *Database) CheckTotalMessagesOfChat(senderID, receiverID int, offset int, lodingChats LoadingChatResponse) (bool, error) {
+
+	queryOfCountTotalMessages := `SELECT COUNT(*)
+                   FROM chats c
+                   WHERE (c.sender_id = ? AND c.receiver_id = ?) OR (c.sender_id = ? AND c.receiver_id = ?)`
+
+	var totalMessages int
+
+	err := d.Db.QueryRow(queryOfCountTotalMessages, senderID, receiverID, receiverID, senderID).Scan(&totalMessages)
+	if err != nil {
+		return false, fmt.Errorf("failed counting total messages: %w", err)
+	}
+
+	return (offset + len(lodingChats.Chats)) < totalMessages, nil
+} 
+
 func (d *Database) GetChatHistory(sender, receiver string, page int, pageSize int) (LoadingChatResponse, error) {
+
 	var Response LoadingChatResponse
 
 	offset := (page - 1) * pageSize
@@ -115,37 +132,26 @@ func (d *Database) GetChatHistory(sender, receiver string, page int, pageSize in
 
 	defer rows.Close()
 
+	var chat Chat
+
 	for rows.Next() {
-		var chat Chat
 
 		if err := rows.Scan(&chat.ID, &chat.Sender, &chat.Receiver, &chat.SenderID, &chat.ReceiverID, &chat.Message, &chat.CreateDate); err != nil {
 			return Response, fmt.Errorf("failed scanning chat history from db : %w", err)
 		}
 		Response.Chats = append(Response.Chats, chat)
+
+		chat = Chat{}
 	}
 
 	if err := rows.Err(); err != nil {
 		return Response, fmt.Errorf("failed iterating over rows: %w", err)
 	}
 
-	countQuery := `SELECT COUNT(*)
-                   FROM chats c
-                   WHERE (c.sender_id = ? AND c.receiver_id = ?) OR (c.sender_id = ? AND c.receiver_id = ?)`
-
-	var totalMessages int
-	err = d.Db.QueryRow(countQuery, senderID, receiverID, receiverID, senderID).Scan(&totalMessages)
-	if err != nil {
-		return Response, fmt.Errorf("failed counting total messages: %w", err)
-	}
-
-	Response.HasMore = (offset + len(Response.Chats)) < totalMessages
-
-	// Reverse the order of messages to maintain chronological order
-	// Since we're getting the newest messages first (DESC) but want to display oldest first
-	if len(Response.Chats) > 1 {
-		for i, j := 0, len(Response.Chats)-1; i < j; i, j = i+1, j-1 {
-			Response.Chats[i], Response.Chats[j] = Response.Chats[j], Response.Chats[i]
-		}
+	IsMore, err := d.CheckTotalMessagesOfChat(senderID, receiverID, offset, Response); if err == nil && IsMore {
+		Response.HasMore = IsMore;
+	} else {
+		return Response, err;
 	}
 
 	return Response, nil
@@ -154,7 +160,6 @@ func (d *Database) GetChatHistory(sender, receiver string, page int, pageSize in
 func IsExist(UserName string, onlineUsers []string) bool {
 
 	for _, User := range onlineUsers {
-
 		if User == UserName {
 			return true
 		}
