@@ -39,9 +39,9 @@
             console.log("this is the element: ", e)
             messageDisplay.innerHTML = "";
             selectedUser.receiver = !e ? this.element.target.dataset.user : e.target.dataset.user
-            selectedUser.isSelected = true
-            selectedUser.index = 0
-            chatList.innerHTML = window.messagesListInnerHtml
+            selectedUser.isSelected = true;
+            selectedUser.index = 0;
+            chatList.innerHTML = window.messagesListInnerHtml;
             loadingChat()
             console.log("Selected user:", selectedUser);
             attachUserListeners()
@@ -60,7 +60,6 @@
                 element.addEventListener('click', window.selectChatFromOnlineUsers.goToChat);
             });
         }
-
     }
 
     attachUserListeners();
@@ -127,7 +126,7 @@
             messageDisplay.appendChild(tempContainer)
         } else {
             messageDisplay.insertBefore(tempContainer, messageDisplay.firstElementChild)
-        }
+        }   
 
         !scrollHelper.isLoading ? messageDisplay.scrollTop = messageDisplay.scrollHeight : false;
 
@@ -239,7 +238,7 @@
             scrollHelper.hasMore = responseData.hasMore
             const scrollHeight = messageDisplay.scrollHeight;
             if (responseData.chats) {
-                responseData.chats.reverse().forEach((chat) => {
+                responseData.chats.forEach((chat) => {
                     const flag = chat.sender == window.localStorage.getItem("user") ? "sent" : "received";
                     createMessage(chat.message, chat.sender, flag, chat.create_date);
                 });
@@ -296,7 +295,7 @@
     // Register message handler for this page
     if (window.WebSocketManager) {
         window.WebSocketManager.registerMessageHandler(handleMessengerMessage);
-        window.WebSocketManager.registerTypingHandler(handleTyping)
+        window.WebSocketManager.registerTypingHandler(handleTyping);
 
         if (window.WebSocketManager.connection)window.WebSocketManager.connection.addEventListener('message',attachUserListeners)
         window.appRegistry.registerEventListener(window, 'beforeunload', function () {

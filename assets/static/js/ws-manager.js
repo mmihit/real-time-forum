@@ -4,7 +4,7 @@ const WebSocketManager = {
     reconnectAttempts: 0,
     maxReconnectAttempts: 5,
     reconnectDelay: 1000,
-    messageHandlers: [],
+    messageHandlers: null,
     onlineUsersHandler: null,
     MessageListHandler: null,
     typingHandler: null,
@@ -41,7 +41,7 @@ const WebSocketManager = {
                     console.log(`typing now from ${chatData.sender}`)
 
             } else if (chatData.message) {
-                this.messageHandlers.forEach(handler => handler(chatData));
+                if (this.messageHandlers) this.messageHandlers(chatData);
                 if (!window.location.pathname.includes('/messenger')) {
                     if (chatData.sender != localStorage.getItem('user')) {
                         window.showAlert(`${chatData.sender} sent you a  message`);
@@ -75,7 +75,7 @@ const WebSocketManager = {
         if (this.connection && this.connection.readyState === WebSocket.OPEN) {
             this.connection.send(JSON.stringify(message));
             return true;
-        } else {connect
+        } else {
             console.error("WebSocket not connected, reconnecting...");
             this.connect();
             return false;
@@ -84,9 +84,7 @@ const WebSocketManager = {
 
     // Register a message handler for specific pages
     registerMessageHandler(handler) {
-        if (!this.messageHandlers.includes(handler)) {
-            this.messageHandlers.push(handler);
-        }
+        this.messageHandlers=handler
     },
 
     registerTypingHandler(handler) {
@@ -98,7 +96,7 @@ const WebSocketManager = {
     },
 
     removeMessageHandler() {
-        this.messageHandlers = []
+        this.messageHandlers = null;
     },
 
     initializeOnlineUsersHandler(handler) {

@@ -77,15 +77,14 @@ export function navigateTo(endpoint) {
 
 async function LoadContent(endpoint) {
     endpoint = window.location.href.replace(window.location.origin, "")
-
     const uniqueUrl = endpoint + (endpoint.includes('?') ? '&' : '?') + '_=' + new Date().getTime();
 
-    try {
-        await fetch(uniqueUrl, {
-            method: "GET",
-            headers: { 'Content-Type': 'application/json' },
-            cache: "no-cache"
-        });
+        try {
+            await fetch(uniqueUrl, {
+                method: "GET",
+                headers: { 'Content-Type': 'application/json' },
+                cache: "no-cache"
+            });
     } catch (error) {
         console.error("Error fetching endpoint:", error);
     }
@@ -114,7 +113,6 @@ async function LoadContent(endpoint) {
         if (document.getElementById('fixedHtml')) document.getElementById('fixedHtml').style.display = "none";
 
         await LoginContent();     
-        await insertUserInCach();
 
         if (window.WebSocketManager.connection) {
             window.WebSocketManager.connection.close()
@@ -135,7 +133,7 @@ async function LoadContent(endpoint) {
         if (document.getElementById('fixedHtml')) document.getElementById('fixedHtml').style.display = "none";
 
         await RegisterContent();
-        await insertUserInCach();
+        // await insertUserInCach();
 
         if (window.WebSocketManager.connecttion) {
             window.WebSocketManager.connection.close()
