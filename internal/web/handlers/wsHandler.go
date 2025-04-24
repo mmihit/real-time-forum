@@ -16,7 +16,6 @@ type Chat struct {
 	Sender   string `json:"sender"`
 	Receiver string `json:"receiver"`
 	Message  string `json:"message"`
-	// typing   bool
 }
 
 type OnlineUser struct {
@@ -48,7 +47,7 @@ type Logout struct {
 
 var (
 	clients = make(map[string][]*Client)
-	mutex   = &sync.Mutex{} // Global mutex for access to the clients map
+	mutex   = &sync.Mutex{}
 )
 
 func (h *Handler) WsHandler(w http.ResponseWriter, r *http.Request) {
@@ -73,11 +72,6 @@ func (h *Handler) WsHandler(w http.ResponseWriter, r *http.Request) {
 		Conn:      conn,
 	}
 
-	// // Register client in the global clients map
-	// mutex.Lock()
-	// clients[username] = append(clients[username], client)
-	// mutex.Unlock()
-
 	mutex.Lock()
 	go h.handleSessions(username, client)
 	mutex.Unlock()
@@ -96,30 +90,24 @@ func (h *Handler) WsHandler(w http.ResponseWriter, r *http.Request) {
 
 		mutex.Unlock()
 
-		fmt.Printf("Client disconnected: %s\n", username)
 		go h.broadcastOnlineUsers()
 	}()
-
-	fmt.Printf("New client connected: %s\n", username)
 
 	// Message handling loop
 	for {
 
 		messageType, messageBytes, err := conn.ReadMessage()
 		if err != nil {
-			fmt.Printf("Error reading message from %s: %v\n", username, err)
 			break
 		}
 
 		if messageType != websocket.TextMessage {
-			fmt.Printf("Ignoring non-text message from %s\n", username)
 			continue
 		}
 
 		// Try to parse as typing event.
 		var typing Typing
 		if err := json.Unmarshal(messageBytes, &typing); err == nil && typing.Type == "IsTyping" {
-			fmt.Println("Typing : ", typing)
 			go h.handleTyping(typing)
 			continue
 		}
@@ -127,10 +115,8 @@ func (h *Handler) WsHandler(w http.ResponseWriter, r *http.Request) {
 		// Otherwise, try to parse as a chat message.
 		var chat Chat
 		if err := json.Unmarshal(messageBytes, &chat); err == nil && chat.Message != "" {
-			fmt.Println("Chat : ", chat)
 			// Security check: ensure the message sender matches the authenticated user
 			if chat.Sender != username {
-				fmt.Printf("Security warning: %s tried to send message as %s\n", username, chat.Sender)
 				chat.Sender = username
 			}
 
@@ -214,16 +200,12 @@ func (h *Handler) broadcastOnlineUsers() {
 	for username := range clients {
 		userList = append(userList, username)
 	}
-	fmt.Println("online users is: ", userList)
 	mutex.Unlock()
 
 	// Broadcast to all connected clients
 	mutex.Lock()
 	var OnlineChatUsers []db.OnlineUsers
 	for username, clientList := range clients {
-
-		fmt.Println("user", username, clientList)
-
 		var onlineUsers []string
 		for _, user := range userList {
 			if username != user {
@@ -254,7 +236,6 @@ func (h *Handler) broadcastOnlineUsers() {
 			}
 		}
 	}
-	fmt.Println("******************")
 	mutex.Unlock()
 }
 
@@ -267,7 +248,6 @@ func (h *Handler) handleSessions(loggedUser string, loggedClient *Client) {
 	_, exist := clients[loggedUser]
 	if !exist {
 		clients[loggedUser] = append(clients[loggedUser], loggedClient)
-		fmt.Println("new in map: ", loggedUser)
 	} else {
 		for _, client := range clients[loggedUser] {
 			if client.SessionId != loggedClient.SessionId {
@@ -277,7 +257,6 @@ func (h *Handler) handleSessions(loggedUser string, loggedClient *Client) {
 				fmt.Println("getOutPlease: ", loggedUser)
 			}
 		}
-		fmt.Println("the same session append: ", loggedUser)
 		clients[loggedUser] = append(clients[loggedUser], loggedClient)
 	}
 	mutex.Unlock()

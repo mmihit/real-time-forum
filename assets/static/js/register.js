@@ -28,13 +28,13 @@ document.addEventListener('submit', async (event) => {
             isValid = false;
         }
 
-        const firstNameRegex = /^[A-Za-z-\s]{6,30}$/;
+        const firstNameRegex = /^[A-Za-z-\s]{2,30}$/;
         if (!firstNameRegex.test(firstName)) {
             document.getElementById('firstNameError').innerText = 'Invalid First Name';
             isValid = false;
         }
 
-        const lastNameRegex = /^[A-Za-z-\s]{6,30}$/;
+        const lastNameRegex = /^[A-Za-z-\s]{2,30}$/;
         if (!lastNameRegex.test(lastName)) {
             document.getElementById('lastNameError').innerText = 'Invalid Last Name';
             isValid = false;

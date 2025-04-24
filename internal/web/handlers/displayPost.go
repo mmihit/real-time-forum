@@ -6,14 +6,8 @@ import (
 
 	"forum/helpers"
 	"forum/internal/db"
-	// "forum/internal/db"
 )
 
-// type postData struct {
-// 	Post     db.Post
-// 	Id       string
-// 	UserName string
-// }
 
 func (h *Handler) DisplayPostWithComments(w http.ResponseWriter, r *http.Request) {
 	isLogged := true
@@ -32,16 +26,13 @@ func (h *Handler) DisplayPostWithComments(w http.ResponseWriter, r *http.Request
 	}
 
 	idTarget, err := strconv.Atoi(r.URL.Query().Get("id"))
-	// fmt.Println(idTarget)
 	if err != nil {
-		// fmt.Println("teeeeeeeeeest5555")
 		helpers.ExecuteTmpl(w, "error.html", http.StatusBadRequest, "Oops! Bad Request error !", nil)
 		return
 	}
 	for _, user := range h.Api.Users {
 		for _, p := range user.Posts {
 			if p.Id == idTarget {
-				// fmt.Println(p, p.Id, idTarget)
 				h.Api.Params.Post.UserName = ""
 				if isLogged {
 					h.Api.Params.Post.UserName = loggedUser

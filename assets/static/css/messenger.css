@@ -317,9 +317,10 @@ body {
 
 .profile-card {
     min-height: 100px;
+    max-height: 100px;
     display: flex;
     margin-top: 6px;
-    align-items: center;
+    /* align-items: center; */
     background: #fff;
     border-radius: 1rem;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);

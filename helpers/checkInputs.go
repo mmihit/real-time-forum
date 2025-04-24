@@ -32,7 +32,7 @@ func IsValidInput(user db.User) string {
 	}
 
 	/*********** First Name *************/
-	firstNameRegex := `^[A-Za-z-\s]{6,30}$`
+	firstNameRegex := `^[A-Za-z-\s]{2,30}$`
 	firstNameR := regexp.MustCompile(firstNameRegex)
 	if !firstNameR.MatchString(user.FirstName) {
 		return "Invalid First Name !"
@@ -41,7 +41,7 @@ func IsValidInput(user db.User) string {
 	}
 
 	/*********** Last Name *************/
-	lastNameRegex := `^[A-Za-z-\s]{6,30}$`
+	lastNameRegex := `^[A-Za-z-\s]{2,30}$`
 	lastNameR := regexp.MustCompile(lastNameRegex)
 	if !lastNameR.MatchString(user.LastName) {
 		return "Invalid Last Name !"

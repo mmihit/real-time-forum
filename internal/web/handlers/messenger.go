@@ -8,7 +8,6 @@ import (
 
 func (h *Handler) Messenger(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		// fmt.Println(r.URL.Path)
 		helpers.ExecuteTmpl(w, "index.html", 200, "", nil)
 		return
 	} else {

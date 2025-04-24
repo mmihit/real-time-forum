@@ -7,7 +7,6 @@ import (
 )
 
 type LoadingChatRequest struct {
-	// Sender   string `json:"sender"`
 	Receiver string `json:"receiver"`
 	Id       int    `json:"index"`
 	Page     int    `json:"page"`
