@@ -9,7 +9,7 @@ const WebSocketManager = {
     MessageListHandler: null,
     typingHandler: null,
     Users: [],
-    navigateToHandle:null,
+    navigateToHandle: null,
 
     connect() {
         if (this.connection && (this.connection.readyState === WebSocket.OPEN)) {
@@ -27,8 +27,10 @@ const WebSocketManager = {
             this.reconnectAttempts = 0;
         };
 
-        this.connection.onmessage = (event) => {
+        this.connection.onmessage = async (event) => {
             const chatData = JSON.parse(event.data);
+
+            if (!insertUserInCach()) return
 
             if (chatData.type === "online_users") {
                 this.Users = chatData.users;
@@ -38,7 +40,7 @@ const WebSocketManager = {
 
             } else if (chatData.type === "IsTyping") {
                 if (this.typingHandler) this.typingHandler(chatData)
-                    console.log(`typing now from ${chatData.sender}`)
+                console.log(`typing now from ${chatData.sender}`)
 
             } else if (chatData.message) {
                 if (this.messageHandlers) this.messageHandlers(chatData);
@@ -71,7 +73,10 @@ const WebSocketManager = {
     },
 
     // Send a message through the WebSocket
-    sendMessage(message) {
+    async sendMessage(message) {
+
+        if (!insertUserInCach()) return
+
         if (this.connection && this.connection.readyState === WebSocket.OPEN) {
             this.connection.send(JSON.stringify(message));
             return true;
@@ -84,11 +89,11 @@ const WebSocketManager = {
 
     // Register a message handler for specific pages
     registerMessageHandler(handler) {
-        this.messageHandlers=handler
+        this.messageHandlers = handler
     },
 
     registerTypingHandler(handler) {
-        this.typingHandler=handler
+        this.typingHandler = handler
     },
 
     initializeLastMessagesListHandler(handler) {
@@ -104,7 +109,7 @@ const WebSocketManager = {
     },
 
     initializeNavigateToHandler(handler) {
-        this.navigateToHandle=handler
+        this.navigateToHandle = handler
     }
 };
 
@@ -116,4 +121,39 @@ window.addEventListener('DOMContentLoaded', () => {
     }, 1000);
 });
 
+// setInterval(insertUserInCach, 5000);
+
 window.WebSocketManager = WebSocketManager;
+
+async function insertUserInCach() {
+    var UserResponse = await fetchApi("/LoggedUser")
+    if (UserResponse) {
+        window.localStorage.setItem("user", UserResponse.message)
+    } else {
+        if (window.WebSocketManager && window.WebSocketManager.connection) {
+            window.WebSocketManager.connection.close()
+            window.showAlert("Please login to continue ...")
+            return false
+        }
+    }
+}
+
+async function fetchApi(url) {
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+        if (response.ok) {
+            return await response.json();
+        } else {
+            return false
+        }
+
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        return null;
+    }
+};

@@ -47,6 +47,10 @@ async function insertUserInCach() {
     var UserResponse = await fetchApi("/LoggedUser")
     if (UserResponse) {
         window.localStorage.setItem("user", UserResponse.message)
+    }else{
+        if (window.WebSocketManager && window.WebSocketManager.connection){
+            window.WebSocketManager.connection.close()
+        }
     }
 }
 

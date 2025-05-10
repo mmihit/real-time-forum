@@ -13,8 +13,7 @@ func DeleteCookie(w http.ResponseWriter, user string, d *db.Database) {
 		Value:    "",
 		Path:     "/",
 		Expires:  time.Now().Add(-time.Hour),
-		HttpOnly: true,
-		Secure:   true,
+		Secure:   false,
 		SameSite: http.SameSiteLaxMode,
 	})
 	// d.DeleteTokenFromDataBase(user)

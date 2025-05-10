@@ -76,8 +76,6 @@ func (h *Handler) WsHandler(w http.ResponseWriter, r *http.Request) {
 	go h.handleSessions(username, client)
 	mutex.Unlock()
 
-
-
 	// Cleanup when connection is closed
 	defer func() {
 		conn.Close()
@@ -93,8 +91,16 @@ func (h *Handler) WsHandler(w http.ResponseWriter, r *http.Request) {
 		go h.broadcastOnlineUsers()
 	}()
 
+
 	// Message handling loop
 	for {
+
+		_, err := helpers.CheckCookie(r, h.DB)
+		if err != nil {
+			helpers.JsonResponse(w, http.StatusUnauthorized, "Unauthorized: Please log in to continue.")
+			conn.Close()
+			break
+		}
 
 		messageType, messageBytes, err := conn.ReadMessage()
 		if err != nil {
@@ -241,7 +247,7 @@ func (h *Handler) broadcastOnlineUsers() {
 
 func (h *Handler) handleSessions(loggedUser string, loggedClient *Client) {
 	mutex.Lock()
-	
+
 	var Logout Logout
 	Logout.Message = "logout"
 	Message, _ := json.Marshal(&Logout)
@@ -260,6 +266,6 @@ func (h *Handler) handleSessions(loggedUser string, loggedClient *Client) {
 		clients[loggedUser] = append(clients[loggedUser], loggedClient)
 	}
 	mutex.Unlock()
-	
+
 	h.broadcastOnlineUsers()
 }
